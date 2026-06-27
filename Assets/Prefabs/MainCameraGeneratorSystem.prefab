@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7338818055911345996}
   - component: {fileID: 1364405473214320370}
   m_Layer: 0
-  m_Name: MainCamerGeneratorSystem
+  m_Name: MainCameraGeneratorSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
