@@ -5,8 +5,11 @@ using System.Collections;
 
 public class TitleScreenManager : MonoBehaviour
 {
+    public GameObject loadingScreen;
+
     public void OnStartButtonClicked()
     {
+        loadingScreen.SetActive(true);
         StartCoroutine(LoadScenesCoroutine());
     }
     private System.Collections.IEnumerator LoadScenesCoroutine()
@@ -53,6 +56,10 @@ public class TitleScreenManager : MonoBehaviour
 
         // 4. 이 줄에 도달했다는 것은 6개 씬이 완벽하게 켜졌다는 뜻입니다!
         Debug.Log("모든 인게임 씬 로딩 완료! 게임을 시작합니다.");
+        if (loadingScreen != null) //null체크 안하면 유니티가 경고띄움
+        {
+            loadingScreen.SetActive(false);
+        }
         
         // 여기서 실제로 캐릭터의 중력을 켜거나, 페이드아웃 연출을 끝내고 게임을 시작시키면 됩니다.
         StartActualGame();
