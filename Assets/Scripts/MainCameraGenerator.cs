@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GameBootstrapper : MonoBehaviour
+public class MainCameraGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject mainCameraPrefab;
 
@@ -22,7 +22,7 @@ public class GameBootstrapper : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("GameBootstrapper: 카메라 프리팹이 등록되지 않았습니다.");
+                Debug.LogWarning("MainCameraGenerator: 카메라 프리팹이 등록되지 않았습니다.");
             }
         }
     }
