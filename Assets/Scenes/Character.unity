@@ -129,8 +129,9 @@ GameObject:
   m_Component:
   - component: {fileID: 481326620}
   - component: {fileID: 481326619}
+  - component: {fileID: 481326621}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -210,6 +211,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &481326621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481326618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 919332164e984984d85d10a9442fb686, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  maxHealth: 100
+  currentHealth: 0
+  MoveSpeed: 10
+  baseAttackPower: 10
+  maxStamina: 100
+  currentStamina: 0
+  staminaRegenRate: 5
+  staminaRegenDelay: 2
 --- !u!1001 &1715393639
 PrefabInstance:
   m_ObjectHideFlags: 0
