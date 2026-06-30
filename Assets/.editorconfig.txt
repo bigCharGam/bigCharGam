@@ -1,0 +1,12 @@
+# 최상위 설정 파일임을 선언 (상위 폴더의 다른 editorconfig 검색을 중단)
+root = true
+
+# 모든 파일(*)에 적용할 규칙 정의
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+# C# 스크립트 파일(*.cs)에만 특정 규칙을 정교하게 적용하고 싶다면 분리 가능
+[*.cs]
+charset = utf-8-bom
