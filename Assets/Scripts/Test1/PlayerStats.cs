@@ -39,7 +39,7 @@ public class PlayerStats : CharacterBaseStats
                                                 // 제너릭) <>, 형식 종류에 맞게 파라미터 형식 변경
     }
 
-    protected override void Update()
+    protected override void Update()        /* 이슈) 인스턴스 땜에 부모 변수 다같이 쓰나? */
     {
 
         base.Update();
