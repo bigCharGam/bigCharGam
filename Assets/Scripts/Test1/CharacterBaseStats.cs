@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CharacterBase : MonoBehaviour
+public class CharacterBaseStats : MonoBehaviour
 {
     [Header("BaseStats")]
     [SerializeField] protected float maxHealth;

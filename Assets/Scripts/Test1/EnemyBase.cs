@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyBase : CharacterBase
+public class EnemyBase : CharacterBaseStats
 {
     [Header("EnemyStats")]
     protected float test1;
