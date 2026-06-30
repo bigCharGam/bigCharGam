@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class CharacterBase : MonoBehaviour
 {
@@ -8,7 +8,7 @@ public class CharacterBase : MonoBehaviour
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float baseAttackPower;
 
-    protected virtual void Start()      // Å°¿öµå) virtual, ÀÚ½Ä ¿À¹ö¶óÀÌµå Çã¿ë
+    protected virtual void Start()      // í‚¤ì›Œë“œ) virtual, ìì‹ ì˜¤ë²„ë¼ì´ë“œ í—ˆìš©
     {
         currentHealth = maxHealth;
     }
