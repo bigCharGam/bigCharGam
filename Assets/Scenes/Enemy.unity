@@ -286,7 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy1
   maxHealth: 150
   currentHealth: 0
-  MoveSpeed: 8
+  moveSpeed: 0
   baseAttackPower: 12
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

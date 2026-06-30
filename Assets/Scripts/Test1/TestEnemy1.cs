@@ -5,7 +5,7 @@ public class TestEnemy1 : EnemyBase
     private void Reset()
     {
         maxHealth = 150f;
-        MoveSpeed = 8f;
+        moveSpeed = 8f;
         baseAttackPower = 12f;
     }
 

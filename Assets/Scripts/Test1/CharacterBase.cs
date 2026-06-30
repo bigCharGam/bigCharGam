@@ -5,10 +5,10 @@ public class CharacterBase : MonoBehaviour
     [Header("BaseStats")]
     [SerializeField] protected float maxHealth;
     [SerializeField] protected float currentHealth;
-    [SerializeField] protected float MoveSpeed;
+    [SerializeField] protected float moveSpeed;
     [SerializeField] protected float baseAttackPower;
 
-    protected virtual void Start()
+    protected virtual void Start()      // 키워드) virtual, 자식 오버라이드 허용
     {
         currentHealth = maxHealth;
     }
