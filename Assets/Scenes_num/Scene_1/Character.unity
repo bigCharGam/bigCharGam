@@ -208,8 +208,8 @@ Transform:
   m_GameObject: {fileID: 481326618}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: -4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -3, y: -3.106, z: 0}
+  m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1629518574}
@@ -338,15 +338,16 @@ MonoBehaviour:
   currentStamina: 0
   staminaRegenRate: 5
   staminaRegenDelay: 2
-  currentState: 0
-  jumpForce: 30
+  currentPosition: 0
+  currentAction: 0
+  jumpForce: 15
   fastFallForce: 60
   groundCheck: {fileID: 1629518574}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.1
-  dashForce: 30
+  dashForce: 25
   dashDuration: 0.1
   dashCooldown: 0.5
   doubleTapTime: 0.2
@@ -394,8 +395,16 @@ PrefabInstance:
       value: MainCameraGeneratorSystem
       objectReference: {fileID: 0}
     - target: {fileID: 2370576206690146260, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370576206690146260, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
       propertyPath: m_TagString
       value: MainCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4491453303811665897, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7338818055911345996, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
       propertyPath: m_LocalPosition.x
