@@ -40,6 +40,7 @@ public class TestEnemy1 : EnemyBase
         base.Update();
     }
 
+    // 임시) 랜덤으로 스킬 사용
     protected override void HandleBattle()
     {
         if (isAttacking) return;
@@ -63,26 +64,24 @@ public class TestEnemy1 : EnemyBase
         }
     }
 
-    // Animation Event에서 호출 — 이름 형식: HitboxEnable_{스킬인덱스}
+    // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
     private void HitboxEnable_0()
     {
         SetHitbox(0, true);
     }
-
     private void HitboxDisable_0()
     {
         SetHitbox(0, false);
     }
-
     private void SetHitbox(int index, bool active)
     {
         if (index < 0 || index >= skills.Length) return;
         skills[index].hitbox.SetActive(active);
         if (active)
+        {
             skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
+        }
     }
-
-    // Animation Event에서 호출
     private void OnAttackEnd()
     {
         isAttacking = false;
