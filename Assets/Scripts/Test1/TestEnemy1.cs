@@ -17,7 +17,7 @@ public class TestEnemy1 : EnemyBase
     private void Reset()
     {
         maxHealth = 150f;
-        MoveSpeed = 8f;
+        moveSpeed = 8f;
         skill1Damage = 10f;
         skill1MinUseRange = 2f;
         runSpeed = 12f;

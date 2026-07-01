@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 481326622}
   - component: {fileID: 481326621}
   - component: {fileID: 481326624}
-  - component: {fileID: 481326623}
+  - component: {fileID: 481326625}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -208,8 +208,8 @@ Transform:
   m_GameObject: {fileID: 481326618}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3, y: -4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -3, y: -3.106, z: 0}
+  m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1629518574}
@@ -240,7 +240,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!61 &481326622
 BoxCollider2D:
@@ -288,32 +288,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &481326623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 481326618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 919332164e984984d85d10a9442fb686, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
-  maxHealth: 100
-  currentHealth: 0
-  MoveSpeed: 10
-  baseAttackPower: 10
-  maxStamina: 100
-  currentStamina: 0
-  staminaRegenRate: 5
-  staminaRegenDelay: 2
-  jumpForce: 15
-  groundCheck: {fileID: 1629518574}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  groundCheckRadius: 0.1
 --- !u!114 &481326624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,10 +314,43 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
+  m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &481326625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481326618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 137a31a7c6fd3b944b683c19f5520620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  maxHealth: 100
+  currentHealth: 0
+  moveSpeed: 10
+  baseAttackPower: 10
+  maxStamina: 100
+  currentStamina: 0
+  staminaRegenRate: 5
+  staminaRegenDelay: 2
+  currentPosition: 0
+  currentAction: 0
+  jumpForce: 15
+  fastFallForce: 60
+  groundCheck: {fileID: 1629518574}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckRadius: 0.1
+  dashForce: 25
+  dashDuration: 0.1
+  dashCooldown: 0.5
+  doubleTapTime: 0.2
 --- !u!1 &1629518573
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,8 +395,16 @@ PrefabInstance:
       value: MainCameraGeneratorSystem
       objectReference: {fileID: 0}
     - target: {fileID: 2370576206690146260, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370576206690146260, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
       propertyPath: m_TagString
       value: MainCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4491453303811665897, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7338818055911345996, guid: 68c5e7ec6887d32419498fb8c0ef33ca, type: 3}
       propertyPath: m_LocalPosition.x

@@ -15,7 +15,8 @@ public struct Waypoint
     public float waitTime;
 }
 
-public class EnemyBase : CharacterBase
+public class EnemyBase : CharacterBaseStats
+
 {
     [Header("EnemyBase")]
     [SerializeField] protected float detectionRange;
