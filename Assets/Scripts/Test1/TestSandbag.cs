@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TestSandbag : CharacterBase
+public class TestSandbag : CharacterBaseStats
 {
     private void Reset()
     {

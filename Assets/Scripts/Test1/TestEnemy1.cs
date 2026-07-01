@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public struct SkillData
+{
+    public string animTrigger;
+    public GameObject hitbox;
+    public float damage;
+    public float minUseRange;
+}
+
 public class TestEnemy1 : EnemyBase
 {
-    [Header("Skill 1 Slash")]
-    [SerializeField] private GameObject skill1Hitbox;
-    [SerializeField] private float skill1Damage;
-    [SerializeField] private float skill1MinUseRange;
+    [Header("Skills")]
+    [SerializeField] private SkillData[] skills;
 
     [Header("Battle")]
     [SerializeField] private float runSpeed;
@@ -18,8 +25,7 @@ public class TestEnemy1 : EnemyBase
     {
         maxHealth = 150f;
         moveSpeed = 8f;
-        skill1Damage = 10f;
-        skill1MinUseRange = 2f;
+        detectionRange = 10f;
         runSpeed = 12f;
     }
 
@@ -37,11 +43,12 @@ public class TestEnemy1 : EnemyBase
     protected override void HandleBattle()
     {
         if (isAttacking) return;
+        if (skills == null || skills.Length == 0) return;
 
         if (selectedSkillIndex == -1)
-            selectedSkillIndex = Random.Range(0, 1);
+            selectedSkillIndex = Random.Range(0, skills.Length);
 
-        float requiredRange = GetMinSkillRange(selectedSkillIndex);
+        float requiredRange = skills[selectedSkillIndex].minUseRange;
 
         if (distanceToPlayer > requiredRange)
         {
@@ -51,44 +58,33 @@ public class TestEnemy1 : EnemyBase
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             isAttacking = true;
-            UseSkill(selectedSkillIndex);
+            anim.SetTrigger(skills[selectedSkillIndex].animTrigger);
             selectedSkillIndex = -1;
         }
     }
 
-    private float GetMinSkillRange(int index)
+    // Animation Event에서 호출 — 이름 형식: HitboxEnable_{스킬인덱스}
+    private void HitboxEnable_0()
     {
-        switch (index)
-        {
-            case 0: return skill1MinUseRange;
-            default: return 2f;
-        }
+        SetHitbox(0, true);
     }
 
-    private void UseSkill(int index)
+    private void HitboxDisable_0()
     {
-        switch (index)
-        {
-            case 0: anim.SetTrigger("Skill1_Slash"); break;
-        }
+        SetHitbox(0, false);
+    }
+
+    private void SetHitbox(int index, bool active)
+    {
+        if (index < 0 || index >= skills.Length) return;
+        skills[index].hitbox.SetActive(active);
+        if (active)
+            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
     }
 
     // Animation Event에서 호출
     private void OnAttackEnd()
     {
         isAttacking = false;
-    }
-
-    // Animation Event에서 호출
-    private void HitboxEnable_Skill1()
-    {
-        skill1Hitbox.SetActive(true);
-        skill1Hitbox.GetComponent<EnemyAttackHitbox>().damage = skill1Damage;
-    }
-
-    // Animation Event에서 호출
-    private void HitboxDisable_Skill1()
-    {
-        skill1Hitbox.SetActive(false);
     }
 }

@@ -3,12 +3,13 @@ using System.Collections;
 
 public enum EnemyState
 {
-    Idle,
-    Patrol,
-    Battle,
+    Patrol, // Waypoints 따라 순찰 상태
+    Idle, // 모든 Waypoint 순찰 후 대기 상태 (순찰 반복이 false인 경우)
+    Battle, // 감지범위 내 플레이어 발견 시 전투 상태
 }
 
-[System.Serializable] //인스펙터에서 잘 보이게?
+// 순찰 지점: 위치와 도착 후 대기 시간
+[System.Serializable]
 public struct Waypoint
 {
     public Transform transform;
@@ -23,13 +24,12 @@ public class EnemyBase : CharacterBaseStats
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected Waypoint[] waypoints;
     [SerializeField] protected bool patrolLoop = true;
+    [SerializeField] protected Transform playerTransform;
 
     protected EnemyState currentState = EnemyState.Patrol;
     protected Animator anim;
-    [SerializeField] protected Transform playerTransform;
     protected Rigidbody2D rb;
     protected float distanceToPlayer;
-
     private int currentWaypointIndex = 0;
     private bool isWating = false;
 
@@ -40,16 +40,17 @@ public class EnemyBase : CharacterBaseStats
         rb.linearVelocity = new Vector2(direction.x * moveSpeed, rb.linearVelocity.y);
         transform.localScale = new Vector3(direction.x > 0 ? 1 : -1, 1, 1);
     }
-    protected virtual void Start()
+
+    override protected void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
         if (playerTransform != null)
-            distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
+            distanceToPlayer = Mathf.Abs(transform.position.x - playerTransform.position.x);
 
         switch (currentState)
         {
@@ -71,7 +72,7 @@ public class EnemyBase : CharacterBaseStats
         if (player != null)
         {
             currentState = EnemyState.Battle;
-            anim.SetBool("isMoving", true);
+            anim.SetBool("isMoving", true); //추후 걷기 뛰기 모션 분리
         }
         return player != null;
     }
@@ -93,9 +94,9 @@ public class EnemyBase : CharacterBaseStats
         if (PlayerDetect()) return;
 
         Transform waypoint = waypoints[currentWaypointIndex].transform;
-        MoveToTarget(waypoint, MoveSpeed);
+        MoveToTarget(waypoint, moveSpeed);
 
-        if (Vector2.Distance(transform.position, waypoint.position) < 0.1f)
+        if (Mathf.Abs(transform.position.x - waypoint.position.x) < 0.1f)
         {
             isWating = true;
             StartCoroutine(WaitAtWaypoint(waypoints[currentWaypointIndex].waitTime));
