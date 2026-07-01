@@ -3,13 +3,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : PlayerStats
 {
-    // 사용자님의 제안대로 찢어발긴 이중 상태 축 (Enum)
+    // 위치와 액션 (Enum)
     public enum PositionState { Grounded, Airborne }
     public enum ActionState { None, Locomotion, FastFalling, Dashing }
 
     [Header("Parallel States")]
-    [SerializeField] private PositionState currentPosition = PositionState.Grounded; // 인스펙터 시각화 축 1
-    [SerializeField] private ActionState currentAction = ActionState.None;           // 인스펙터 시각화 축 2
+    [SerializeField] private PositionState currentPosition = PositionState.Grounded;
+    [SerializeField] private ActionState currentAction = ActionState.None;
 
     [Header("Jump & Fall")]
     [SerializeField] private float jumpForce = 15f;
@@ -65,20 +65,25 @@ public class PlayerMovement : PlayerStats
     // 3. 물리연산 및 실시간 업데이트 메서드
     private void FixedUpdate()
     {
-        // [1축: 물리 위치 레이더] 실시간 위치 업데이트
+        // 메서드 완성시 없앨 편의성 변수
+        bool isPressingUp = moveInput.y > 0.5f;
+        bool isPressingDown = moveInput.y < -0.5f;
+        bool isPressingAD = moveInput.x != 0f;
+
+        // [ 1) 위치] 실시간 위치 업데이트
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         currentPosition = isGrounded ? PositionState.Grounded : PositionState.Airborne;
 
-        // [2축: 조작 움직임 레이더] 대시 중이 아닐 때만 실시간 조작 상태 판단 및 전환
+        // [ 2) 액션] 대시 중이 아닐 때만 실시간 조작 상태 판단 및 전환
         if (currentAction != ActionState.Dashing)
         {
             // 공중이면서 아래 키를 누르고 있다면 -> 강하 조작 상태
-            if (currentPosition == PositionState.Airborne && moveInput.y < -0.5f)
+            if (currentPosition == PositionState.Airborne && isPressingDown)
             {
                 currentAction = ActionState.FastFalling;
             }
             // 그 외에 좌우 입력이 들어가고 있다면 -> 이동 조작 상태
-            else if (moveInput.x != 0f)
+            else if (isPressingAD)
             {
                 currentAction = ActionState.Locomotion;
             }
@@ -89,7 +94,7 @@ public class PlayerMovement : PlayerStats
             }
         }
 
-        // [3) 최종 물리 주입] 이중 축의 결론을 조합하여 물리 제어
+        // [ 3) 최종 물리 주입] 위치와 액션을 조합하여 물리 제어
         switch (currentAction)
         {
             case ActionState.Dashing:
@@ -104,19 +109,19 @@ public class PlayerMovement : PlayerStats
                 rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
                 // 땅 위에서 위쪽 키 입력 시 점프 물리 즉시 발동
-                if (currentPosition == PositionState.Grounded && moveInput.y > 0.5f)
+                if (currentPosition == PositionState.Grounded && isPressingUp)
                 {
                     rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 }
                 break;
 
             case ActionState.None:
-                // 땅 위면 멈춤, 공중(수동 추락 포함)이면 좌우 조작값만 반영하되 자연스러운 중력 하강 허용
+                // 땅 위면 멈춤, 공중이면 좌우 조작값만 반영하되 자연스러운 중력 하강 허용
                 float targetX = (currentPosition == PositionState.Grounded) ? 0f : moveInput.x * moveSpeed;
                 rb.linearVelocity = new Vector2(targetX, rb.linearVelocity.y);
 
                 // 제자리 정지 중 위쪽 키 입력 시 점프 물리 즉시 발동
-                if (currentPosition == PositionState.Grounded && moveInput.y > 0.5f)
+                if (currentPosition == PositionState.Grounded && isPressingUp)
                 {
                     rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 }
