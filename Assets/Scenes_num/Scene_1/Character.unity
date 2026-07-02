@@ -230,7 +230,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 4
+  m_GravityScale: 20
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -327,12 +327,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 481326618}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 137a31a7c6fd3b944b683c19f5520620, type: 3}
+  m_Script: {fileID: 11500000, guid: 260e5a56f10286647917e3d1aefe3a3e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMain
   maxHealth: 100
   currentHealth: 0
-  moveSpeed: 10
+  moveSpeed: 20
   baseAttackPower: 10
   maxStamina: 100
   currentStamina: 0
@@ -340,17 +340,17 @@ MonoBehaviour:
   staminaRegenDelay: 2
   currentPosition: 0
   currentAction: 0
-  jumpForce: 15
-  fastFallForce: 60
+  jumpForce: 100
+  fastFallForce: 80
   groundCheck: {fileID: 1629518574}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.1
-  dashForce: 25
+  dashForce: 50
   dashDuration: 0.1
-  dashCooldown: 0.5
-  doubleTapTime: 0.2
+  dashCooldown: 0.1
+  doubleTapTime: 0.25
 --- !u!1 &1629518573
 GameObject:
   m_ObjectHideFlags: 0
