@@ -12,16 +12,16 @@ public class PlayerMovement : PlayerBattle
     [SerializeField] private ActionState currentAction = ActionState.None;
 
     [Header("Jump & Fall")]
-    [SerializeField] private float jumpForce = 15f;
-    [SerializeField] private float fastFallForce = 20f;
+    [SerializeField] private float jumpForce = 35f;
+    [SerializeField] private float fastFallForce = 80f;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundCheckRadius = 0.1f;
 
     [Header("Dash")]
-    [SerializeField] private float dashForce = 25f;
-    [SerializeField] private float dashDuration = 0.2f;
-    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private float dashForce = 50f;
+    [SerializeField] private float dashDuration = 0.1f;
+    [SerializeField] private float dashCooldown = 0.1f;
     [SerializeField] private float doubleTapTime = 0.25f;
 
     private Rigidbody2D rb;
@@ -64,7 +64,7 @@ public class PlayerMovement : PlayerBattle
     }
 
     // 3. 물리연산 및 실시간 업데이트 메서드
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         // 메서드 완성시 없앨 편의성 변수
         bool isPressingUp = moveInput.y > 0.5f;
