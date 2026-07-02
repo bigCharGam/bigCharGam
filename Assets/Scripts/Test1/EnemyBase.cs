@@ -80,7 +80,6 @@ public class EnemyBase : CharacterBaseStats
         if (player != null)
         {
             currentState = EnemyState.Battle;
-            anim.SetBool("isMoving", true); //추후 걷기 뛰기 모션 분리
         }
         return player != null;
     }
@@ -103,10 +102,12 @@ public class EnemyBase : CharacterBaseStats
 
         Transform waypoint = waypoints[currentWaypointIndex].transform;
         MoveToTarget(waypoint, moveSpeed);
+        anim.SetInteger("moveLevel", 1); 
 
         if (Mathf.Abs(transform.position.x - waypoint.position.x) < 0.1f)
         {
             isWating = true;
+            anim.SetInteger("moveLevel", 0);
             StartCoroutine(WaitAtWaypoint(waypoints[currentWaypointIndex].waitTime));
 
             currentWaypointIndex++;
@@ -127,6 +128,7 @@ public class EnemyBase : CharacterBaseStats
     {
         yield return new WaitForSeconds(waitTime);
         isWating = false;
+        anim.SetInteger("moveLevel", 1);
     }
 
     protected virtual void HandleBattle()

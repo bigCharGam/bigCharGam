@@ -4,7 +4,6 @@ using System.Collections;
 [System.Serializable]
 public struct SkillData
 {
-    public string animTrigger;
     public GameObject hitbox;
     public float damage;
     public float minUseRange;
@@ -17,6 +16,7 @@ public class TestEnemy1 : EnemyBase
 
     [Header("Battle")]
     [SerializeField] private float runSpeed;
+    [SerializeField] private float backStepSpeed;
 
     private bool isAttacking = false;
     private int selectedSkillIndex = -1;
@@ -25,6 +25,7 @@ public class TestEnemy1 : EnemyBase
     {
         maxHealth = 150f;
         moveSpeed = 8f;
+        backStepSpeed = 30f;
         detectionRange = 10f;
         runSpeed = 12f;
     }
@@ -40,27 +41,40 @@ public class TestEnemy1 : EnemyBase
         base.Update();
     }
 
-    // 임시) 랜덤으로 스킬 사용
     protected override void HandleBattle()
     {
         if (isAttacking) return;
         if (skills == null || skills.Length == 0) return;
 
+        // 어떤 스킬 사용할지 결정
+        // 임시) 랜덤으로 스킬 사용
         if (selectedSkillIndex == -1)
-            selectedSkillIndex = Random.Range(0, skills.Length);
+        {
+            int p = Random.Range(0, 100);
+            if (p < 30)
+            {
+                selectedSkillIndex = 1;
+            }
+            else
+            {
+                selectedSkillIndex = 0;
+            }
+        }
 
         float requiredRange = skills[selectedSkillIndex].minUseRange;
 
+        // 스킬별 사거리까지 달려가서 사용
         if (distanceToPlayer > requiredRange)
         {
+            anim.SetInteger("moveLevel", 2);
             MoveToTarget(playerTransform, runSpeed);
         }
         else
         {
+            anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            rb.WakeUp();
             isAttacking = true;
-            anim.SetTrigger(skills[selectedSkillIndex].animTrigger);
+            anim.SetTrigger("skill_" + selectedSkillIndex);
             selectedSkillIndex = -1;
         }
     }
@@ -74,6 +88,14 @@ public class TestEnemy1 : EnemyBase
     {
         SetHitbox(0, false);
     }
+    private void HitboxEnable_1()
+    {
+        SetHitbox(1, true);
+    }
+    private void HitboxDisable_1()
+    {
+        SetHitbox(1, false);
+    }
     private void SetHitbox(int index, bool active)
     {
         if (index < 0 || index >= skills.Length) return;
@@ -86,5 +108,15 @@ public class TestEnemy1 : EnemyBase
     private void OnAttackEnd()
     {
         isAttacking = false;
+    }
+    public void BackStepStart()
+    {
+        anim.SetInteger("moveLevel", 2);
+        rb.linearVelocity = new Vector2(-backStepSpeed, rb.linearVelocity.y);
+    }
+    public void BackStepEnd()
+    {
+        anim.SetInteger("moveLevel", 0);
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 }
