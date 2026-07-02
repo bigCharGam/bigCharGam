@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : PlayerStats
+public class PlayerMovement : PlayerBattle
 {
     // 위치와 액션 (Enum)
     public enum PositionState { Grounded, Airborne }
@@ -38,6 +38,7 @@ public class PlayerMovement : PlayerStats
     {
         base.Start();
         rb = GetComponent<Rigidbody2D>();
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep; // 물리연산 중단 방지
     }
 
     // 2. 프레임 (타이머 수치 계산만 수행하는 매서드)

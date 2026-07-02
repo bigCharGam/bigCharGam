@@ -9,8 +9,7 @@ public class EnemyAttackHitbox : MonoBehaviour
     {
         if (col.CompareTag("Player"))
         {
-            //col.GetComponent<Player>().TakeDamage(damage);
-            col.GetComponent<TestSandbag>().TakeDamage(damage);
+            col.GetComponent<PlayerBattle>().TakeDamage(damage);
         }
         //나중에 경직 코드 추가할것
     }

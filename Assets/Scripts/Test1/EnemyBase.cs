@@ -24,7 +24,7 @@ public class EnemyBase : CharacterBaseStats
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected Waypoint[] waypoints;
     [SerializeField] protected bool patrolLoop = true; // 순찰 반복 여부
-    [SerializeField] protected Transform playerTransform;
+    protected Transform playerTransform;
 
     protected EnemyState currentState = EnemyState.Patrol;
     protected Animator anim;
@@ -46,6 +46,10 @@ public class EnemyBase : CharacterBaseStats
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+
+        // 플레이어랑 씬이 달라 인스펙터에서 드래그해서 넣을 수 없고 코드로 찾아야함
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null) playerTransform = player.transform;
     }
 
     protected override void Update()

@@ -58,6 +58,7 @@ public class TestEnemy1 : EnemyBase
         else
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            rb.WakeUp();
             isAttacking = true;
             anim.SetTrigger(skills[selectedSkillIndex].animTrigger);
             selectedSkillIndex = -1;
