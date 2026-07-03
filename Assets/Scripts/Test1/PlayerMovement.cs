@@ -5,11 +5,11 @@ public class PlayerMovement : PlayerBattle
 {
     // 위치와 액션 (Enum)
     public enum PositionState { Grounded, Airborne }
-    public enum ActionState { None, Locomotion, FastFalling, Dashing }
+    public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing }
 
     [Header("Parallel States")]
-    [SerializeField] private PositionState currentPosition = PositionState.Grounded;
-    [SerializeField] private ActionState currentAction = ActionState.None;
+    [SerializeField] protected PositionState currentPosition = PositionState.Grounded;
+    [SerializeField] protected ActionState currentAction = ActionState.None;
 
     [Header("Jump & Fall")]
     [SerializeField] private float jumpForce = 35f;
@@ -22,16 +22,19 @@ public class PlayerMovement : PlayerBattle
     [SerializeField] private float dashForce = 50f;
     [SerializeField] private float dashDuration = 0.1f;
     [SerializeField] private float dashCooldown = 0.1f;
-    [SerializeField] private float doubleTapTime = 0.25f;
 
-    private Rigidbody2D rb;
-    private Vector2 moveInput;
-    private bool isGrounded;
+    protected Rigidbody2D rb;
+    protected Vector2 moveInput;
+    protected bool isGrounded;
 
-    private float dashTimeLeft;
-    private float dashCooldownTimer;
-    private float lastInputTimeX;
-    private float lastDirectionX;
+    protected float dashTimeLeft;
+    protected float dashCooldownTimer;
+    protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
+
+    // ⚡ [요청하신 새로운 C# 프로퍼티] 한 줄로 깔끔하게 하드웨어 실시간 입력 판정
+    protected bool _isInputW => moveInput.y > 0.5f;
+    protected bool isPressingS => moveInput.y < -0.5f;
+    protected bool isPressingAD => moveInput.x != 0f;
 
     // 1. 초기화
     protected override void Start()
@@ -41,61 +44,66 @@ public class PlayerMovement : PlayerBattle
         rb.sleepMode = RigidbodySleepMode2D.NeverSleep; // 물리연산 중단 방지
     }
 
-    // 2. 프레임 (타이머 수치 계산만 수행하는 매서드)
+    // 2. 프레임 (상태별 조건식 정의 및 시간 계산 부서)
     protected override void Update()
     {
         base.Update();
 
+        // 쿨타임 타이머 관리
         if (dashCooldownTimer > 0)
         {
             dashCooldownTimer -= Time.deltaTime;
         }
 
-        // 대시 중일 때의 독립적인 타이머 관리
-        if (currentAction == ActionState.Dashing)
+        // 현재 조작 상태 상자에 맞춰 분할 처리
+        switch (currentAction)
         {
-            dashTimeLeft -= Time.deltaTime;
-            if (dashTimeLeft <= 0)
-            {
-                // 대시가 끝난 순간 조작 상태를 재연산하여 복구
-                currentAction = (moveInput.x != 0f) ? ActionState.Locomotion : ActionState.None;
-            }
+            case ActionState.None:
+                if (currentPosition == PositionState.Airborne && isPressingS)
+                {
+                    currentAction = ActionState.FastFalling;
+                }
+                else if (isPressingAD)
+                {
+                    currentAction = ActionState.Locomotion;
+                }
+                break;
+
+            case ActionState.Locomotion:
+                if (currentPosition == PositionState.Airborne && isPressingS)
+                {
+                    currentAction = ActionState.FastFalling;
+                }
+                else if (!isPressingAD)
+                {
+                    currentAction = ActionState.None;
+                }
+                break;
+
+            case ActionState.FastFalling:
+                if (currentPosition == PositionState.Grounded || !isPressingS)
+                {
+                    currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
+                }
+                break;
+
+            case ActionState.Dashing:
+                // 대시 지속 시간 마모 계산
+                dashTimeLeft -= Time.deltaTime;
+                if (dashTimeLeft <= 0)
+                {
+                    currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
+                }
+                break;
         }
     }
 
-    // 3. 물리연산 및 실시간 업데이트 메서드
+    // 3. 물리연산 및 실시간 업데이트 메서드 (순수 물리 주입 공장)
     protected virtual void FixedUpdate()
     {
-        // 메서드 완성시 없앨 편의성 변수
-        bool isPressingUp = moveInput.y > 0.5f;
-        bool isPressingDown = moveInput.y < -0.5f;
-        bool isPressingAD = moveInput.x != 0f;
-
-        // [ 1) 위치] 실시간 위치 업데이트
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         currentPosition = isGrounded ? PositionState.Grounded : PositionState.Airborne;
 
-        // [ 2) 액션] 대시 중이 아닐 때만 실시간 조작 상태 판단 및 전환
-        if (currentAction != ActionState.Dashing)
-        {
-            // 공중이면서 아래 키를 누르고 있다면 -> 강하 조작 상태
-            if (currentPosition == PositionState.Airborne && isPressingDown)
-            {
-                currentAction = ActionState.FastFalling;
-            }
-            // 그 외에 좌우 입력이 들어가고 있다면 -> 이동 조작 상태
-            else if (isPressingAD)
-            {
-                currentAction = ActionState.Locomotion;
-            }
-            // 아무 조작도 안 하거나 키를 뗐다면 -> 기본 조작 상태
-            else
-            {
-                currentAction = ActionState.None;
-            }
-        }
-
-        // [ 3) 최종 물리 주입] 위치와 액션을 조합하여 물리 제어
         switch (currentAction)
         {
             case ActionState.Dashing:
@@ -107,53 +115,47 @@ public class PlayerMovement : PlayerBattle
                 break;
 
             case ActionState.Locomotion:
-                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
-
-                // 땅 위에서 위쪽 키 입력 시 점프 물리 즉시 발동
-                if (currentPosition == PositionState.Grounded && isPressingUp)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-                }
+                // 물리 주기 시점에 실시간으로 W(위쪽) 키 입력 확인 시 즉시 점프 주입
+                float velYLoco = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
+                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, velYLoco);
                 break;
 
             case ActionState.None:
-                // 땅 위면 멈춤, 공중이면 좌우 조작값만 반영하되 자연스러운 중력 하강 허용
                 float targetX = (currentPosition == PositionState.Grounded) ? 0f : moveInput.x * moveSpeed;
-                rb.linearVelocity = new Vector2(targetX, rb.linearVelocity.y);
-
-                // 제자리 정지 중 위쪽 키 입력 시 점프 물리 즉시 발동
-                if (currentPosition == PositionState.Grounded && isPressingUp)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-                }
+                // 물리 주기 시점에 실시간으로 W(위쪽) 키 입력 확인 시 즉시 점프 주입
+                float velYNone = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
+                rb.linearVelocity = new Vector2(targetX, velYNone);
                 break;
         }
     }
 
-    // 4. 외부 신호 (오직 입력 데이터 수집 및 '순수 대시 조건'만 가볍게 판정)
+    // 4. 이벤트 기반 콜백 메서드 (입력 데이터 수집 및 방향 보존)
     private void OnMove(InputValue value)
     {
-        Vector2 previousMoveInput = moveInput;
         moveInput = value.Get<Vector2>();
 
-        // 대시 중에는 새로운 방향 전환 및 연속 대시 트리거 연산을 차단
-        if (currentAction == ActionState.Dashing) return;
-
-        // 더블 탭 대시 판정
-        if (previousMoveInput.x == 0f && moveInput.x != 0f)
+        // 좌우 이동 신호(A, D)가 실시간으로 들어올 때만 정직하게 바라보는 방향 최신화
+        if (isPressingAD)
         {
-            if (moveInput.x == lastDirectionX && (Time.time - lastInputTimeX) <= doubleTapTime && dashCooldownTimer <= 0)
-            {
-                dashTimeLeft = dashDuration;
-                dashCooldownTimer = dashCooldown;
-                currentAction = ActionState.Dashing; // 조작 상태를 대시로 즉시 선점
-                return;
-            }
-            else
-            {
-                lastDirectionX = moveInput.x;
-            }
-            lastInputTimeX = Time.time;
+            lastDirectionX = moveInput.x > 0f ? 1f : -1f;
         }
+    }
+
+    // ⚡ [인풋 시스템 연동] 에디터 세팅의 Dash Multi Tap 성공 시 호출되는 독립 메시지 채널
+    private void OnDash()
+    {
+        // 쿨타임 중이거나 이미 대시 중이면 하드웨어 인터럽트 무시
+        if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
+
+        // 대시가 켜지는 찰나에 조작 방향키(A, D) 정보를 최종 강제 확정
+        if (isPressingAD)
+        {
+            lastDirectionX = moveInput.x > 0f ? 1f : -1f;
+        }
+
+        // 대시 타이머 및 상태 자산 정의
+        dashTimeLeft = dashDuration;
+        dashCooldownTimer = dashCooldown;
+        currentAction = ActionState.Dashing;
     }
 }

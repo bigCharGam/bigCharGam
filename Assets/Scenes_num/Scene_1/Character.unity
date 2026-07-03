@@ -338,6 +338,7 @@ MonoBehaviour:
   currentStamina: 0
   staminaRegenRate: 5
   staminaRegenDelay: 2
+  isParrying: 0
   currentPosition: 0
   currentAction: 0
   jumpForce: 100
@@ -347,10 +348,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.1
-  dashForce: 50
+  dashForce: 100
   dashDuration: 0.1
   dashCooldown: 0.1
-  doubleTapTime: 0.25
+  normalAttackDashForce: 12
+  bigAttackDashForce: 25
 --- !u!1 &1629518573
 GameObject:
   m_ObjectHideFlags: 0
