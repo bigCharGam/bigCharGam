@@ -141,10 +141,9 @@ public class PlayerMovement : PlayerBattle
         }
     }
 
-    // ⚡ [인풋 시스템 연동] 에디터 세팅의 Dash Multi Tap 성공 시 호출되는 독립 메시지 채널
     private void OnDash()
     {
-        // 쿨타임 중이거나 이미 대시 중이면 하드웨어 인터럽트 무시
+        // 쿨타임 중이거나 이미 대시 중이면 무시
         if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
 
         // 대시가 켜지는 찰나에 조작 방향키(A, D) 정보를 최종 강제 확정

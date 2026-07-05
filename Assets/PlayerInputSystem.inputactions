@@ -43,9 +43,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Parry",
+                    "name": "WParry",
                     "type": "Button",
-                    "id": "c69a14e2-7a9c-46a9-8342-df6ba939ee78",
+                    "id": "b4e8b147-32ea-4787-be17-f688e8136118",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DParry",
+                    "type": "Button",
+                    "id": "535a8de9-a9ff-4b5c-b314-74e15943ff9c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "AParry",
+                    "type": "Button",
+                    "id": "9d9b8aa6-c8d1-4d69-a681-83988a07d585",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -251,105 +269,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "WParry",
-                    "id": "7e8431d3-8b35-4b3b-8b68-0ca00306e140",
-                    "path": "OneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Parry",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "9fc36ab3-0c56-4f63-890a-9e108def63f1",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "binding",
-                    "id": "c2dc9690-056c-4526-ae5c-269266e42bc0",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "AParry",
-                    "id": "b35cca4d-a0d2-47ec-b8de-e0cc7ade97a4",
-                    "path": "OneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Parry",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "f9e79b45-b581-4455-b6a5-fa3d37c1781f",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "binding",
-                    "id": "22cb9db7-dfa6-4cd9-815e-f53e89f996b6",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "DParry",
-                    "id": "11ad2b5d-e134-4724-be2b-5745499b91de",
-                    "path": "OneModifier",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Parry",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "modifier",
-                    "id": "87fbb0aa-1f1c-452c-aea4-f209cabe21ed",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "binding",
-                    "id": "9817f1e3-b210-43ed-8868-a0f1941a7ba3",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Parry",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "ed4979b2-41ef-4017-8fc5-cdb34c418c19",
                     "path": "<Keyboard>/1",
@@ -436,6 +355,105 @@
                     "action": "DoLoco",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "a7cfa1ec-96de-495d-bbcb-a3bf453916b3",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WParry",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Modifier",
+                    "id": "4910d3e7-d080-4a60-a9bf-1d34b215fd5c",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "WParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Binding",
+                    "id": "5446369f-7fa5-46dc-8d80-573e8540fa51",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "WParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "229117a3-d7e3-45b3-8b73-e54767b3fc90",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DParry",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Modifier",
+                    "id": "a75a2ae5-5540-43a7-b55f-b9d903576a38",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Binding",
+                    "id": "2bf1c24c-328e-462a-8467-c60bc8c7cc1f",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "907d4cb3-8e5e-4a57-86b7-edc3637a5abf",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AParry",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Modifier",
+                    "id": "94e5369e-49d5-492b-81d1-d660d4d83225",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "AParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Binding",
+                    "id": "ed14b489-752e-4bd1-832a-9959c3d4f08f",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "AParry",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
