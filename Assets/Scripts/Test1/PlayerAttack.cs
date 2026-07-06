@@ -3,11 +3,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttack : PlayerMovement
 {
-    [Header("Attack Settings")]
-    [SerializeField] private float normalAttackDashForce = 12f; // 일반 공격 시 전방 전진 힘
-    [SerializeField] private float bigAttackDashForce = 25f;   // 강공격 시 전방 돌진 힘
+    private enum ParryDirection { None, Up, Left, Right }
+    private ParryDirection currentParryDirection = ParryDirection.None;
 
-    // 공격이나 스킬 지속시간을 제어하기 위한 내부 타이머
+    [Header("Attack Settings")]
+    [SerializeField] private float normalAttackDashForce = 12f;
+    [SerializeField] private float bigAttackDashForce = 25f;
+
+    [Header("Damage Settings")] // 인스펙터에서 데미지 조절 가능
+    [SerializeField] private int normalAttackDamage = 10;
+    [SerializeField] private int bigAttackDamage = 20;
+
+    [Header("Attack Range Settings")]
+    [SerializeField] private Transform attackPoint;
+    [SerializeField] private Vector2 attackSize = new Vector2(2f, 1f);
+    [SerializeField] private LayerMask enemyLayers;
+
     private float attackDurationTimer;
     private float currentAttackDuration = 0.15f;
 
@@ -20,7 +31,15 @@ public class PlayerAttack : PlayerMovement
     {
         base.Update();
 
-        // ⚡ 공격/스킬 동작 제한 시간 타이머 마모 처리
+        if (isParrying)
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard != null && !keyboard.leftShiftKey.isPressed && !keyboard.rightShiftKey.isPressed)
+            {
+                ForceExitParry();
+            }
+        }
+
         if (attackDurationTimer > 0)
         {
             attackDurationTimer -= Time.deltaTime;
@@ -36,16 +55,13 @@ public class PlayerAttack : PlayerMovement
 
     protected override void FixedUpdate()
     {
-        // ⚡ 중요: 부모의 FixedUpdate()를 먼저 실행하여 기본 물리(Grounded 체크 등)를 수행합니다.
         base.FixedUpdate();
 
-        // 부모의 FixedUpdate()가 끝난 직후, 만약 공격 중인 상태라면 물리 속도를 강제로 제어합니다.
         switch (currentAction)
         {
             case ActionState.Attacking:
                 rb.linearVelocity = new Vector2(lastDirectionX * normalAttackDashForce, rb.linearVelocity.y);
                 break;
-
             case ActionState.SkillUsing:
                 break;
         }
@@ -55,55 +71,92 @@ public class PlayerAttack : PlayerMovement
     {
         if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
 
-        Debug.Log("기본 공격 발동!");
         currentAction = ActionState.Attacking;
         attackDurationTimer = currentAttackDuration;
+
+        // 일반 공격 데미지 적용
+        CheckAttackHit(normalAttackDamage);
     }
 
     private void OnBigAttack()
     {
         if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
 
-        Debug.Log("강공격 발동!");
         currentAction = ActionState.Attacking;
         attackDurationTimer = 0.25f;
         rb.linearVelocity = new Vector2(lastDirectionX * bigAttackDashForce, rb.linearVelocity.y);
+
+        // 강공격 데미지 적용
+        CheckAttackHit(bigAttackDamage);
     }
 
-    // ⚡ [인풋 시스템 연동] 패링 (Shift + W/A/D)
-    // 인스펙터의 Player Input 컴포넌트 Behavior 설정이 'Send Messages'일 경우 작동합니다.
-    // 인풋 액션의 다양한 국면(Started, Canceled)을 캐치하기 위해 CallbackContext를 매개변수로 받습니다.
-    private void OnParry(InputValue value)
+    private void CheckAttackHit(int damage)
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
+
+        Debug.Log($"공격 범위 내 감지된 적 수: {hitEnemies.Length} | 적용 데미지: {damage}");
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            if (enemy.TryGetComponent<EnemyBase>(out var enemyComponent))
+            {
+                enemyComponent.TakeDamage(damage);
+                Debug.Log($"{enemy.name}에게 {damage} 데미지를 입혔습니다!");
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(attackPoint.position, new Vector3(attackSize.x, attackSize.y, 1));
+    }
+
+    // --- 패링 관련 로직 ---
+    private void OnWParry(InputValue value)
     {
         if (currentAction == ActionState.Dashing) return;
+        if (value.isPressed) EnterParry(ParryDirection.Up, "상단 패링 자세 돌입!");
+        else ExitParry(ParryDirection.Up, "상단 패링 자세 해제.");
+    }
 
-        // PlayerInput에서 전달되는 컨텍스트를 추출
-        var context = value.Get<float>();
+    private void OnAParry(InputValue value)
+    {
+        if (currentAction == ActionState.Dashing) return;
+        if (value.isPressed) EnterParry(ParryDirection.Left, "좌측 패링 자세 돌입!");
+        else ExitParry(ParryDirection.Left, "좌측 패링 자세 해제.");
+    }
 
-        // 유니티 인풋 시스템에서 버튼 복합키가 성립하여 신호가 들어오는 중일 때 (Value가 0보다 큼)
-        if (value.isPressed)
+    private void OnDParry(InputValue value)
+    {
+        if (currentAction == ActionState.Dashing) return;
+        if (value.isPressed) EnterParry(ParryDirection.Right, "우측 패링 자세 돌입!");
+        else ExitParry(ParryDirection.Right, "우측 패링 자세 해제.");
+    }
+
+    private void EnterParry(ParryDirection direction, string logMessage)
+    {
+        isParrying = true;
+        currentParryDirection = direction;
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+    }
+
+    private void ExitParry(ParryDirection direction, string logMessage)
+    {
+        if (currentParryDirection == direction)
         {
-            Debug.Log("패링 자세 돌입 (무적 활성화)!");
-            isParrying = true; // 부모(PlayerBattle)의 변수를 직접 제어
-
-            // 패링 시에는 제자리에 멈추게 하고 싶다면 속도를 0으로 리셋
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-        }
-        else // 키를 떼서 신호가 끊겼을 때 (Canceled 국면 대응)
-        {
-            Debug.Log("패링 자세 해제 (무적 종료).");
             isParrying = false;
+            currentParryDirection = ParryDirection.None;
         }
     }
 
-    private void OnPotion()
+    private void ForceExitParry()
     {
-        Debug.Log("포션 아이템 소비!");
+        isParrying = false;
+        currentParryDirection = ParryDirection.None;
     }
 
-    private void OnDoLoco()
-    {
-        Debug.Log("발도");
-        Debug.Log("납도");
-    }
+    private void OnPotion() { }
+    private void OnDoLoco() { }
 }

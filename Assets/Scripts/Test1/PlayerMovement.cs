@@ -31,10 +31,9 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
 
-    // ⚡ [요청하신 새로운 C# 프로퍼티] 한 줄로 깔끔하게 하드웨어 실시간 입력 판정
-    protected bool _isInputW => moveInput.y > 0.5f;
-    protected bool isPressingS => moveInput.y < -0.5f;
-    protected bool isPressingAD => moveInput.x != 0f;
+    protected bool _isInputW => moveInput.y > 0.5f && !isParrying;
+    protected bool isPressingS => moveInput.y < -0.5f && !isParrying;
+    protected bool isPressingAD => moveInput.x != 0f && !isParrying;
 
     // 1. 초기화
     protected override void Start()
@@ -141,10 +140,9 @@ public class PlayerMovement : PlayerBattle
         }
     }
 
-    // ⚡ [인풋 시스템 연동] 에디터 세팅의 Dash Multi Tap 성공 시 호출되는 독립 메시지 채널
     private void OnDash()
     {
-        // 쿨타임 중이거나 이미 대시 중이면 하드웨어 인터럽트 무시
+        // 쿨타임 중이거나 이미 대시 중이면 무시
         if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
 
         // 대시가 켜지는 찰나에 조작 방향키(A, D) 정보를 최종 강제 확정
