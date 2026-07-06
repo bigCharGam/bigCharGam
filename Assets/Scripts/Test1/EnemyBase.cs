@@ -135,4 +135,9 @@ public class EnemyBase : CharacterBaseStats
     {
 
     }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+    }
 }
