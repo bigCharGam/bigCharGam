@@ -6,7 +6,11 @@ public struct SkillDataMelee
 {
     public GameObject hitbox;
     public float damage;
-    public float minUseRange;
+    public float minRange; // 일부 스킬 너무 가까우면 못씀
+    public float maxRange;
+    public float UseRange;
+    public int weightInit; // 일부 스킬은 조건 만족 시 가중치가 점점 증가
+    public int weightNow;
 }
 
 public class EnemySword : EnemyBase
@@ -17,9 +21,10 @@ public class EnemySword : EnemyBase
     [Header("Battle")]
     [SerializeField] private float runSpeed;
     [SerializeField] private float backStepSpeed;
+    [SerializeField] private float backStepJumpForce;
 
     private bool isAttacking = false;
-    private int selectedSkillIndex = -1;
+    [SerializeField] private int selectedSkillIndex = -1;
 
     private void Reset()
     {
@@ -34,6 +39,11 @@ public class EnemySword : EnemyBase
     {
         base.Start();
         anim = GetComponent<Animator>();
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            skills[i].weightNow = skills[i].weightInit;
+        }
     }
 
     protected override void Update()
@@ -46,24 +56,42 @@ public class EnemySword : EnemyBase
         if (isAttacking) return;
         if (skills == null || skills.Length == 0) return;
 
-        // 어떤 스킬 사용할지 결정
-        // 임시) 랜덤으로 스킬 사용
+        // minRange ~ maxRange 사이에 있는 스킬 중에서 랜덤으로 선택
         if (selectedSkillIndex == -1)
         {
-            int p = Random.Range(0, 100);
-            if (p < 30)
+            int weightSum = 0;
+            for (int i = 0; i < skills.Length; i++)
             {
-                selectedSkillIndex = 1;
+                if (skills[i].minRange <= distanceToPlayer && skills[i].maxRange >= distanceToPlayer)
+                {
+                    weightSum += skills[i].weightNow;
+                }
             }
-            else
+            int r = Random.Range(0, weightSum);
+            int a = 0;
+            for (int i = 0; i < skills.Length; i++)
             {
-                selectedSkillIndex = 0;
+                if (skills[i].minRange <= distanceToPlayer && skills[i].maxRange >= distanceToPlayer)
+                {
+                    a += skills[i].weightNow;
+                    if (r < a)
+                    {
+                        selectedSkillIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // 백스텝 사거리 안에서 다른 공격 시 백스텝 확률 증가
+            if (selectedSkillIndex != -1 && skills[2].weightNow < 100 && distanceToPlayer < skills[2].maxRange)
+            {
+                skills[2].weightNow += 10;
             }
         }
 
-        float requiredRange = skills[selectedSkillIndex].minUseRange;
+        // 실제 사용 거리(UseRange) 까지 달려가서 사용
+        float requiredRange = skills[selectedSkillIndex].UseRange;
 
-        // 스킬별 사거리까지 달려가서 사용
         if (distanceToPlayer > requiredRange)
         {
             anim.SetInteger("moveLevel", 2);
@@ -79,22 +107,15 @@ public class EnemySword : EnemyBase
     }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
-    private void HitboxEnable_0()
+
+    //모든 스킬 종료 시
+    private void OnAttackEnd()
     {
-        SetHitbox(0, true);
+        isAttacking = false;
+        selectedSkillIndex = -1;
     }
-    private void HitboxDisable_0()
-    {
-        SetHitbox(0, false);
-    }
-    private void HitboxEnable_1()
-    {
-        SetHitbox(1, true);
-    }
-    private void HitboxDisable_1()
-    {
-        SetHitbox(1, false);
-    }
+
+    //공격 스킬 공용
     private void SetHitbox(int index, bool active)
     {
         if (index < 0 || index >= skills.Length) return;
@@ -104,19 +125,35 @@ public class EnemySword : EnemyBase
             skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
         }
     }
-    private void OnAttackEnd()
+
+    //스킬0
+    private void HitboxEnable_0()
     {
-        isAttacking = false;
-        selectedSkillIndex = -1;
+        SetHitbox(0, true);
     }
+    private void HitboxDisable_0()
+    {
+        SetHitbox(0, false);
+    }
+
+    //스킬1
+    private void HitboxEnable_1()
+    {
+        SetHitbox(1, true);
+    }
+    private void HitboxDisable_1()
+    {
+        SetHitbox(1, false);
+    }
+
+    //스킬2
     public void BackStepStart()
     {
-        anim.SetInteger("moveLevel", 2);
-        rb.linearVelocity = new Vector2(-backStepSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(transform.localScale.x * -backStepSpeed, backStepJumpForce);
     }
     public void BackStepEnd()
     {
-        anim.SetInteger("moveLevel", 0);
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        skills[2].weightNow = skills[2].weightInit;
     }
 }

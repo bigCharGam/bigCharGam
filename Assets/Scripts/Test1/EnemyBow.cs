@@ -6,7 +6,11 @@ public struct SkillDataBow
 {
     public float damage;
     public float shootPower;
-    public float minUseRange;
+    public float minRange; // 일부 스킬 너무 가까우면 못씀
+    public float maxRange;
+    public float UseRange;
+    public int weightInit; // 일부 스킬은 조건 만족 시 가중치가 점점 증가
+    public int weightNow;
 }
 
 public class EnemyBow : EnemyBase
@@ -17,6 +21,7 @@ public class EnemyBow : EnemyBase
     [Header("Battle")]
     [SerializeField] private float runSpeed;
     [SerializeField] private float backStepSpeed;
+    [SerializeField] private float backStepJumpForce;
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Transform arrowSpawnPoint;
 
@@ -38,6 +43,11 @@ public class EnemyBow : EnemyBase
     {
         base.Start();
         anim = GetComponent<Animator>();
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            skills[i].weightNow = skills[i].weightInit;
+        }
     }
 
     protected override void Update()
@@ -50,22 +60,41 @@ public class EnemyBow : EnemyBase
         if (isAttacking) return;
         if (skills == null || skills.Length == 0) return;
 
-        // 어떤 스킬 사용할지 결정
-        // 임시) 랜덤으로 스킬 사용
+        // minRange ~ maxRange 사이에 있는 스킬 중에서 랜덤으로 선택
         if (selectedSkillIndex == -1)
         {
-            int p = Random.Range(0, 100);
-            if (p < 20)
+            int weightSum = 0;
+            for (int i = 0; i < skills.Length; i++)
             {
-                selectedSkillIndex = 1;
+                if (skills[i].minRange <= distanceToPlayer && skills[i].maxRange >= distanceToPlayer)
+                {
+                    weightSum += skills[i].weightNow;
+                }
             }
-            else
+            int r = Random.Range(0, weightSum);
+            int a = 0;
+            for (int i = 0; i < skills.Length; i++)
             {
-                selectedSkillIndex = 0;
+                if (skills[i].minRange <= distanceToPlayer && skills[i].maxRange >= distanceToPlayer)
+                {
+                    a += skills[i].weightNow;
+                    if (r < a)
+                    {
+                        selectedSkillIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // 백스텝 사거리 안에서 다른 공격 시 백스텝 확률 증가
+            if (selectedSkillIndex != -1 && skills[2].weightNow < 100 && distanceToPlayer < skills[2].maxRange)
+            {
+                skills[2].weightNow += 10;
             }
         }
 
-        float requiredRange = skills[selectedSkillIndex].minUseRange;
+        // 실제 사용 거리(UseRange) 까지 달려가서 사용
+        float requiredRange = skills[selectedSkillIndex].UseRange;
 
         // 스킬별 사거리까지 달려가서 사용
         if (distanceToPlayer > requiredRange)
@@ -77,6 +106,7 @@ public class EnemyBow : EnemyBase
         {
             pendingDamage = skills[selectedSkillIndex].damage;
             pendingShootPower = skills[selectedSkillIndex].shootPower;
+
             isAttacking = true;
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
@@ -85,6 +115,15 @@ public class EnemyBow : EnemyBase
     }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
+
+    // 모든 스킬 종료 시 공통
+    private void OnAttackEnd()
+    {
+        isAttacking = false;
+        selectedSkillIndex = -1;
+    }
+
+    // 스킬0, 스킬1
     private void ArrowStart()
     {
         if (arrowPrefab == null || arrowSpawnPoint == null) return;
@@ -95,9 +134,15 @@ public class EnemyBow : EnemyBase
         if (arrowScript == null) return;
         arrowScript.Shoot(pendingDamage, pendingShootPower, direction);
     }
-    private void OnAttackEnd()
+
+    //스킬2
+    public void BackStepStart()
     {
-        isAttacking = false;
-        selectedSkillIndex = -1;
+        rb.linearVelocity = new Vector2(transform.localScale.x * -backStepSpeed, backStepJumpForce);
+    }
+    public void BackStepEnd()
+    {
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        skills[2].weightNow = skills[2].weightInit;
     }
 }
