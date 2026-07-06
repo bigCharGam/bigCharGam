@@ -1,25 +1,29 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
-public struct SkillData
+public struct SkillDataBow
 {
-    public GameObject hitbox;
     public float damage;
+    public float shootPower;
     public float minUseRange;
 }
 
-public class TestEnemy1 : EnemyBase
+public class EnemyBow : EnemyBase
 {
     [Header("Skills")]
-    [SerializeField] private SkillData[] skills;
+    [SerializeField] private SkillDataBow[] skills;
 
     [Header("Battle")]
     [SerializeField] private float runSpeed;
     [SerializeField] private float backStepSpeed;
+    [SerializeField] private GameObject arrowPrefab;
+    [SerializeField] private Transform arrowSpawnPoint;
 
     private bool isAttacking = false;
     private int selectedSkillIndex = -1;
+    private float pendingDamage;
+    private float pendingShootPower;
 
     private void Reset()
     {
@@ -51,7 +55,7 @@ public class TestEnemy1 : EnemyBase
         if (selectedSkillIndex == -1)
         {
             int p = Random.Range(0, 100);
-            if (p < 30)
+            if (p < 20)
             {
                 selectedSkillIndex = 1;
             }
@@ -71,52 +75,29 @@ public class TestEnemy1 : EnemyBase
         }
         else
         {
+            pendingDamage = skills[selectedSkillIndex].damage;
+            pendingShootPower = skills[selectedSkillIndex].shootPower;
+            isAttacking = true;
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            isAttacking = true;
             anim.SetTrigger("skill_" + selectedSkillIndex);
-            selectedSkillIndex = -1;
         }
     }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
-    private void HitboxEnable_0()
+    private void ArrowStart()
     {
-        SetHitbox(0, true);
-    }
-    private void HitboxDisable_0()
-    {
-        SetHitbox(0, false);
-    }
-    private void HitboxEnable_1()
-    {
-        SetHitbox(1, true);
-    }
-    private void HitboxDisable_1()
-    {
-        SetHitbox(1, false);
-    }
-    private void SetHitbox(int index, bool active)
-    {
-        if (index < 0 || index >= skills.Length) return;
-        skills[index].hitbox.SetActive(active);
-        if (active)
-        {
-            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
-        }
+        if (arrowPrefab == null || arrowSpawnPoint == null) return;
+
+        float direction = transform.localScale.x >= 0 ? 1f : -1f;
+        GameObject arrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, Quaternion.identity);
+        Arrow arrowScript = arrow.GetComponent<Arrow>();
+        if (arrowScript == null) return;
+        arrowScript.Shoot(pendingDamage, pendingShootPower, direction);
     }
     private void OnAttackEnd()
     {
         isAttacking = false;
-    }
-    public void BackStepStart()
-    {
-        anim.SetInteger("moveLevel", 2);
-        rb.linearVelocity = new Vector2(-backStepSpeed, rb.linearVelocity.y);
-    }
-    public void BackStepEnd()
-    {
-        anim.SetInteger("moveLevel", 0);
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        selectedSkillIndex = -1;
     }
 }
