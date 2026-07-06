@@ -10,11 +10,14 @@ public class PlayerAttack : PlayerMovement
     [SerializeField] private float normalAttackDashForce = 12f;
     [SerializeField] private float bigAttackDashForce = 25f;
 
+    [Header("Damage Settings")] // 인스펙터에서 데미지 조절 가능
+    [SerializeField] private int normalAttackDamage = 10;
+    [SerializeField] private int bigAttackDamage = 20;
+
     [Header("Attack Range Settings")]
     [SerializeField] private Transform attackPoint;
     [SerializeField] private Vector2 attackSize = new Vector2(2f, 1f);
     [SerializeField] private LayerMask enemyLayers;
-    [SerializeField] private int attackDamage = 10;
 
     private float attackDurationTimer;
     private float currentAttackDuration = 0.15f;
@@ -71,20 +74,34 @@ public class PlayerAttack : PlayerMovement
         currentAction = ActionState.Attacking;
         attackDurationTimer = currentAttackDuration;
 
-        // 공격 판정 호출
-        CheckAttackHit();
+        // 일반 공격 데미지 적용
+        CheckAttackHit(normalAttackDamage);
     }
 
-    private void CheckAttackHit()
+    private void OnBigAttack()
+    {
+        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
+
+        currentAction = ActionState.Attacking;
+        attackDurationTimer = 0.25f;
+        rb.linearVelocity = new Vector2(lastDirectionX * bigAttackDashForce, rb.linearVelocity.y);
+
+        // 강공격 데미지 적용
+        CheckAttackHit(bigAttackDamage);
+    }
+
+    private void CheckAttackHit(int damage)
     {
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
-        Debug.Log($"공격 범위 내 감지된 적 수: {hitEnemies.Length}");
+
+        Debug.Log($"공격 범위 내 감지된 적 수: {hitEnemies.Length} | 적용 데미지: {damage}");
+
         foreach (Collider2D enemy in hitEnemies)
         {
             if (enemy.TryGetComponent<EnemyBase>(out var enemyComponent))
             {
-                enemyComponent.TakeDamage(attackDamage);
-                Debug.Log($"{enemy.name}에게 {attackDamage} 데미지를 입혔습니다!");
+                enemyComponent.TakeDamage(damage);
+                Debug.Log($"{enemy.name}에게 {damage} 데미지를 입혔습니다!");
             }
         }
     }
@@ -96,15 +113,7 @@ public class PlayerAttack : PlayerMovement
         Gizmos.DrawWireCube(attackPoint.position, new Vector3(attackSize.x, attackSize.y, 1));
     }
 
-    private void OnBigAttack()
-    {
-        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
-        currentAction = ActionState.Attacking;
-        attackDurationTimer = 0.25f;
-        rb.linearVelocity = new Vector2(lastDirectionX * bigAttackDashForce, rb.linearVelocity.y);
-        CheckAttackHit();
-    }
-
+    // --- 패링 관련 로직 ---
     private void OnWParry(InputValue value)
     {
         if (currentAction == ActionState.Dashing) return;
