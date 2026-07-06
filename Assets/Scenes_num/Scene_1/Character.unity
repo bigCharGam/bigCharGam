@@ -354,12 +354,13 @@ MonoBehaviour:
   dashCooldown: 0.1
   normalAttackDashForce: 12
   bigAttackDashForce: 25
+  normalAttackDamage: 10
+  bigAttackDamage: 20
   attackPoint: {fileID: 1601832588}
   attackSize: {x: 2, y: 1}
   enemyLayers:
     serializedVersion: 2
     m_Bits: 512
-  attackDamage: 10
 --- !u!1 &1601832587
 GameObject:
   m_ObjectHideFlags: 0
