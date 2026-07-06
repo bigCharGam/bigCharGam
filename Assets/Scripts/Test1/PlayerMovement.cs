@@ -31,10 +31,9 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
 
-    // ⚡ [요청하신 새로운 C# 프로퍼티] 한 줄로 깔끔하게 하드웨어 실시간 입력 판정
-    protected bool _isInputW => moveInput.y > 0.5f;
-    protected bool isPressingS => moveInput.y < -0.5f;
-    protected bool isPressingAD => moveInput.x != 0f;
+    protected bool _isInputW => moveInput.y > 0.5f && !isParrying;
+    protected bool isPressingS => moveInput.y < -0.5f && !isParrying;
+    protected bool isPressingAD => moveInput.x != 0f && !isParrying;
 
     // 1. 초기화
     protected override void Start()
