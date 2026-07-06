@@ -64,6 +64,7 @@ public class PlayerAttack : PlayerMovement
     private void OnAttack()
     {
         if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
+        Debug.Log("기본 공격.");
         currentAction = ActionState.Attacking;
         attackDurationTimer = currentAttackDuration;
     }
@@ -71,6 +72,7 @@ public class PlayerAttack : PlayerMovement
     private void OnBigAttack()
     {
         if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking) return;
+        Debug.Log("강한 공격.");
         currentAction = ActionState.Attacking;
         attackDurationTimer = 0.25f;
         rb.linearVelocity = new Vector2(lastDirectionX * bigAttackDashForce, rb.linearVelocity.y);
