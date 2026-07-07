@@ -4,6 +4,7 @@ using System.Collections;
 [System.Serializable]
 public struct SkillDataBow
 {
+    public string skillName;
     public float damage;
     public float shootPower;
     public float minRange; // 일부 스킬 너무 가까우면 못씀
@@ -42,6 +43,7 @@ public class EnemyBow : EnemyBase
     protected override void Start()
     {
         base.Start();
+        currentHealth = maxHealth;
         anim = GetComponent<Animator>();
 
         for (int i = 0; i < skills.Length; i++)
@@ -96,7 +98,6 @@ public class EnemyBow : EnemyBase
         // 실제 사용 거리(UseRange) 까지 달려가서 사용
         float requiredRange = skills[selectedSkillIndex].UseRange;
 
-        // 스킬별 사거리까지 달려가서 사용
         if (distanceToPlayer > requiredRange)
         {
             anim.SetInteger("moveLevel", 2);
@@ -144,5 +145,55 @@ public class EnemyBow : EnemyBase
     {
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         skills[2].weightNow = skills[2].weightInit;
+    }
+
+    //스킬3
+    public void RunStart()
+    {
+        StartCoroutine(RunStartCoroutine());
+    }
+
+    private IEnumerator RunStartCoroutine()
+    {
+        if (playerTransform == null) yield break;
+
+        float fleeDirection = transform.position.x > playerTransform.position.x ? 1f : -1f;
+        transform.localScale = new Vector3(fleeDirection, 1f, 1f);
+
+        float distance = Random.Range(10f, 15f);
+        float startX = transform.position.x;
+
+        while (Mathf.Abs(transform.position.x - startX) < distance)
+        {
+            rb.linearVelocity = new Vector2(fleeDirection * runSpeed, rb.linearVelocity.y);
+            yield return null;
+        }
+
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+
+        // 도망 후 다시 플레이어 바라보기
+        float facePlayer = playerTransform.position.x > transform.position.x ? 1f : -1f;
+        transform.localScale = new Vector3(facePlayer, 1f, 1f);
+
+        OnAttackEnd();
+    }
+
+    //스킬4
+    public void BackWalkStart()
+    {
+        StartCoroutine(MoveBackwardForDistance(moveSpeed, Random.Range(5f, 10f)));
+
+    }
+    private IEnumerator MoveBackwardForDistance(float speed, float distance)
+    {
+        float direction = transform.localScale.x >= 0 ? -1f : 1f;
+        float startX = transform.position.x;
+        while (Mathf.Abs(transform.position.x - startX) < distance)
+        {
+            rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+            yield return null;
+        }
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        OnAttackEnd();
     }
 }

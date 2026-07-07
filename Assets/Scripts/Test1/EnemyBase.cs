@@ -33,6 +33,8 @@ public class EnemyBase : CharacterBaseStats
     private int currentWaypointIndex = 0;
     private bool isWating = false;
 
+    protected bool isDead = false;
+
     // 목표 위치로 이동하는 함수
     protected void MoveToTarget(Transform target, float moveSpeed)
     {
@@ -54,6 +56,8 @@ public class EnemyBase : CharacterBaseStats
 
     protected override void Update()
     {
+        if (isDead) return;
+
         // 임시) 항상 플레이어와 거리재기
         if (playerTransform != null)
             distanceToPlayer = Mathf.Abs(transform.position.x - playerTransform.position.x);
@@ -139,5 +143,21 @@ public class EnemyBase : CharacterBaseStats
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
+        
+        if (currentHealth <= 0 && !isDead)
+        {
+            isDead = true;
+            StartCoroutine(DieCoroutine());
+        }
+    }
+
+    protected IEnumerator DieCoroutine()
+    {
+        anim.SetTrigger("die");
+        
+        yield return new WaitForSeconds(0.8f); //죽고나서 물리판정 지속시간
+        rb.simulated = false;
+        yield return new WaitForSeconds(1f);
+        Destroy(gameObject);
     }
 }

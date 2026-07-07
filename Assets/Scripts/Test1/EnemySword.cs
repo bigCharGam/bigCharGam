@@ -38,6 +38,7 @@ public class EnemySword : EnemyBase
     protected override void Start()
     {
         base.Start();
+        currentHealth = maxHealth;
         anim = GetComponent<Animator>();
 
         for (int i = 0; i < skills.Length; i++)

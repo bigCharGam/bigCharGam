@@ -26,9 +26,10 @@ public class Arrow : MonoBehaviour
     {
         this.damage = damage;
         this.power = power;
+        float powerY = power > 50 ? 1f : 2f; // 빠른 화살은 높이 낮게
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 1f;
-        Vector2 velocity = new Vector2(power * direction, 1f);
+        Vector2 velocity = new Vector2(power * direction, powerY);
         rb.linearVelocity = velocity;
         ApplyRotation(velocity);
     }
