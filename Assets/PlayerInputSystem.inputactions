@@ -115,7 +115,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "DoLoco",
+                    "name": "Baldo",
                     "type": "Button",
                     "id": "af1228ec-0813-4463-8a30-ce04c9c54f9c",
                     "expectedControlType": "",
@@ -351,8 +351,8 @@
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "DoLoco",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Baldo",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
