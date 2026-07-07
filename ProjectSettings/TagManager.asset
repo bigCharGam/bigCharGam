@@ -49,11 +49,14 @@ TagManager:
   - name: Midground
     uniqueID: 3682183861
     locked: 0
-  - name: Foreground
+  - name: Platform
     uniqueID: 3659688539
     locked: 0
-  - name: effect
+  - name: charactor
     uniqueID: 1946901895
+    locked: 0
+  - name: Foreground
+    uniqueID: 1245012157
     locked: 0
   m_RenderingLayers:
   - Default
