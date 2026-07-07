@@ -342,6 +342,10 @@ MonoBehaviour:
   isParrying: 0
   currentPosition: 0
   currentAction: 0
+  currentBaldoState: 0
+  baldoSpeedMultiplier: 0.66390896
+  baldoMotionDuration: 3
+  nabdoMotionDuration: 3
   jumpForce: 50
   fastFallForce: 80
   groundCheck: {fileID: 1629518574}
@@ -352,8 +356,13 @@ MonoBehaviour:
   dashForce: 100
   dashDuration: 0.1
   dashCooldown: 0.1
+  currentParryDirection: 0
   normalAttackDashForce: 12
   bigAttackDashForce: 25
+  normalAttackDuration: 0.15
+  bigAttackDuration: 0.25
+  normalAttackCooldown: 0.2
+  bigAttackCooldown: 0.5
   normalAttackDamage: 10
   bigAttackDamage: 20
   attackPoint: {fileID: 1601832588}
