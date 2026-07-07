@@ -467,6 +467,14 @@ PrefabInstance:
       propertyPath: waypoints.Array.data[2].transform
       value: 
       objectReference: {fileID: 846965372}
+    - target: {fileID: 5980410666636655455, guid: 220e3c6c2030c02468a2a2f50c8f5f72, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5980410666636655455, guid: 220e3c6c2030c02468a2a2f50c8f5f72, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1946901895
+      objectReference: {fileID: 0}
     - target: {fileID: 8255107882870740068, guid: 220e3c6c2030c02468a2a2f50c8f5f72, type: 3}
       propertyPath: m_Name
       value: EnemySword
@@ -488,6 +496,14 @@ PrefabInstance:
       propertyPath: waypoints.Array.data[0].transform
       value: 
       objectReference: {fileID: 720366933}
+    - target: {fileID: 4253581972043735431, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4253581972043735431, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1946901895
+      objectReference: {fileID: 0}
     - target: {fileID: 5583719906796750322, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
       propertyPath: m_LocalPosition.x
       value: 60
