@@ -5,11 +5,26 @@ public class PlayerMovement : PlayerBattle
 {
     // 위치와 액션 (Enum)
     public enum PositionState { Grounded, Airborne }
-    public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing }
+    public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing, Parrying }
+
+    // [기능 추가] 발도 및 납도 상태를 정의하는 Enum
+    public enum BaldoState { Nabdo, Baldo }
 
     [Header("Parallel States")]
     [SerializeField] protected PositionState currentPosition = PositionState.Grounded;
     [SerializeField] protected ActionState currentAction = ActionState.None;
+
+    // [기능 추가] 인스펙터 창에서 현재 납도/발도 상태를 확인할 수 있도록 SerializeField 지정
+    [Header("Baldo System")]
+    [SerializeField] private BaldoState currentBaldoState = BaldoState.Nabdo;
+
+    // [기능 추가] 인스펙터 창에서 발도 상태일 때의 이동 속도 감소 비율 설정 (0.0 ~ 1.0)
+    [SerializeField][Range(0f, 1f)] private float baldoSpeedMultiplier = 0.6f;
+
+    // [기능 추가] 발도 및 납도 동작에 걸리는 시간 설정 및 타이머 통합
+    [SerializeField] private float baldoMotionDuration = 0.4f; // 인스펙터에서 발도 모션 시간 조절 가능
+    [SerializeField] private float nabdoMotionDuration = 0.5f; // 인스펙터에서 납도 모션 시간 조절 가능
+    private float baldoActionTimer = 0f; // 발도/납도 상태 전환 중 행동을 제한할 통합 타이머
 
     [Header("Jump & Fall")]
     [SerializeField] private float jumpForce = 35f;
@@ -31,9 +46,20 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
 
-    protected bool _isInputW => moveInput.y > 0.5f && !isParrying;
-    protected bool isPressingS => moveInput.y < -0.5f && !isParrying;
-    protected bool isPressingAD => moveInput.x != 0f && !isParrying;
+    // [컴파일 에러 수정] 존재하지 않는 bool 변수 대신 currentAction 상태를 체크하도록 수정
+    protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
+    protected bool isPressingS => moveInput.y < -0.5f && currentAction != ActionState.Parrying;
+    protected bool isPressingAD => moveInput.x != 0f && currentAction != ActionState.Parrying;
+
+    // [기능 추가] 외부 공격/스킬 스크립트나 타이머 상황 조회를 위한 프로퍼티 정의
+    public BaldoState CurrentBaldoState
+    {
+        get => currentBaldoState;
+        set => currentBaldoState = value;
+    }
+
+    // [기능 추가] 발도/납도 진행 중(타이머 구동 중)인지 여부를 반환하는 프로퍼티
+    public bool IsBaldoTransitioning => baldoActionTimer > 0f;
 
     // 1. 초기화
     protected override void Start()
@@ -52,6 +78,12 @@ public class PlayerMovement : PlayerBattle
         if (dashCooldownTimer > 0)
         {
             dashCooldownTimer -= Time.deltaTime;
+        }
+
+        // [기능 추가] 발도/납도 전환 타이머 실시간 마모 계산
+        if (baldoActionTimer > 0f)
+        {
+            baldoActionTimer -= Time.deltaTime;
         }
 
         // 현재 조작 상태 상자에 맞춰 분할 처리
@@ -103,6 +135,13 @@ public class PlayerMovement : PlayerBattle
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         currentPosition = isGrounded ? PositionState.Grounded : PositionState.Airborne;
 
+        // [기능 추가] 현재 발도 상태에 따른 실시간 이동 속도 보정 계산 적용
+        float currentMoveSpeed = moveSpeed;
+        if (currentBaldoState == BaldoState.Baldo)
+        {
+            currentMoveSpeed *= baldoSpeedMultiplier;
+        }
+
         switch (currentAction)
         {
             case ActionState.Dashing:
@@ -110,17 +149,17 @@ public class PlayerMovement : PlayerBattle
                 break;
 
             case ActionState.FastFalling:
-                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, -fastFallForce);
+                rb.linearVelocity = new Vector2(moveInput.x * currentMoveSpeed, -fastFallForce);
                 break;
 
             case ActionState.Locomotion:
                 // 물리 주기 시점에 실시간으로 W(위쪽) 키 입력 확인 시 즉시 점프 주입
                 float velYLoco = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
-                rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, velYLoco);
+                rb.linearVelocity = new Vector2(moveInput.x * currentMoveSpeed, velYLoco);
                 break;
 
             case ActionState.None:
-                float targetX = (currentPosition == PositionState.Grounded) ? 0f : moveInput.x * moveSpeed;
+                float targetX = (currentPosition == PositionState.Grounded) ? 0f : moveInput.x * currentMoveSpeed;
                 // 물리 주기 시점에 실시간으로 W(위쪽) 키 입력 확인 시 즉시 점프 주입
                 float velYNone = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
                 rb.linearVelocity = new Vector2(targetX, velYNone);
@@ -145,6 +184,15 @@ public class PlayerMovement : PlayerBattle
         // 쿨타임 중이거나 이미 대시 중이면 무시
         if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
 
+        // [기능 변경] 공중 상태에서 대시 버튼 입력을 명확히 수신하되, 
+        // 물리적인 대시 상태로 전이하지 않고 입력을 완전히 무효(무시) 처리합니다.
+        if (currentPosition == PositionState.Airborne)
+        {
+            // 입력을 정상적으로 받았음을 인지하고 로그를 남긴 후, 아무런 상태 변화 없이 반환하여 무효화
+            Debug.Log("공중 상태에서 대시 입력이 감지되어 무효 처리되었습니다.");
+            return;
+        }
+
         // 대시가 켜지는 찰나에 조작 방향키(A, D) 정보를 최종 강제 확정
         if (isPressingAD)
         {
@@ -155,5 +203,55 @@ public class PlayerMovement : PlayerBattle
         dashTimeLeft = dashDuration;
         dashCooldownTimer = dashCooldown;
         currentAction = ActionState.Dashing;
+    }
+
+    // [기능 추가] 뉴 인풋 시스템 Baldo 액션(R키) 매핑 콜백 메서드
+    private void OnBaldo()
+    {
+        // 발도 혹은 납도 모션이 재생 중인 타이머 도중에는 R키 중복 변환을 완전히 차단
+        if (baldoActionTimer > 0f) return;
+
+        // 공격 중이거나 패링 중, 스킬 사용 중일 때는 수동 납도/발도 전환 제한 (선택 사항)
+        if (currentAction == ActionState.Attacking || currentAction == ActionState.SkillUsing || currentAction == ActionState.Parrying) return;
+
+        // R키 입력 시마다 발도(Baldo) <-> 납도(Nabdo) 상태가 토글 전환됨
+        if (currentBaldoState == BaldoState.Nabdo)
+        {
+            currentBaldoState = BaldoState.Baldo;
+            baldoActionTimer = baldoMotionDuration; // 발도 모션 시간 구동
+            Debug.Log($"납도 상태에서 발도 상태로 변경되었습니다. ({baldoMotionDuration}초 동안 모션 대기)");
+        }
+        else
+        {
+            currentBaldoState = BaldoState.Nabdo;
+            baldoActionTimer = nabdoMotionDuration; // 납도 모션 시간 구동
+            Debug.Log($"발도 상태에서 납도 상태로 변경되었습니다. ({nabdoMotionDuration}초 동안 모션 대기)");
+        }
+    }
+
+    // [기능 추가] 자식 또는 외부 스크립트가 안전하게 발도 상태를 보장받을 수 있도록 유틸리티 메서드 구축
+    /// <summary>
+    /// 공격이나 스킬 사용 전 발도 상태를 보장합니다. 납도 상태일 경우 발도로 변경합니다.
+    /// </summary>
+    /// <returns>동작을 즉시 진행해도 되는지 여부 (발도/납도 상태 변환 모션 작동 중일 때는 false 반환)</returns>
+    public bool EnsureBaldoState()
+    {
+        // 1. 이미 발도 중이거나 납도 중(타이머 구동 중)이라면 행동 진행 차단
+        if (baldoActionTimer > 0f)
+        {
+            return false;
+        }
+
+        // 2. 완벽한 납도 상태라면 발도로 강제 전환하고 발도 타이머 작동 시작
+        if (currentBaldoState == BaldoState.Nabdo)
+        {
+            currentBaldoState = BaldoState.Baldo;
+            baldoActionTimer = baldoMotionDuration;
+            Debug.Log($"납도 상태에서 공격/스킬이 입력되어 발도로 강제 전환됩니다. ({baldoMotionDuration}초 대기)");
+
+            return false;
+        }
+
+        return true; // 이미 완벽히 발도가 완료된 상태라면 즉시 True를 주어 다음 행동 진행 허용
     }
 }
