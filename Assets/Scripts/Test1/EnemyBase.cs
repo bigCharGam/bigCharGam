@@ -151,7 +151,7 @@ public class EnemyBase : CharacterBaseStats
         }
     }
 
-    protected IEnumerator DieCoroutine()
+    protected virtual IEnumerator DieCoroutine()
     {
         anim.SetTrigger("die");
         
