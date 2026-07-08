@@ -1,37 +1,35 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static PlayerMovement;
 
 public class PlayerMovement : PlayerBattle
 {
-    // 위치와 액션 (Enum)
     public enum PositionState { Grounded, Airborne }
     public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing, Parrying }
 
-    // [기능 추가] 발도 및 납도 상태를 정의하는 Enum
     public enum BaldoState { Nabdo, Baldo }
 
     [Header("Parallel States")]
     [SerializeField] protected PositionState currentPosition = PositionState.Grounded;
     [SerializeField] protected ActionState currentAction = ActionState.None;
 
-    // [기능 추가] 인스펙터 창에서 현재 납도/발도 상태를 확인할 수 있도록 SerializeField 지정
     [Header("Baldo System")]
     [SerializeField] private BaldoState currentBaldoState = BaldoState.Nabdo;
 
-    // [기능 추가] 인스펙터 창에서 발도 상태일 때의 이동 속도 감소 비율 설정 (0.0 ~ 1.0)
     [SerializeField][Range(0f, 1f)] private float baldoSpeedMultiplier = 0.6f;
 
-    // [기능 추가] 발도 및 납도 동작에 걸리는 시간 설정 및 타이머 통합
-    [SerializeField] private float baldoMotionDuration = 0.4f; // 인스펙터에서 발도 모션 시간 조절 가능
-    [SerializeField] private float nabdoMotionDuration = 0.5f; // 인스펙터에서 납도 모션 시간 조절 가능
-    private float baldoActionTimer = 0f; // 발도/납도 상태 전환 중 행동을 제한할 통합 타이머
+    [SerializeField] private float baldoMotionDuration = 0.4f;
+    [SerializeField] private float nabdoMotionDuration = 0.5f;
+    private float baldoActionTimer = 0f;
 
     [Header("Jump & Fall")]
     [SerializeField] private float jumpForce = 35f;
     [SerializeField] private float fastFallForce = 80f;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float groundCheckRadius = 0.1f;
+
+    // [수정사항] 원형 반지름(float) 변수 대신, 인스펙터 창에서 가로(X)와 세로(Y) 크기를 직접 조절할 수 있도록 사각형 크기 변수(Vector2)로 변경합니다.
+    [SerializeField] private Vector2 groundCheckSize = new Vector2(1f, 2f);
 
     [Header("Dash")]
     [SerializeField] private float dashForce = 50f;
@@ -46,19 +44,18 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
 
-    // [컴파일 에러 수정] 존재하지 않는 bool 변수 대신 currentAction 상태를 체크하도록 수정
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingS => moveInput.y < -0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingAD => moveInput.x != 0f && currentAction != ActionState.Parrying;
 
-    // [기능 추가] 외부 공격/스킬 스크립트나 타이머 상황 조회를 위한 프로퍼티 정의
+    // 외부 공격/스킬 스크립트나 타이머 상황 조회를 위한 프로퍼티 정의
     public BaldoState CurrentBaldoState
     {
         get => currentBaldoState;
         set => currentBaldoState = value;
     }
 
-    // [기능 추가] 발도/납도 진행 중(타이머 구동 중)인지 여부를 반환하는 프로퍼티
+    // 발도/납도 진행 중(타이머 구동 중)인지 여부를 반환하는 프로퍼티
     public bool IsBaldoTransitioning => baldoActionTimer > 0f;
 
     // 1. 초기화
@@ -80,7 +77,7 @@ public class PlayerMovement : PlayerBattle
             dashCooldownTimer -= Time.deltaTime;
         }
 
-        // [기능 추가] 발도/납도 전환 타이머 실시간 마모 계산
+        // 발도/납도 전환 타이머 실시간 마모 계산
         if (baldoActionTimer > 0f)
         {
             baldoActionTimer -= Time.deltaTime;
@@ -132,10 +129,11 @@ public class PlayerMovement : PlayerBattle
     // 3. 물리연산 및 실시간 업데이트 메서드 (순수 물리 주입 공장)
     protected virtual void FixedUpdate()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        // [수정사항] 기존 OverlapCircle(원형 판정) 대신 OverlapBox를 사용하여 인스펙터창에서 지정한 groundCheckSize 크기대로 사각형 바닥 체크를 수행합니다.
+        isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
         currentPosition = isGrounded ? PositionState.Grounded : PositionState.Airborne;
 
-        // [기능 추가] 현재 발도 상태에 따른 실시간 이동 속도 보정 계산 적용
+        // 현재 발도 상태에 따른 실시간 이동 속도 보정 계산 적용
         float currentMoveSpeed = moveSpeed;
         if (currentBaldoState == BaldoState.Baldo)
         {
@@ -184,7 +182,7 @@ public class PlayerMovement : PlayerBattle
         // 쿨타임 중이거나 이미 대시 중이면 무시
         if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
 
-        // [기능 변경] 공중 상태에서 대시 버튼 입력을 명확히 수신하되, 
+        // 공중 상태에서 대시 버튼 입력을 명확히 수신하되, 
         // 물리적인 대시 상태로 전이하지 않고 입력을 완전히 무효(무시) 처리합니다.
         if (currentPosition == PositionState.Airborne)
         {
@@ -205,7 +203,7 @@ public class PlayerMovement : PlayerBattle
         currentAction = ActionState.Dashing;
     }
 
-    // [기능 추가] 뉴 인풋 시스템 Baldo 액션(R키) 매핑 콜백 메서드
+    // 뉴 인풋 시스템 Baldo 액션(R키) 매핑 콜백 메서드
     private void OnBaldo()
     {
         // 발도 혹은 납도 모션이 재생 중인 타이머 도중에는 R키 중복 변환을 완전히 차단
@@ -215,7 +213,7 @@ public class PlayerMovement : PlayerBattle
         if (currentAction == ActionState.Attacking || currentAction == ActionState.SkillUsing || currentAction == ActionState.Parrying) return;
 
         // R키 입력 시마다 발도(Baldo) <-> 납도(Nabdo) 상태가 토글 전환됨
-        if (currentBaldoState == BaldoState.Nabdo)
+        if (currentBaldoState == BaldoState.Nabdo) // 원본의 오타인 BabdoState 수정을 피하기 위해 기존 명칭 구조 및 변환 타이머 규칙을 충실히 보존합니다.
         {
             currentBaldoState = BaldoState.Baldo;
             baldoActionTimer = baldoMotionDuration; // 발도 모션 시간 구동
@@ -229,7 +227,7 @@ public class PlayerMovement : PlayerBattle
         }
     }
 
-    // [기능 추가] 자식 또는 외부 스크립트가 안전하게 발도 상태를 보장받을 수 있도록 유틸리티 메서드 구축
+    // 자식 또는 외부 스크립트가 안전하게 발도 상태를 보장받을 수 있도록 유틸리티 메서드 구축
     /// <summary>
     /// 공격이나 스킬 사용 전 발도 상태를 보장합니다. 납도 상태일 경우 발도로 변경합니다.
     /// </summary>
@@ -253,5 +251,15 @@ public class PlayerMovement : PlayerBattle
         }
 
         return true; // 이미 완벽히 발도가 완료된 상태라면 즉시 True를 주어 다음 행동 진행 허용
+    }
+
+    // [수정사항] 바닥 체크 판정 범위를 원형(DrawWireSphere)에서 사각형(DrawWireCube) 기즈모로 바꾸어, 인스펙터창 조절 값이 유니티 씬 뷰에 실시간 연동되도록 수정합니다.
+    private void OnDrawGizmos()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+        }
     }
 }
