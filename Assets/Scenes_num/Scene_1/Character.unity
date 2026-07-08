@@ -352,7 +352,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  groundCheckRadius: 0.1
+  groundCheckSize: {x: 5, y: 1}
   dashForce: 100
   dashDuration: 0.1
   dashCooldown: 0.1
