@@ -4,6 +4,7 @@ using System.Collections;
 [System.Serializable]
 public struct SkillDataMelee
 {
+    public string skillName;
     public GameObject hitbox;
     public float damage;
     public float minRange; // 일부 스킬 너무 가까우면 못씀
