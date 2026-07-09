@@ -44,6 +44,9 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
 
+    // [애니메이션 추가] 컴포넌트 참조용 변수
+    private Animator animator;
+
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingS => moveInput.y < -0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingAD => moveInput.x != 0f && currentAction != ActionState.Parrying;
@@ -64,6 +67,9 @@ public class PlayerMovement : PlayerBattle
         base.Start();
         rb = GetComponent<Rigidbody2D>();
         rb.sleepMode = RigidbodySleepMode2D.NeverSleep; // 물리연산 중단 방지
+
+        // [애니메이션 추가] 오브젝트의 Animator 컴포넌트 자동 할당
+        animator = GetComponent<Animator>();
     }
 
     // 2. 프레임 (상태별 조건식 정의 및 시간 계산 부서)
@@ -123,6 +129,14 @@ public class PlayerMovement : PlayerBattle
                     currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
                 }
                 break;
+        }
+
+        // [애니메이션 추가] 현재 스크립트 상태 머신 자산을 애니메이터 파라미터에 실시간 동기화
+        if (animator != null)
+        {
+            // 이동 중(Locomotion 상태이고 바닥에 있을 때) 파라미터 전달
+            bool isMoving = (currentAction == ActionState.Locomotion && currentPosition == PositionState.Grounded);
+            animator.SetBool("isMoving", isMoving);
         }
     }
 
