@@ -1,6 +1,18 @@
 using UnityEngine;
 using System.Collections;
 
+// 버그잡기
+public enum EnemySpearState
+{
+    Idle,
+    Walk,
+    Run,
+    SkillGoing,
+    SkillUsing,
+    SkillEndIdle,
+    Dead
+}
+
 public class EnemySpear : EnemyBase
 {
     [Header("Skills")]
@@ -13,6 +25,15 @@ public class EnemySpear : EnemyBase
 
     private bool isAttacking = false;
     [SerializeField] private int selectedSkillIndex = -1;
+
+    [Header("Skill1")]
+    public float skill1ActualUseRange; // 스킬1 돌진후 찌르기 나갈때 실제 UseRange
+    public float skill1RunSpeed = 23f;
+    public GameObject skill1Hitbox2;
+
+    [Header("Debug")]
+    public EnemySpearState state = EnemySpearState.Idle;
+    public int skillDisplay = -1;
 
     private void Reset()
     {
@@ -44,6 +65,7 @@ public class EnemySpear : EnemyBase
     {
         if (isAttacking) return;
         if (skills == null || skills.Length == 0) return;
+        if (selectedSkillIndex == -2) return;
 
         // minRange ~ maxRange 사이에 있는 스킬 중에서 랜덤으로 선택
         if (selectedSkillIndex == -1)
@@ -85,6 +107,8 @@ public class EnemySpear : EnemyBase
         {
             anim.SetInteger("moveLevel", 2);
             MoveToTarget(playerTransform, runSpeed);
+
+            state = EnemySpearState.SkillGoing;
         }
         else
         {
@@ -92,6 +116,8 @@ public class EnemySpear : EnemyBase
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             isAttacking = true;
             anim.SetTrigger("skill_" + selectedSkillIndex);    
+
+            state = EnemySpearState.SkillUsing;
         }
     }
 
@@ -101,6 +127,15 @@ public class EnemySpear : EnemyBase
     private void OnAttackEnd()
     {
         isAttacking = false;
+        StartCoroutine(OnAttackEndCoroutine());
+        selectedSkillIndex = -2;
+
+        state = EnemySpearState.SkillEndIdle;
+    }
+    private IEnumerator OnAttackEndCoroutine()
+    {
+        float randTime = Random.Range(0.1f, 1.5f);
+        yield return new WaitForSeconds(randTime);
         selectedSkillIndex = -1;
     }
 
@@ -112,6 +147,7 @@ public class EnemySpear : EnemyBase
         if (active)
         {
             skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
+            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().isParryable = skills[index].isParryable;
         }
     }
 
@@ -126,6 +162,20 @@ public class EnemySpear : EnemyBase
     }
 
     //스킬1
+    private void RunPierceStart()
+    {
+        StartCoroutine(RunPierce());
+    }
+    private IEnumerator RunPierce()
+    {
+        while (distanceToPlayer > skill1ActualUseRange)
+        {
+            rb.linearVelocity = new Vector2(transform.localScale.x * skill1RunSpeed, rb.linearVelocity.y);
+            yield return null;
+        }
+        anim.SetTrigger("skill_1_2");
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+    }
     private void HitboxEnable_1()
     {
         SetHitbox(1, true);
@@ -133,6 +183,14 @@ public class EnemySpear : EnemyBase
     private void HitboxDisable_1()
     {
         SetHitbox(1, false);
+    }
+    private void HitboxEnable_1_2()
+    {
+        skill1Hitbox2.SetActive(true);
+    }
+    private void HitboxDisable_1_2()
+    {
+        skill1Hitbox2.SetActive(false);
     }
 
     //스킬2
@@ -144,5 +202,15 @@ public class EnemySpear : EnemyBase
     {
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         skills[2].weightNow = skills[2].weightInit;
+    }
+
+    //스킬3
+    private void HitboxEnable_3()
+    {
+        SetHitbox(3, true);
+    }
+    private void HitboxDisable_3()
+    {
+        SetHitbox(3, false);
     }
 }

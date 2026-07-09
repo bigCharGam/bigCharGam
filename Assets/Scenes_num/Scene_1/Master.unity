@@ -203,7 +203,7 @@ MonoBehaviour:
   offset: {x: 0, y: 2, z: -10}
   smoothSpeed: 5
   minX: 0
-  maxX: 400
+  maxX: 900
 --- !u!1001 &694985315
 PrefabInstance:
   m_ObjectHideFlags: 0

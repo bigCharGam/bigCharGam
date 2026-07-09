@@ -1,19 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-[System.Serializable]
-public struct SkillDataBow
-{
-    public string skillName;
-    public float damage;
-    public float shootPower;
-    public float minRange; // 일부 스킬 너무 가까우면 못씀
-    public float maxRange;
-    public float UseRange;
-    public int weightInit; // 일부 스킬은 조건 만족 시 가중치가 점점 증가
-    public int weightNow;
-}
-
 public class EnemyBow : EnemyBase
 {
     [Header("Skills")]
