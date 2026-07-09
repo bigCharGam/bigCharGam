@@ -17,6 +17,16 @@ public class MultiSceneCameraFollow : MonoBehaviour
     // 인스펙터에서 노출하지 않고 내부에서만 관리 (다중 씬 연결 불가 방지)
     private Transform playerTarget;
 
+    private float defaultMinX;
+    private float defaultMaxX;
+
+    void Start()
+    {
+        // 게임 시작 시 인스펙터에 적어둔 원래 맵 크기를 기억하기
+        defaultMinX = minX;
+        defaultMaxX = maxX;
+    }
+
     void LateUpdate()
     {
         // 1. 플레이어 씬이나 프리팹이 아직 로드되지 않았다면 실시간으로 찾기 시도
@@ -55,5 +65,19 @@ public class MultiSceneCameraFollow : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         playerTarget = newTarget;
+    }
+
+    // 전투 방에 들어갔을 때 카메라를 좁은 구역에 가두는 함수
+    public void SetBoundary(float newMin, float newMax)
+    {
+        minX = newMin;
+        maxX = newMax;
+    }
+
+    // 전투 방을 클리어하면 다시 원래 맵 전체 크기로 풀어주는 함수
+    public void ResetBoundary()
+    {
+        minX = defaultMinX;
+        maxX = defaultMaxX;
     }
 }
