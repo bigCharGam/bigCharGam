@@ -3,8 +3,8 @@ guid: 3449eb5a26849394fbdb48ac6fd43b16
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5295514260241456510
-    second: Gemini_Generated_Image_tujop0tujop0tujo_0
+      213: -4320295261928297051
+    second: logo_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Gemini_Generated_Image_tujop0tujop0tujo_0
+      name: logo_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 35
         width: 1984
-        height: 2128
+        height: 2093
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e7d15b0b9227d7940800000000000000
-      internalID: 5295514260241456510
+      spriteID: 5ade5f3695a3b04c0800000000000000
+      internalID: -4320295261928297051
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Gemini_Generated_Image_tujop0tujop0tujo_0: 5295514260241456510
+      logo_0: -4320295261928297051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
