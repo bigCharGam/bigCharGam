@@ -334,7 +334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMain
   maxHealth: 100
   currentHealth: 0
-  moveSpeed: 20
+  moveSpeed: 30
   baseAttackPower: 10
   maxStamina: 100
   currentStamina: 0

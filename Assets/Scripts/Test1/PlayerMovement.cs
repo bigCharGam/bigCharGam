@@ -131,6 +131,10 @@ public class PlayerMovement : PlayerBattle
             // 이동 중(Locomotion 상태이고 바닥에 있을 때) 파라미터 전달
             bool isMoving = (currentAction == ActionState.Locomotion && currentPosition == PositionState.Grounded);
             animator.SetBool("isMoving", isMoving);
+
+            // [점프 애니메이션 연동 추가] 공중 상태(Airborne)인지 여부를 판단하여 애니메이터 변수에 주입
+            bool isAirborne = (currentPosition == PositionState.Airborne);
+            animator.SetBool("isAirborne", isAirborne);
         }
     }
 
