@@ -1,12 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static PlayerMovement;
 
 public class PlayerMovement : PlayerBattle
 {
     public enum PositionState { Grounded, Airborne }
     public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing, Parrying }
-
     public enum BaldoState { Nabdo, Baldo }
 
     [Header("Parallel States")]
@@ -15,20 +13,16 @@ public class PlayerMovement : PlayerBattle
 
     [Header("Baldo System")]
     [SerializeField] private BaldoState currentBaldoState = BaldoState.Nabdo;
-
     [SerializeField][Range(0f, 1f)] private float baldoSpeedMultiplier = 0.6f;
-
     [SerializeField] private float baldoMotionDuration = 0.4f;
     [SerializeField] private float nabdoMotionDuration = 0.5f;
-    private float baldoActionTimer = 0f;
 
     [Header("Jump & Fall")]
     [SerializeField] private float jumpForce = 35f;
     [SerializeField] private float fastFallForce = 80f;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-
-    // [수정사항] 원형 반지름(float) 변수 대신, 인스펙터 창에서 가로(X)와 세로(Y) 크기를 직접 조절할 수 있도록 사각형 크기 변수(Vector2)로 변경합니다.
+    //인스펙터 창에서 가로(X)와 세로(Y) 크기를 직접 조절할 수 있도록 사각형 크기 변수(Vector2)로 변경
     [SerializeField] private Vector2 groundCheckSize = new Vector2(1f, 2f);
 
     [Header("Dash")]
@@ -36,17 +30,17 @@ public class PlayerMovement : PlayerBattle
     [SerializeField] private float dashDuration = 0.1f;
     [SerializeField] private float dashCooldown = 0.1f;
 
+    // 내부 상태 및 컴포넌트 참조 변수
     protected Rigidbody2D rb;
     protected Vector2 moveInput;
     protected bool isGrounded;
-
     protected float dashTimeLeft;
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
+    private float baldoActionTimer = 0f;
+    private Animator animator; // 애니 컴포넌트 참조용 변수
 
-    // [애니메이션 추가] 컴포넌트 참조용 변수
-    private Animator animator;
-
+    // 입력 상태 판정 프로퍼티
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingS => moveInput.y < -0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingAD => moveInput.x != 0f && currentAction != ActionState.Parrying;
@@ -68,7 +62,7 @@ public class PlayerMovement : PlayerBattle
         rb = GetComponent<Rigidbody2D>();
         rb.sleepMode = RigidbodySleepMode2D.NeverSleep; // 물리연산 중단 방지
 
-        // [애니메이션 추가] 오브젝트의 Animator 컴포넌트 자동 할당
+        // 애니 오브젝트의 Animator 컴포넌트 자동 할당
         animator = GetComponent<Animator>();
     }
 
@@ -131,19 +125,23 @@ public class PlayerMovement : PlayerBattle
                 break;
         }
 
-        // [애니메이션 추가] 현재 스크립트 상태 머신 자산을 애니메이터 파라미터에 실시간 동기화
+        // 애니 현재 스크립트 상태 머신 자산을 애니 파라미터에 실시간 동기화
         if (animator != null)
         {
             // 이동 중(Locomotion 상태이고 바닥에 있을 때) 파라미터 전달
             bool isMoving = (currentAction == ActionState.Locomotion && currentPosition == PositionState.Grounded);
             animator.SetBool("isMoving", isMoving);
+
+            // [점프 애니메이션 연동 추가] 공중 상태(Airborne)인지 여부를 판단하여 애니메이터 변수에 주입
+            bool isAirborne = (currentPosition == PositionState.Airborne);
+            animator.SetBool("isAirborne", isAirborne);
         }
     }
 
     // 3. 물리연산 및 실시간 업데이트 메서드 (순수 물리 주입 공장)
     protected virtual void FixedUpdate()
     {
-        // [수정사항] 기존 OverlapCircle(원형 판정) 대신 OverlapBox를 사용하여 인스펙터창에서 지정한 groundCheckSize 크기대로 사각형 바닥 체크를 수행합니다.
+        // OverlapBox를 사용하여 인스펙터창에서 지정한 groundCheckSize 크기로 바닥 체크
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
         currentPosition = isGrounded ? PositionState.Grounded : PositionState.Airborne;
 
@@ -267,7 +265,7 @@ public class PlayerMovement : PlayerBattle
         return true; // 이미 완벽히 발도가 완료된 상태라면 즉시 True를 주어 다음 행동 진행 허용
     }
 
-    // [수정사항] 바닥 체크 판정 범위를 원형(DrawWireSphere)에서 사각형(DrawWireCube) 기즈모로 바꾸어, 인스펙터창 조절 값이 유니티 씬 뷰에 실시간 연동되도록 수정합니다.
+    // 바닥 체크 판정 범위 사각형(DrawWireCube) 기즈모로 바꾸어, 인스펙터창 조절 값이 유니티 씬 뷰에 실시간 연동
     private void OnDrawGizmos()
     {
         if (groundCheck != null)

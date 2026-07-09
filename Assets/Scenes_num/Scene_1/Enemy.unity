@@ -860,7 +860,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 22.42, y: 11}
+    oldSize: {x: 8, y: 11}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -1429,10 +1429,6 @@ PrefabInstance:
     - target: {fileID: 6188485927598534181, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
       propertyPath: m_Name
       value: EnemyBow
-      objectReference: {fileID: 0}
-    - target: {fileID: 6188485927598534181, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6188485927598534181, guid: 2c08c6efa83d48e41bedab6615b05220, type: 3}
       propertyPath: m_IsActive

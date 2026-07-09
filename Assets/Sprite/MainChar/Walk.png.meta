@@ -1,0 +1,351 @@
+fileFormatVersion: 2
+guid: e845be3b8e32bfb40846c0e9d2b1ed68
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 126986150687847957
+    second: MainChar_ActionSprite_UP (walk)_0
+  - first:
+      213: 8505619840511662990
+    second: MainChar_ActionSprite_UP (walk)_1
+  - first:
+      213: -8281417939588702489
+    second: MainChar_ActionSprite_UP (walk)_2
+  - first:
+      213: 1201179470954956468
+    second: MainChar_ActionSprite_UP (walk)_3
+  - first:
+      213: -847525388536415773
+    second: MainChar_ActionSprite_UP (walk)_4
+  - first:
+      213: -5794885801946601104
+    second: MainChar_ActionSprite_UP (walk)_5
+  - first:
+      213: -4387140816101751782
+    second: MainChar_ActionSprite_UP (walk)_6
+  - first:
+      213: -5598991661181162626
+    second: MainChar_ActionSprite_UP (walk)_7
+  - first:
+      213: 5058063898970780168
+    second: MainChar_ActionSprite_UP (walk)_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_0
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 12
+        width: 276
+        height: 495
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 516b4233b3523c100800000000000000
+      internalID: 126986150687847957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_1
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 502
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b56342e280a0670800000000000000
+      internalID: 8505619840511662990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_2
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 18
+        width: 256
+        height: 488
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ee9442c24e721d80800000000000000
+      internalID: -8281417939588702489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_3
+      rect:
+        serializedVersion: 2
+        x: 1045
+        y: 12
+        width: 236
+        height: 494
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b603cd5d527ba010800000000000000
+      internalID: 1201179470954956468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_4
+      rect:
+        serializedVersion: 2
+        x: 1443
+        y: 14
+        width: 278
+        height: 492
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e97926462cfc34f0800000000000000
+      internalID: -847525388536415773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_5
+      rect:
+        serializedVersion: 2
+        x: 1843
+        y: 14
+        width: 284
+        height: 494
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 079a405d01e649fa0800000000000000
+      internalID: -5794885801946601104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_6
+      rect:
+        serializedVersion: 2
+        x: 2257
+        y: 12
+        width: 248
+        height: 496
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1443acfbaebd13c0800000000000000
+      internalID: -4387140816101751782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_7
+      rect:
+        serializedVersion: 2
+        x: 2661
+        y: 18
+        width: 270
+        height: 489
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7b2ce6bfb26c42b0800000000000000
+      internalID: -5598991661181162626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainChar_ActionSprite_UP (walk)_8
+      rect:
+        serializedVersion: 2
+        x: 3061
+        y: 12
+        width: 280
+        height: 494
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 802716d315ad13640800000000000000
+      internalID: 5058063898970780168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MainChar_ActionSprite_UP (walk)_0: 126986150687847957
+      MainChar_ActionSprite_UP (walk)_1: 8505619840511662990
+      MainChar_ActionSprite_UP (walk)_2: -8281417939588702489
+      MainChar_ActionSprite_UP (walk)_3: 1201179470954956468
+      MainChar_ActionSprite_UP (walk)_4: -847525388536415773
+      MainChar_ActionSprite_UP (walk)_5: -5794885801946601104
+      MainChar_ActionSprite_UP (walk)_6: -4387140816101751782
+      MainChar_ActionSprite_UP (walk)_7: -5598991661181162626
+      MainChar_ActionSprite_UP (walk)_8: 5058063898970780168
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
