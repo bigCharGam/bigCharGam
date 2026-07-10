@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 7f3db497640889845b0f27c0224d6bb3
+guid: 1793cf00b75280d42a09deaef34fea12
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8707158030486265906
-    second: MainChar_ActionSprite_UP (Damge)_0
+      213: -8879358145905959731
+    second: MainChar_ActionSprite_UP (item)_0
   - first:
-      213: 1937993536788691067
-    second: MainChar_ActionSprite_UP (Damge)_1
+      213: 5666758673245846732
+    second: MainChar_ActionSprite_UP (item)_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +103,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (Damge)_0
+      name: Item_0
       rect:
         serializedVersion: 2
-        x: 67
+        x: 148
         y: 0
-        width: 310
-        height: 460
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 358
+        height: 497
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ecf1dad57e5f92780800000000000000
-      internalID: -8707158030486265906
+      spriteID: 67c9375678529b9478f463457e066824
+      internalID: 27810141
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (Damge)_1
+      name: Item_1
       rect:
         serializedVersion: 2
-        x: 531
-        y: 0
-        width: 284
-        height: 454
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 584
+        y: 63
+        width: 494
+        height: 367
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b78fa419ad225ea10800000000000000
-      internalID: 1937993536788691067
+      spriteID: 8df0287f87d2cc14f9e7559315b0a2c7
+      internalID: 708667202
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8074f9475be7a0748bc636840b23b3b4
     internalID: 0
     vertices: []
     indices: 
@@ -158,10 +158,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MainChar_ActionSprite_UP (Damge)_0: -8707158030486265906
-      MainChar_ActionSprite_UP (Damge)_1: 1937993536788691067
+      Item_0: 27810141
+      Item_1: 708667202
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -38,7 +38,7 @@ public class PlayerMovement : PlayerBattle
     protected float dashCooldownTimer;
     protected float lastDirectionX = 1f; // 대시 방향 보존용 플래그
     private float baldoActionTimer = 0f;
-    private Animator animator; // 애니 컴포넌트 참조용 변수
+    protected Animator animator; // 애니 컴포넌트 참조용 변수
 
     // 입력 상태 판정 프로퍼티
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
@@ -201,6 +201,12 @@ public class PlayerMovement : PlayerBattle
             // 입력을 정상적으로 받았음을 인지하고 로그를 남긴 후, 아무런 상태 변화 없이 반환하여 무효화
             Debug.Log("공중 상태에서 대시 입력이 감지되어 무효 처리되었습니다.");
             return;
+        }
+
+        // [애니메이션 연동 추가] 대시 트리거 발동
+        if (animator != null)
+        {
+            animator.SetTrigger("isDashing");
         }
 
         // 대시가 켜지는 찰나에 조작 방향키(A, D) 정보를 최종 강제 확정

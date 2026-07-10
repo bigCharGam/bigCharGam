@@ -1,13 +1,22 @@
 fileFormatVersion: 2
-guid: 1793cf00b75280d42a09deaef34fea12
+guid: ef78e152b2335cc4a870598a5462fbdd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8879358145905959731
-    second: MainChar_ActionSprite_UP (item)_0
+      213: 7432614352616381668
+    second: MainChar_ActionSprite_UP (stand)_0
   - first:
-      213: 5666758673245846732
-    second: MainChar_ActionSprite_UP (item)_1
+      213: -8396444865593825122
+    second: MainChar_ActionSprite_UP (stand)_1
+  - first:
+      213: 2837430665055026187
+    second: MainChar_ActionSprite_UP (stand)_2
+  - first:
+      213: 729240779743828324
+    second: MainChar_ActionSprite_UP (stand)_3
+  - first:
+      213: -6763754240373362414
+    second: MainChar_ActionSprite_UP (stand)_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +112,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (item)_0
+      name: Stand_0
       rect:
         serializedVersion: 2
-        x: 147
-        y: 0
-        width: 360
-        height: 498
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 411
+        y: 538
+        width: 23
+        height: 9
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dccddc7afce26c480800000000000000
-      internalID: -8879358145905959731
+      spriteID: 1634a5a0b278cf445bff1ee33c1144bc
+      internalID: 372267452
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (item)_1
+      name: Stand_1
       rect:
         serializedVersion: 2
-        x: 583
-        y: 62
-        width: 496
-        height: 369
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 150
+        y: 0
+        width: 315
+        height: 536
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: cccbea25dfe54ae40800000000000000
-      internalID: 5666758673245846732
+      spriteID: 5a3920eb2cfb61d428471aa5cc76dd7e
+      internalID: -1103879347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stand_2
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 11
+        width: 314
+        height: 525
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b99b459fc2fe8ae44b128aaba1f284f8
+      internalID: -258699747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stand_3
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 11
+        width: 307
+        height: 525
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d478c89f13b1bf34ab474a33ea3c27b9
+      internalID: 567190132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stand_4
+      rect:
+        serializedVersion: 2
+        x: 1660
+        y: 14
+        width: 310
+        height: 522
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e24d8ac31cbf2fd44beb2745d6a4523c
+      internalID: -934280962
       vertices: []
       indices: 
       edges: []
@@ -150,7 +225,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1a33162e5ef5d7c41a09e114d89beda0
     internalID: 0
     vertices: []
     indices: 
@@ -158,10 +233,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MainChar_ActionSprite_UP (item)_0: -8879358145905959731
-      MainChar_ActionSprite_UP (item)_1: 5666758673245846732
+      Stand_0: 372267452
+      Stand_1: -1103879347
+      Stand_2: -258699747
+      Stand_3: 567190132
+      Stand_4: -934280962
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

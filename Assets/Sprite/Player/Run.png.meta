@@ -1,22 +1,25 @@
 fileFormatVersion: 2
-guid: ef78e152b2335cc4a870598a5462fbdd
+guid: e530d7aa3cfa2fb468bd9d9d209890c4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7432614352616381668
-    second: MainChar_ActionSprite_UP (stand)_0
+      213: -4633830721820123909
+    second: MainChar_ActionSprite_UP (run)_0
   - first:
-      213: -8396444865593825122
-    second: MainChar_ActionSprite_UP (stand)_1
+      213: -5080303055207420134
+    second: MainChar_ActionSprite_UP (run)_1
   - first:
-      213: 2837430665055026187
-    second: MainChar_ActionSprite_UP (stand)_2
+      213: -9072193951754538629
+    second: MainChar_ActionSprite_UP (run)_2
   - first:
-      213: 729240779743828324
-    second: MainChar_ActionSprite_UP (stand)_3
+      213: -985231001238490385
+    second: MainChar_ActionSprite_UP (run)_3
   - first:
-      213: -6763754240373362414
-    second: MainChar_ActionSprite_UP (stand)_4
+      213: -6021813111407510317
+    second: MainChar_ActionSprite_UP (run)_4
+  - first:
+      213: -6512250581189274144
+    second: MainChar_ActionSprite_UP (run)_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -112,111 +115,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (stand)_0
+      name: Run_0
       rect:
         serializedVersion: 2
-        x: 411
-        y: 538
-        width: 23
-        height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 349
+        y: 13
+        width: 380
+        height: 475
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4ec5b20cf53f52760800000000000000
-      internalID: 7432614352616381668
+      spriteID: 704d1473c7cfaf449afc42ca40c5e9e6
+      internalID: 589773358
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (stand)_1
+      name: Run_1
       rect:
         serializedVersion: 2
-        x: 150
-        y: 0
-        width: 315
-        height: 536
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 780
+        y: 13
+        width: 377
+        height: 475
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e98a02a81e5d97b80800000000000000
-      internalID: -8396444865593825122
+      spriteID: 9c966c6a370f14949a63f114bb086ce5
+      internalID: 1405302592
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (stand)_2
+      name: Run_2
       rect:
         serializedVersion: 2
-        x: 654
+        x: 1216
         y: 11
-        width: 314
-        height: 525
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 365
+        height: 484
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b0cb7611824906720800000000000000
-      internalID: 2837430665055026187
+      spriteID: 00eb451513959224d95a96f096bb4364
+      internalID: -532821879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (stand)_3
+      name: Run_3
       rect:
         serializedVersion: 2
-        x: 1157
+        x: 1626
         y: 11
-        width: 307
-        height: 525
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        width: 387
+        height: 481
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4691c5020a8ce1a00800000000000000
-      internalID: 729240779743828324
+      spriteID: c7d29221dbbd982499d97929a9c3f5e6
+      internalID: 1153658190
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (stand)_4
+      name: Run_4
       rect:
         serializedVersion: 2
-        x: 1660
-        y: 14
-        width: 310
-        height: 522
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 2046
+        y: 13
+        width: 364
+        height: 482
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 211f082ba515222a0800000000000000
-      internalID: -6763754240373362414
+      spriteID: 9df272b66e3059646863ecca94ab49b0
+      internalID: 2011565764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Run_5
+      rect:
+        serializedVersion: 2
+        x: 2446
+        y: 10
+        width: 379
+        height: 478
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57e1ee218e88bc340b53ed03ab2865c5
+      internalID: 405502539
       vertices: []
       indices: 
       edges: []
@@ -225,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1a33162e5ef5d7c41a09e114d89beda0
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -235,13 +260,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MainChar_ActionSprite_UP (stand)_0: 7432614352616381668
-      MainChar_ActionSprite_UP (stand)_1: -8396444865593825122
-      MainChar_ActionSprite_UP (stand)_2: 2837430665055026187
-      MainChar_ActionSprite_UP (stand)_3: 729240779743828324
-      MainChar_ActionSprite_UP (stand)_4: -6763754240373362414
+      Run_0: 589773358
+      Run_1: 1405302592
+      Run_2: -532821879
+      Run_3: 1153658190
+      Run_4: 2011565764
+      Run_5: 405502539
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

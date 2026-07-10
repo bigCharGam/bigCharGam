@@ -212,6 +212,14 @@ public class PlayerAttack : PlayerMovement
         // 공격이 끝난 시점부터 쿨타임이 돌도록 [공격 지속 시간 + 쿨타임]으로 설정
         attackCooldownTimer = normalAttackDuration + normalAttackCooldown;
 
+
+        // [애니메이션 추가] 일반 공격 트리거 발동
+        // (PlayerMovement에서 animator를 protected로 선언했으므로 접근 가능)
+        if (animator != null)
+        {
+            animator.SetTrigger("isSmallAttack");
+        }
+
         // 일반 공격 데미지 적용
         CheckAttackHit(normalAttackDamage);
     }
@@ -223,6 +231,12 @@ public class PlayerAttack : PlayerMovement
 
         // 공격이 끝난 시점부터 쿨타임이 돌도록 [공격 지속 시간 + 쿨타임]으로 설정
         attackCooldownTimer = bigAttackDuration + bigAttackCooldown;
+
+        // [애니메이션 추가] 강공격 트리거 발동
+        if (animator != null)
+        {
+            animator.SetTrigger("isBigAttack");
+        }
 
         // 강공격 데미지 적용
         CheckAttackHit(bigAttackDamage);

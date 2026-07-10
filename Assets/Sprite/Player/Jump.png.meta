@@ -1,25 +1,28 @@
 fileFormatVersion: 2
-guid: e530d7aa3cfa2fb468bd9d9d209890c4
+guid: d319b5c41ff14824e8af83ddaf233f45
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4633830721820123909
-    second: MainChar_ActionSprite_UP (run)_0
+      213: -6510811684812300112
+    second: MainChar_ActionSprite_UP (jump)_0
   - first:
-      213: -5080303055207420134
-    second: MainChar_ActionSprite_UP (run)_1
+      213: 7479986957891824407
+    second: MainChar_ActionSprite_UP (jump)_1
   - first:
-      213: -9072193951754538629
-    second: MainChar_ActionSprite_UP (run)_2
+      213: -1144641314783872123
+    second: MainChar_ActionSprite_UP (jump)_2
   - first:
-      213: -985231001238490385
-    second: MainChar_ActionSprite_UP (run)_3
+      213: 4559675408992937818
+    second: MainChar_ActionSprite_UP (jump)_3
   - first:
-      213: -6021813111407510317
-    second: MainChar_ActionSprite_UP (run)_4
+      213: 2627353647471086499
+    second: MainChar_ActionSprite_UP (jump)_4
   - first:
-      213: -6512250581189274144
-    second: MainChar_ActionSprite_UP (run)_5
+      213: 95561028890946709
+    second: MainChar_ActionSprite_UP (jump)_5
+  - first:
+      213: 5814501815914104297
+    second: MainChar_ActionSprite_UP (jump)_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,133 +118,155 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_0
+      name: Jump_0
       rect:
         serializedVersion: 2
-        x: 349
-        y: 13
-        width: 380
-        height: 475
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 107
+        y: 522
+        width: 42
+        height: 80
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bfc9e94728351bfb0800000000000000
-      internalID: -4633830721820123909
+      spriteID: 28eb24762d3923a4a8e0b58d162e5028
+      internalID: 1146521563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_1
+      name: Jump_1
       rect:
         serializedVersion: 2
-        x: 780
-        y: 13
-        width: 377
-        height: 475
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 153
+        y: 522
+        width: 48
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a1fa703b9432f79b0800000000000000
-      internalID: -5080303055207420134
+      spriteID: 26b35e49e7f04cc48bd13726e8e7b22c
+      internalID: -1008250862
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_2
+      name: Jump_2
       rect:
         serializedVersion: 2
-        x: 1216
-        y: 11
-        width: 365
-        height: 484
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 207
+        y: 526
+        width: 70
+        height: 62
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b71393cdaa7191280800000000000000
-      internalID: -9072193951754538629
+      spriteID: b98e073528ade4643be9f00ef559b391
+      internalID: 468455645
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_3
+      name: Jump_3
       rect:
         serializedVersion: 2
-        x: 1626
-        y: 11
-        width: 387
-        height: 481
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 279
+        y: 504
+        width: 54
+        height: 82
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: fe23a75df91c352f0800000000000000
-      internalID: -985231001238490385
+      spriteID: 90185fda669d73b489e3a4b72d57dcf9
+      internalID: 240838129
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_4
+      name: Jump_4
       rect:
         serializedVersion: 2
-        x: 2046
-        y: 13
-        width: 364
-        height: 482
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 547
+        y: 92
+        width: 334
+        height: 504
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3dcf3ce41e83e6ca0800000000000000
-      internalID: -6021813111407510317
+      spriteID: 3e424585738d28e43abb726280bb9146
+      internalID: -1232200897
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainChar_ActionSprite_UP (run)_5
+      name: Jump_5
       rect:
         serializedVersion: 2
-        x: 2446
-        y: 10
-        width: 379
-        height: 478
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 163
+        y: 6
+        width: 254
+        height: 488
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0e5d1eb8996df95a0800000000000000
-      internalID: -6512250581189274144
+      spriteID: 9c9e9e5c77977cd4f9dc622e10b2e128
+      internalID: 1741148160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jump_6
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 8
+        width: 310
+        height: 450
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d785725aa1cb4644fad5ca0d7805b19d
+      internalID: -689008465
       vertices: []
       indices: 
       edges: []
@@ -250,7 +275,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 1f8b1872d67c9a646b079fb95b8e307d
     internalID: 0
     vertices: []
     indices: 
@@ -260,14 +285,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MainChar_ActionSprite_UP (run)_0: -4633830721820123909
-      MainChar_ActionSprite_UP (run)_1: -5080303055207420134
-      MainChar_ActionSprite_UP (run)_2: -9072193951754538629
-      MainChar_ActionSprite_UP (run)_3: -985231001238490385
-      MainChar_ActionSprite_UP (run)_4: -6021813111407510317
-      MainChar_ActionSprite_UP (run)_5: -6512250581189274144
+      Jump_0: 1146521563
+      Jump_1: -1008250862
+      Jump_2: 468455645
+      Jump_3: 240838129
+      Jump_4: -1232200897
+      Jump_5: 1741148160
+      Jump_6: -689008465
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
