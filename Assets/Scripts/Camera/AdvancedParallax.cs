@@ -1,53 +1,62 @@
 using UnityEngine;
 
-public class InfiniteParallax : MonoBehaviour
+public class AutoParallax : MonoBehaviour
 {
-    [Header("Parallax Settings")]
-    public float multiplierX = 0.8f;
-    public float multiplierY = 0f;
-
-    [Header("Infinite Loop Settings")]
-    [Tooltip("체크하면 배경이 끊기지 않고 가로로 무한 반복됩니다.")]
-    public bool infiniteHorizontal = true;
-    [Tooltip("배경 이미지 한 장의 가로 크기 (유니티 Grid 단위 기준)")]
-    public float textureSizeX = 38.4f; // 사용하시는 배경 타일 한 덩어리의 가로 길이에 맞게 조절
+    [Header("패럴랙스 설정")]
+    [Tooltip("1 = 카메라와 똑같이 이동\n0 = 고정된 땅")]
+    [Range(0f, 1f)] public float parallaxFactorX = 0.8f;
+    [Range(0f, 1f)] public float parallaxFactorY = 0f;
+    public bool isInfinite = true;
 
     private Transform cam;
-    private Vector3 lastCameraPosition;
-    private bool isInitialized = false;
-    private Vector3 targetPosition;
+    private Vector3 startPos;
+    private Vector3 camStartPos;
+    private float boundSizeX;
+
+    void Start()
+    {
+        cam = Camera.main.transform;
+        // 배경과 카메라의 '초기 시작 위치'를 각각 저장해둡니다.
+        startPos = transform.position;
+        camStartPos = cam.position;
+
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            boundSizeX = renderer.bounds.size.x;
+        }
+        else
+        {
+            isInfinite = false;
+        }
+    }
 
     void LateUpdate()
     {
-        if (!isInitialized)
+        if (cam == null) return;
+
+        // 1. 카메라가 시작 지점에서 '이동한 순수 거리'만 계산합니다. (좌표 버그 원천 차단)
+        float travelX = cam.position.x - camStartPos.x;
+        float travelY = cam.position.y - camStartPos.y;
+
+        transform.position = new Vector3(
+            startPos.x + travelX * parallaxFactorX,
+            startPos.y + travelY * parallaxFactorY,
+            transform.position.z
+        );
+
+        // 2. Factor가 1 미만일 때만 무한 루프를 돌립니다. (1이면 벗어날 일이 없으므로 생략)
+        if (isInfinite && boundSizeX > 0 && parallaxFactorX < 1f)
         {
-            if (Camera.main != null)
+            float distance = cam.position.x - transform.position.x;
+
+            if (distance > boundSizeX)
             {
-                cam = Camera.main.transform;
-                lastCameraPosition = cam.position;
-                targetPosition = transform.position;
-                isInitialized = true;
+                startPos.x += boundSizeX;
             }
-            return;
-        }
-        if (cam == null) { isInitialized = false; return; }
-
-        // 1. 패럴랙스 기본 이동 계산
-        Vector3 deltaMovement = cam.position - lastCameraPosition;
-        targetPosition += new Vector3(deltaMovement.x * multiplierX, deltaMovement.y * multiplierY, 0);
-        transform.position = targetPosition;
-        lastCameraPosition = cam.position;
-
-        // 2. [핵심] 무한 루프 순간이동 로직
-        if (infiniteHorizontal)
-        {
-            // 카메라가 배경의 중심에서 배경 크기만큼 벗어났는지 체크
-            if (Mathf.Abs(cam.position.x - transform.position.x) >= textureSizeX)
+            else if (distance < -boundSizeX)
             {
-                // 카메라가 우측으로 벗어났다면 배경을 우측으로 한 칸 순간이동
-                float offsetPositionX = (cam.position.x - transform.position.x) % textureSizeX;
-                targetPosition.x = cam.position.x - offsetPositionX;
-                transform.position = new Vector3(targetPosition.x, transform.position.y, transform.position.z);
+                startPos.x -= boundSizeX;
             }
         }
     }
