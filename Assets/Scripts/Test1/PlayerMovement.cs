@@ -40,6 +40,9 @@ public class PlayerMovement : PlayerBattle
     private float baldoActionTimer = 0f;
     protected Animator animator; // 애니 컴포넌트 참조용 변수
 
+    private bool isFacingRight = true;  // 처음 시작 시 오른쪽을 바라보고 있다고 가정 [cite: 24]
+    private Vector3 defaultScale;       // 인스펙터에 설정된 기본 Scale 값을 저장할 변수 [cite: 24]
+
     // 입력 상태 판정 프로퍼티
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
     protected bool isPressingS => moveInput.y < -0.5f && currentAction != ActionState.Parrying;
@@ -64,6 +67,8 @@ public class PlayerMovement : PlayerBattle
 
         // 애니 오브젝트의 Animator 컴포넌트 자동 할당
         animator = GetComponent<Animator>();
+
+        defaultScale = transform.localScale;
     }
 
     // 2. 프레임 (상태별 조건식 정의 및 시간 계산 부서)
@@ -186,7 +191,28 @@ public class PlayerMovement : PlayerBattle
         if (isPressingAD)
         {
             lastDirectionX = moveInput.x > 0f ? 1f : -1f;
+
+
+            if (moveInput.x > 0f && !isFacingRight)
+            {
+                Flip();
+            }
+            else if (moveInput.x < 0f && isFacingRight)
+            {
+                Flip();
+            }
         }
+    }
+
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+
+        Vector3 newScale = transform.localScale;
+    
+        newScale.x = defaultScale.x * (isFacingRight ? 1f : -1f);
+        transform.localScale = newScale;
     }
 
     private void OnDash()
