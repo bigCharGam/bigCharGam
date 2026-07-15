@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,6 +9,10 @@ public class PlayerAttack : PlayerMovement
 
     // 자동으로 발도 후 수행할 공격의 종류를 예약하기 위한 Enum
     private enum PendingAttackType { None, Normal, Big }
+
+    // ⭐ [C# 이벤트 선언] 플레이어가 공격 선딜레이를 시작할 때 발행할 라디오 방송국(이벤트)입니다.
+    // 적 AI 담당자는 이 이벤트를 구독하여 플레이어의 위치(Vector3) 정보를 받아 처리하게 됩니다.
+    public static event Action<Vector3> OnPlayerAttackAlert;
 
     [Header("Battle Status")]
     [SerializeField] private ParryDirection currentParryDirection = ParryDirection.None;
@@ -104,11 +109,11 @@ public class PlayerAttack : PlayerMovement
 
                 if (reservedAttack == PendingAttackType.Normal)
                 {
-                    StartCoroutine(AttackRoutine(isHeavy: false));
+                    StartCoroutine(AttackRoutine(isBigAttack: false));
                 }
                 else if (reservedAttack == PendingAttackType.Big)
                 {
-                    StartCoroutine(AttackRoutine(isHeavy: true));
+                    StartCoroutine(AttackRoutine(isBigAttack: true));
                 }
             }
 
@@ -187,7 +192,7 @@ public class PlayerAttack : PlayerMovement
             return;
         }
 
-        StartCoroutine(AttackRoutine(isHeavy: false));
+        StartCoroutine(AttackRoutine(isBigAttack: false));
     }
 
     private void OnBigAttack()
@@ -203,29 +208,31 @@ public class PlayerAttack : PlayerMovement
             return;
         }
 
-        StartCoroutine(AttackRoutine(isHeavy: true));
+        StartCoroutine(AttackRoutine(isBigAttack: true));
     }
 
     // --- [핵심 기능] 선딜 -> 공격/돌진 -> 후딜 제어 코루틴 ---
-    private IEnumerator AttackRoutine(bool isHeavy)
+    private IEnumerator AttackRoutine(bool isBigAttack) // [교체] 직관적인 매개변수명 적용
     {
         isAttackingRoutineActive = true;
-        currentAction = ActionState.Attacking;
+        currentAction = ActionState.Attacking; // [교체] 공격 중 상태 진입
 
         // 1. 공격 스펙 설정 분기
-        float preDelay = isHeavy ? heavyPreDelay : lightPreDelay;
-        float postDelay = isHeavy ? heavyPostDelay : lightPostDelay;
-        float duration = isHeavy ? bigAttackDuration : normalAttackDuration;
-        float cooldown = isHeavy ? bigAttackCooldown : normalAttackCooldown;
-        int damage = isHeavy ? bigAttackDamage : normalAttackDamage;
-        string triggerName = isHeavy ? "isBigAttack" : "isSmallAttack";
+        float preDelay = isBigAttack ? heavyPreDelay : lightPreDelay;
+        float postDelay = isBigAttack ? heavyPostDelay : lightPostDelay;
+        float duration = isBigAttack ? bigAttackDuration : normalAttackDuration;
+        float cooldown = isBigAttack ? bigAttackCooldown : normalAttackCooldown;
+        int damage = isBigAttack ? bigAttackDamage : normalAttackDamage;
+        string triggerName = isBigAttack ? "isBigAttack" : "isSmallAttack";
 
-        // 2. [선딜 시작] 선딜 모션 재생 트리거가 있다면 여기서 실행할 수 있습니다.
+        // 2. [선딜 시작] 선딜 모션 재생 트리거 작동
         if (animator != null)
         {
-            // 공격을 준비하는 모션이나 선행 트리거가 필요할 때 호출
             animator.SetTrigger(triggerName);
         }
+
+        // ⭐ [신호 전송] 선딜레이 대기 직전, 이벤트를 구독 중인 객체들에게 공격 위치를 송출합니다!
+        AlertEnemiesOfAttack();
 
         // 선딜레이 시간만큼 대기
         yield return new WaitForSeconds(preDelay);
@@ -246,18 +253,39 @@ public class PlayerAttack : PlayerMovement
         isAttackingRoutineActive = false;
     }
 
+    // ⭐ [수정] 적의 클래스를 몰라도 공중에 신호(위치값)만 쏘도록 이벤트 연동 적용
+    private void AlertEnemiesOfAttack()
+    {
+        // 이벤트를 구독하고 있는 스크립트가 있을 때만 현재 플레이어의 위치를 매개변수로 담아 이벤트를 전송합니다.
+        OnPlayerAttackAlert?.Invoke(transform.position);
+    }
+
+    // 감지된 여러 명의 적들 중에서 가장 가까운 단 한 명의 적만 타격하는 정교한 판정 로직
     private void CheckAttackHit(int damage)
     {
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
 
-        Debug.Log($"공격 범위 내 감지된 적 수: {hitEnemies.Length} | 적용 데미지: {damage}");
+        Collider2D closestEnemy = null;
+        float closestDistance = Mathf.Infinity; // 최단거리 비교용 기본값 세팅
 
+        // 1. 범위 내의 적들 중 나와 가장 가까운 적을 탐색합니다.
         foreach (Collider2D enemy in hitEnemies)
         {
-            if (enemy.TryGetComponent<EnemyBase>(out var enemyComponent))
+            float distance = Vector2.Distance(transform.position, enemy.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        // 2. 최종 결정된 단 1명의 적에게만 단일 대미지 판정을 수행합니다.
+        if (closestEnemy != null)
+        {
+            if (closestEnemy.TryGetComponent<EnemyBase>(out var enemyComponent))
             {
                 enemyComponent.TakeDamage(damage);
-                Debug.Log($"{enemy.name}에게 {damage} 데미지를 입혔습니다!");
+                Debug.Log($"🎯 단일 타격 대상: {closestEnemy.name} | {damage} 데미지 적용 완료!");
             }
         }
     }
