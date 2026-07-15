@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,13 +6,13 @@ public class PlayerAttack : PlayerMovement
 {
     private enum ParryDirection { None, W, A, D }
 
-    // [기능 추가] 자동으로 발도 후 수행할 공격의 종류를 예약하기 위한 Enum
+    // 자동으로 발도 후 수행할 공격의 종류를 예약하기 위한 Enum
     private enum PendingAttackType { None, Normal, Big }
 
     [Header("Battle Status")]
     [SerializeField] private ParryDirection currentParryDirection = ParryDirection.None;
 
-    // [기능 추가] 발도 전환 타이머가 끝난 뒤 즉시 공격을 실행하기 위한 상태 변수
+    // 발도 전환 타이머가 끝난 뒤 즉시 공격을 실행하기 위한 상태 변수
     private PendingAttackType reservedAttack = PendingAttackType.None;
     private bool wasTransitioningLastFrame = false;
 
@@ -19,7 +20,13 @@ public class PlayerAttack : PlayerMovement
     [SerializeField] private float normalAttackDashForce = 12f;
     [SerializeField] private float bigAttackDashForce = 25f;
 
-    [Header("Attack Duration Settings")]
+    [Header("Attack Delay Settings (선딜 / 후딜)")]
+    [SerializeField] private float lightPreDelay = 0.15f;   // 작은 공격 선딜
+    [SerializeField] private float lightPostDelay = 0.2f;   // 작은 공격 후딜
+    [SerializeField] private float heavyPreDelay = 0.35f;   // 큰 공격 선딜
+    [SerializeField] private float heavyPostDelay = 0.4f;   // 큰 공격 후딜
+
+    [Header("Attack Duration Settings (돌진 및 판정 지속시간)")]
     [SerializeField] private float normalAttackDuration = 0.15f;
     [SerializeField] private float bigAttackDuration = 0.25f;
 
@@ -37,7 +44,8 @@ public class PlayerAttack : PlayerMovement
     [SerializeField] private LayerMask enemyLayers;
 
     private float attackDurationTimer;
-    private float attackCooldownTimer; // 현재 남은 쿨타임을 계산할 타이머 변수 추가
+    private float attackCooldownTimer; // 현재 남은 쿨타임을 계산할 타이머 변수
+    private bool isAttackingRoutineActive = false; // 코루틴 중복 실행 방지용 플래그
 
     protected override void Start() => base.Start();
 
@@ -55,20 +63,13 @@ public class PlayerAttack : PlayerMovement
             }
         }
 
-        // [기능 추가] 실시간으로 부모의 발도/납도 타이머 종료 시점을 감지하여 예약된 공격 실행
+        // 실시간으로 부모의 발도/납도 타이머 종료 시점을 감지하여 예약된 공격 실행
         HandleReservedAttack();
 
-        // 공격 타이머 관리
+        // 공격 돌진 타이머 관리 (FixedUpdate에서의 속도 제어용)
         if (attackDurationTimer > 0)
         {
             attackDurationTimer -= Time.deltaTime;
-            if (attackDurationTimer <= 0)
-            {
-                if (currentAction == ActionState.Attacking || currentAction == ActionState.SkillUsing)
-                {
-                    currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
-                }
-            }
         }
 
         // 쿨타임 타이머 관리
@@ -82,14 +83,15 @@ public class PlayerAttack : PlayerMovement
     {
         base.FixedUpdate();
 
-        if (currentAction == ActionState.Attacking)
+        // 공격 액션 상태이고, 돌진 지속 타이머가 남아있을 때만 앞으로 전진 처리
+        if (currentAction == ActionState.Attacking && attackDurationTimer > 0)
         {
             float currentDashForce = (attackDurationTimer > normalAttackDuration) ? bigAttackDashForce : normalAttackDashForce;
             rb.linearVelocity = new Vector2(lastDirectionX * currentDashForce, rb.linearVelocity.y);
         }
     }
 
-    // [기능 추가] 발도 완료 프레임을 실시간 감지하여 예약 공격을 분기 처리하는 유틸리티 메서드
+    // 발도 완료 프레임을 실시간 감지하여 예약 공격을 분기 처리하는 유틸리티 메서드
     private void HandleReservedAttack()
     {
         // 전 프레임에는 발도/납도 중이었는데, 이번 프레임에 타이머가 끝난 경우 (발도 완료 순간)
@@ -102,11 +104,11 @@ public class PlayerAttack : PlayerMovement
 
                 if (reservedAttack == PendingAttackType.Normal)
                 {
-                    ExecuteNormalAttackLogic();
+                    StartCoroutine(AttackRoutine(isHeavy: false));
                 }
                 else if (reservedAttack == PendingAttackType.Big)
                 {
-                    ExecuteBigAttackLogic();
+                    StartCoroutine(AttackRoutine(isHeavy: true));
                 }
             }
 
@@ -123,13 +125,14 @@ public class PlayerAttack : PlayerMovement
     {
         if (isPressed)
         {
-            // [기능 추가] 현재 발도 모션 중이거나 납도 모션 중인 경우 패링 작동 제한
+            // 현재 발도 모션 중이거나 납도 모션 중인 경우 패링 작동 제한
             if (IsBaldoTransitioning) return;
 
-            // 공격, 대시, 스킬 중에는 패링 불가
+            // 공격, 대시, 스킬 중에는 패링 불가 (코루틴 실행 중 상태도 포함)
             if (currentAction == ActionState.Attacking ||
                 currentAction == ActionState.Dashing ||
-                currentAction == ActionState.SkillUsing) return;
+                currentAction == ActionState.SkillUsing ||
+                isAttackingRoutineActive) return;
 
             // 이미 패링 중이라도 방향이 다르면 새 방향으로 갱신
             if (currentAction == ActionState.Parrying)
@@ -170,76 +173,77 @@ public class PlayerAttack : PlayerMovement
         currentParryDirection = ParryDirection.None;
     }
 
-    // --- 공격 로직 ---
+    // --- 공격 입력 함수 ---
     private void OnAttack()
     {
         // 대시 중이거나 이미 공격 중일 때, 그리고 쿨타임이 남아있을 때는 공격 불가
-        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking || attackCooldownTimer > 0) return;
+        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking || isAttackingRoutineActive || attackCooldownTimer > 0) return;
 
         // 부모(PlayerMovement)에 구현된 발도 검증 로직 실행
         if (!EnsureBaldoState())
         {
-            // [기능 추가] 전환 타이머 작동으로 차단된 경우, 일반 공격을 예약 상자에 주입
+            // 전환 타이머 작동으로 차단된 경우, 일반 공격을 예약 상자에 주입
             reservedAttack = PendingAttackType.Normal;
             return;
         }
 
-        ExecuteNormalAttackLogic();
+        StartCoroutine(AttackRoutine(isHeavy: false));
     }
 
     private void OnBigAttack()
     {
         // 대시 중이거나 이미 공격 중일 때, 그리고 쿨타임이 남아있을 때는 공격 불가 조건 추가
-        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking || attackCooldownTimer > 0) return;
+        if (currentAction == ActionState.Dashing || currentAction == ActionState.Attacking || isAttackingRoutineActive || attackCooldownTimer > 0) return;
 
         // 부모(PlayerMovement)에 구현된 발도 검증 로직 실행
         if (!EnsureBaldoState())
         {
-            // [기능 추가] 전환 타이머 작동으로 차단된 경우, 강공격을 예약 상자에 주입
+            // 전환 타이머 작동으로 차단된 경우, 강공격을 예약 상자에 주입
             reservedAttack = PendingAttackType.Big;
             return;
         }
 
-        ExecuteBigAttackLogic();
+        StartCoroutine(AttackRoutine(isHeavy: true));
     }
 
-    // [기능 추가] 중복을 줄이고 예약 시점에 재호출하기 위해 순수 공격 실행 단락을 가독성 있게 메소드로 분리
-    private void ExecuteNormalAttackLogic()
+    // --- [핵심 기능] 선딜 -> 공격/돌진 -> 후딜 제어 코루틴 ---
+    private IEnumerator AttackRoutine(bool isHeavy)
     {
+        isAttackingRoutineActive = true;
         currentAction = ActionState.Attacking;
-        attackDurationTimer = normalAttackDuration;
 
-        // 공격이 끝난 시점부터 쿨타임이 돌도록 [공격 지속 시간 + 쿨타임]으로 설정
-        attackCooldownTimer = normalAttackDuration + normalAttackCooldown;
+        // 1. 공격 스펙 설정 분기
+        float preDelay = isHeavy ? heavyPreDelay : lightPreDelay;
+        float postDelay = isHeavy ? heavyPostDelay : lightPostDelay;
+        float duration = isHeavy ? bigAttackDuration : normalAttackDuration;
+        float cooldown = isHeavy ? bigAttackCooldown : normalAttackCooldown;
+        int damage = isHeavy ? bigAttackDamage : normalAttackDamage;
+        string triggerName = isHeavy ? "isBigAttack" : "isSmallAttack";
 
-
-        // [애니메이션 추가] 일반 공격 트리거 발동
-        // (PlayerMovement에서 animator를 protected로 선언했으므로 접근 가능)
+        // 2. [선딜 시작] 선딜 모션 재생 트리거가 있다면 여기서 실행할 수 있습니다.
         if (animator != null)
         {
-            animator.SetTrigger("isSmallAttack");
+            // 공격을 준비하는 모션이나 선행 트리거가 필요할 때 호출
+            animator.SetTrigger(triggerName);
         }
 
-        // 일반 공격 데미지 적용
-        CheckAttackHit(normalAttackDamage);
-    }
+        // 선딜레이 시간만큼 대기
+        yield return new WaitForSeconds(preDelay);
 
-    private void ExecuteBigAttackLogic()
-    {
-        currentAction = ActionState.Attacking;
-        attackDurationTimer = bigAttackDuration;
+        // 3. [실제 공격 판정 및 돌진] 선딜이 끝난 직후 딜러와 대미지 연산 처리
+        attackDurationTimer = duration; // FixedUpdate에서 대시 연산을 실행하도록 타이머 설정
+        CheckAttackHit(damage);
 
-        // 공격이 끝난 시점부터 쿨타임이 돌도록 [공격 지속 시간 + 쿨타임]으로 설정
-        attackCooldownTimer = bigAttackDuration + bigAttackCooldown;
+        // 돌진 및 공격 판정 시간만큼 대기
+        yield return new WaitForSeconds(duration);
 
-        // [애니메이션 추가] 강공격 트리거 발동
-        if (animator != null)
-        {
-            animator.SetTrigger("isBigAttack");
-        }
+        // 4. [후딜 시작] 공격 판정 프로세스가 끝나고 제자리 복귀 및 경직 대기
+        yield return new WaitForSeconds(postDelay);
 
-        // 강공격 데미지 적용
-        CheckAttackHit(bigAttackDamage);
+        // 5. [행동 가능 상태 복귀 및 쿨타임 적용]
+        currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
+        attackCooldownTimer = cooldown; // 후딜이 끝난 시점부터 순수 쿨타임 작동 시작
+        isAttackingRoutineActive = false;
     }
 
     private void CheckAttackHit(int damage)
