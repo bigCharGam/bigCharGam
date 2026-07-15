@@ -91,6 +91,7 @@ public class EnemySword : EnemyBase
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             isAttacking = true;
+            hitReactImmune = skills[selectedSkillIndex].isImmune;
             anim.SetTrigger("skill_" + selectedSkillIndex);    
         }
     }
@@ -101,6 +102,7 @@ public class EnemySword : EnemyBase
     private void OnAttackEnd()
     {
         isAttacking = false;
+        hitReactImmune = false;
         selectedSkillIndex = -1;
     }
 
@@ -111,7 +113,11 @@ public class EnemySword : EnemyBase
         skills[index].hitbox.SetActive(active);
         if (active)
         {
-            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
+            var hitboxComp = skills[index].hitbox.GetComponent<EnemyAttackHitbox>();
+            hitboxComp.damage = skills[index].damage;
+            hitboxComp.parryReduction = skills[index].parryReduction;
+            hitboxComp.parryPerfectReduction = skills[index].parryPerfectReduction;
+            hitboxComp.isReflectable = skills[index].isReflectable;
         }
     }
 
@@ -144,5 +150,25 @@ public class EnemySword : EnemyBase
     {
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         skills[2].weightNow = skills[2].weightInit;
+    }
+
+    // 피격 시 히트박스 끄고 스킬 종료
+    protected override void OnHitStart()
+    {
+        base.OnHitStart();
+
+        isAttacking = false;
+        hitReactImmune = false;
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i].hitbox != null)
+                skills[i].hitbox.SetActive(false);
+        }
+    }
+
+    protected override void OnHitEnd()
+    {
+        selectedSkillIndex = -1; 
     }
 }

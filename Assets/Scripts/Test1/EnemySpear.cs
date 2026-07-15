@@ -2,15 +2,13 @@ using UnityEngine;
 using System.Collections;
 
 // 버그잡기
-public enum EnemySpearState
+public enum EnemySpearBattleState
 {
-    Idle,
-    Walk,
-    Run,
-    SkillGoing,
+    SkillSelctAndGo,
     SkillUsing,
     SkillEndIdle,
-    Dead
+    Parry,
+    OnHit,
 }
 
 public class EnemySpear : EnemyBase
@@ -22,9 +20,12 @@ public class EnemySpear : EnemyBase
     [SerializeField] private float runSpeed;
     [SerializeField] private float backStepSpeed;
     [SerializeField] private float backStepJumpForce;
-
-    private bool isAttacking = false;
+    [SerializeField] private float tooCloseRange; //너무 가까울시 backwalk
     [SerializeField] private int selectedSkillIndex = -1;
+    public ParticleSystem parryEffect1;
+    public ParticleSystem parryEffect2;
+    private float endIdleTime = 0f;
+    private float endIdleTimeElapsed = 0f;
 
     [Header("Skill1")]
     public float skill1ActualUseRange; // 스킬1 돌진후 찌르기 나갈때 실제 UseRange
@@ -32,8 +33,9 @@ public class EnemySpear : EnemyBase
     public GameObject skill1Hitbox2;
 
     [Header("Debug")]
-    public EnemySpearState state = EnemySpearState.Idle;
     public int skillDisplay = -1;
+    [SerializeField] private bool parryAble = false; // 추후 not Serialize
+    [SerializeField] private EnemySpearBattleState state = EnemySpearBattleState.SkillSelctAndGo;
 
     private void Reset()
     {
@@ -63,10 +65,27 @@ public class EnemySpear : EnemyBase
 
     protected override void HandleBattle()
     {
-        if (isAttacking) return;
-        if (skills == null || skills.Length == 0) return;
-        if (selectedSkillIndex == -2) return;
+        switch (state)
+        {
+            case EnemySpearBattleState.SkillSelctAndGo:
+                HandleSkillSelectAndGo();
+                break;
+            case EnemySpearBattleState.SkillUsing:
+                HandleSkillUsing();
+                break;
+            case EnemySpearBattleState.SkillEndIdle:
+                HandleSkillEndIdle();
+                break;
+            case EnemySpearBattleState.Parry:
+                HandleParry();
+                break;
+            case EnemySpearBattleState.OnHit:
+                break;
+        }
+    }
 
+    private void HandleSkillSelectAndGo()
+    {
         // minRange ~ maxRange 사이에 있는 스킬 중에서 랜덤으로 선택
         if (selectedSkillIndex == -1)
         {
@@ -107,18 +126,88 @@ public class EnemySpear : EnemyBase
         {
             anim.SetInteger("moveLevel", 2);
             MoveToTarget(playerTransform, runSpeed);
-
-            state = EnemySpearState.SkillGoing;
         }
         else
         {
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            isAttacking = true;
+            hitReactImmune = skills[selectedSkillIndex].isImmune;
             anim.SetTrigger("skill_" + selectedSkillIndex);    
 
-            state = EnemySpearState.SkillUsing;
+            state = EnemySpearBattleState.SkillUsing;
         }
+    }
+    private void HandleSkillUsing()
+    {
+        return;
+    }
+    private void HandleSkillEndIdle()
+    {
+        endIdleTimeElapsed += Time.deltaTime;
+        if (endIdleTimeElapsed > 0.5f)
+        {
+            parryAble = true;
+        }
+        if (distanceToPlayer < tooCloseRange) // 너무 가까우면 Back Walk
+        {
+            anim.SetInteger("moveLevel", 1);
+            rb.linearVelocity = new Vector2(-1f, rb.linearVelocity.y);
+        }
+        if (endIdleTimeElapsed >= endIdleTime)
+        {
+            parryAble = false;
+            selectedSkillIndex = -1;
+            state = EnemySpearBattleState.SkillSelctAndGo;
+        }
+    }
+    private void HandleParry()
+    {
+        return;
+    }
+
+    public override void TakeDamage(float damage)
+    {
+        if (parryAble)
+        {
+            // 패리 성공 → 데미지X, 히트리액트X
+            parryAble = false;
+            state = EnemySpearBattleState.Parry;
+            anim.SetTrigger("parry");
+            parryEffect1.Play();
+            parryEffect2.Play();
+            return;
+        }
+
+        base.TakeDamage(damage);
+    }
+
+    protected override void OnHitStart()
+    {
+        base.OnHitStart();
+        state = EnemySpearBattleState.OnHit;
+        hitReactImmune = false;
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i].hitbox != null)
+                skills[i].hitbox.SetActive(false);
+        }
+        if (skill1Hitbox2 != null)
+            skill1Hitbox2.SetActive(false);
+    }
+
+    // Animation Event에서 호출 (parry 애니메이션 끝날 때)
+    protected override void OnHitEnd()
+    {
+        base.OnHitEnd();
+        state = EnemySpearBattleState.SkillSelctAndGo;
+        selectedSkillIndex = -1;
+    }
+
+    private void OnParryEnd()
+    {
+        state = EnemySpearBattleState.SkillSelctAndGo;
+        selectedSkillIndex = -1;
     }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
@@ -126,17 +215,10 @@ public class EnemySpear : EnemyBase
     //모든 스킬 종료 시
     private void OnAttackEnd()
     {
-        isAttacking = false;
-        StartCoroutine(OnAttackEndCoroutine());
-        selectedSkillIndex = -2;
-
-        state = EnemySpearState.SkillEndIdle;
-    }
-    private IEnumerator OnAttackEndCoroutine()
-    {
-        float randTime = Random.Range(0.1f, 1.5f);
-        yield return new WaitForSeconds(randTime);
-        selectedSkillIndex = -1;
+        hitReactImmune = false;
+        state = EnemySpearBattleState.SkillEndIdle;
+        endIdleTime = Random.Range(0.1f, 1.5f);
+        endIdleTimeElapsed = 0f;
     }
 
     //공격 스킬 공용
@@ -146,8 +228,11 @@ public class EnemySpear : EnemyBase
         skills[index].hitbox.SetActive(active);
         if (active)
         {
-            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().damage = skills[index].damage;
-            skills[index].hitbox.GetComponent<EnemyAttackHitbox>().isParryable = skills[index].isParryable;
+            var hitboxComp = skills[index].hitbox.GetComponent<EnemyAttackHitbox>();
+            hitboxComp.damage = skills[index].damage;
+            hitboxComp.parryReduction = skills[index].parryReduction;
+            hitboxComp.parryPerfectReduction = skills[index].parryPerfectReduction;
+            hitboxComp.isReflectable = skills[index].isReflectable;
         }
     }
 
@@ -213,4 +298,5 @@ public class EnemySpear : EnemyBase
     {
         SetHitbox(3, false);
     }
+
 }

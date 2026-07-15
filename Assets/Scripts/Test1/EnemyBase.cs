@@ -28,7 +28,10 @@ public struct SkillDataMelee
     public float UseRange;
     public int weightInit; // 일부 스킬은 조건 만족 시 가중치가 점점 증가
     public int weightNow;
-    public bool isParryable;
+    public float parryReduction; // 패링 시 데미지 감소 비율
+    public float parryPerfectReduction; // 퍼펙트 패리 시 데미지 감소 비율
+    public bool isImmune; // 이 스킬의 선딜~후딜 전체 동안 피격 경직 면역
+    public bool isReflectable; // 퍼펙트 패리 시 적 반사경직 모션 여부
 }
 
 // Bow 스킬 데이터
@@ -43,7 +46,10 @@ public struct SkillDataBow
     public float UseRange;
     public int weightInit; // 일부 스킬은 조건 만족 시 가중치가 점점 증가
     public int weightNow;
-    public bool isParryable;
+    public float parryReduction;        // 일반 패리 시 데미지 감소 비율 (0=패리불가, 1=완전차단)
+    public float parryPerfectReduction; // 퍼펙트 패리 시 데미지 감소 비율
+    public bool isImmune; // 이 스킬의 선딜~후딜 전체 동안 피격 경직(히트리액트) 면역
+    public bool isReflectable; // 퍼펙트 패리 시 적 반사경직 모션 여부
 }
 
 public class EnemyBase : CharacterBaseStats
@@ -54,7 +60,7 @@ public class EnemyBase : CharacterBaseStats
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected Waypoint[] waypoints;
     [SerializeField] protected bool patrolLoop = true; // 순찰 반복 여부
-    protected Transform playerTransform;
+    public Transform playerTransform;
 
     protected EnemyState currentState = EnemyState.Patrol;
     protected Animator anim;
@@ -64,6 +70,11 @@ public class EnemyBase : CharacterBaseStats
     private bool isWating = false;
 
     protected bool isDead = false;
+    protected bool isHit = false;
+
+    // 특정 스킬 실행 중(선딜~후딜) 피격당해도 히트리액트 X
+    protected bool hitReactImmune = false;
+
 
     // 목표 위치로 이동하는 함수
     protected void MoveToTarget(Transform target, float moveSpeed)
@@ -87,6 +98,7 @@ public class EnemyBase : CharacterBaseStats
     protected override void Update()
     {
         if (isDead) return;
+        if (isHit) return;
 
         // 임시) 항상 플레이어와 거리재기
         if (playerTransform != null)
@@ -170,15 +182,55 @@ public class EnemyBase : CharacterBaseStats
 
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        
+
         if (currentHealth <= 0 && !isDead)
         {
             isDead = true;
+            StopAllCoroutines();
             StartCoroutine(DieCoroutine());
+            return;
         }
+
+        // 스킬에 staggerImmune이 걸려있으면 데미지는 들어가지만 히트리액트는 나오지 않음
+        if (!isDead && !hitReactImmune)
+        {
+            OnHitStart();
+        }
+    }
+
+    protected virtual void OnHitStart()
+    {
+        StopAllCoroutines(); // 진행 중이던 스킬 코루틴(돌진, 백스텝 대기 등) 정리
+        anim.SetTrigger("hit");
+        isHit = true;
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        anim.SetInteger("moveLevel", 0);
+    }
+
+    // Animation Event에서 호출 (hit 애니메이션 끝날 때)
+    protected virtual void OnHitEnd()
+    {
+        isHit = false;
+    }
+
+    // 플레이어 퍼펙트 패리에 의해 공격이 튕겼을 때 호출 (스킬의 isReflectable이 true일 때만)
+    public virtual void OnPerfectParried()
+    {
+        if (isDead) return;
+        StopAllCoroutines();
+        PerfectParriedStart();
+    }
+
+    private void PerfectParriedStart()
+    {
+        isHit = true;
+        OnHitStart();
+        rb.linearVelocity = Vector2.zero;
+        anim.SetTrigger("reflect");
+        // 종료는 reflect 애니메이션 끝날 때 Animation Event OnHitEnd() 호출
     }
 
     protected virtual IEnumerator DieCoroutine()

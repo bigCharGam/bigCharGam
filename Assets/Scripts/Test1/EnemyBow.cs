@@ -96,6 +96,7 @@ public class EnemyBow : EnemyBase
             pendingShootPower = skills[selectedSkillIndex].shootPower;
 
             isAttacking = true;
+            hitReactImmune = skills[selectedSkillIndex].isImmune;
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             anim.SetTrigger("skill_" + selectedSkillIndex);
@@ -108,6 +109,7 @@ public class EnemyBow : EnemyBase
     private void OnAttackEnd()
     {
         isAttacking = false;
+        hitReactImmune = false;
         selectedSkillIndex = -1;
     }
 
@@ -182,5 +184,20 @@ public class EnemyBow : EnemyBase
         }
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         OnAttackEnd();
+    }
+
+    // 피격 시 히트박스 끄고 스킬 종료
+    protected override void OnHitStart()
+    {
+        base.OnHitStart();
+
+        isAttacking = false;
+        hitReactImmune = false;
+    }
+
+    protected override void OnHitEnd()
+    {
+        selectedSkillIndex = -1; 
+        base.OnHitEnd();
     }
 }
