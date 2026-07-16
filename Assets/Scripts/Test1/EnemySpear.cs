@@ -151,7 +151,7 @@ public class EnemySpear : EnemyBase
         if (distanceToPlayer < tooCloseRange) // 너무 가까우면 Back Walk
         {
             anim.SetInteger("moveLevel", 1);
-            rb.linearVelocity = new Vector2(-1f, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(-0.5f * moveSpeed, rb.linearVelocity.y);
         }
         if (endIdleTimeElapsed >= endIdleTime)
         {
@@ -196,19 +196,6 @@ public class EnemySpear : EnemyBase
             skill1Hitbox2.SetActive(false);
     }
 
-    // Animation Event에서 호출 (parry 애니메이션 끝날 때)
-    protected override void OnHitEnd()
-    {
-        base.OnHitEnd();
-        state = EnemySpearBattleState.SkillSelctAndGo;
-        selectedSkillIndex = -1;
-    }
-
-    private void OnParryEnd()
-    {
-        state = EnemySpearBattleState.SkillSelctAndGo;
-        selectedSkillIndex = -1;
-    }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
 
@@ -219,6 +206,19 @@ public class EnemySpear : EnemyBase
         state = EnemySpearBattleState.SkillEndIdle;
         endIdleTime = Random.Range(0.1f, 1.5f);
         endIdleTimeElapsed = 0f;
+    }
+
+    // 피격, 패리
+    protected override void OnHitEnd()
+    {
+        base.OnHitEnd();
+        state = EnemySpearBattleState.SkillSelctAndGo;
+        selectedSkillIndex = -1;
+    }
+    private void OnParryEnd()
+    {
+        state = EnemySpearBattleState.SkillSelctAndGo;
+        selectedSkillIndex = -1;
     }
 
     //공격 스킬 공용

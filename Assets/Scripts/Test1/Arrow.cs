@@ -11,7 +11,6 @@ public class Arrow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rb == null) return;
         ApplyRotation(rb.linearVelocity);
     }
 
@@ -21,7 +20,7 @@ public class Arrow : MonoBehaviour
         float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg + RotationOffset;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
-    
+
     public void Shoot(float damage, float power, float direction)
     {
         this.damage = damage;
@@ -41,8 +40,14 @@ public class Arrow : MonoBehaviour
             other.GetComponent<PlayerBattle>().TakeDamage(damage);
             Destroy(gameObject);
         }
+    }
 
-        // 예정) 벽, 바닥, 충돌 처리
-        
+    public void ArrowStop()
+    {
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 0f;
+        rb.bodyType = RigidbodyType2D.Kinematic;
+
+        ArrowManager.instance.NewArrow(this);
     }
 }

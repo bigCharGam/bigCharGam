@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// 버그잡기
+public enum EnemySwordBattleState
+{
+    SkillSelctAndGo,
+    SkillUsing,
+    SkillEndIdle,
+    Parry,
+    OnHit,
+}
+
 public class EnemySword : EnemyBase
 {
     [Header("Skills")]
@@ -10,9 +20,17 @@ public class EnemySword : EnemyBase
     [SerializeField] private float runSpeed;
     [SerializeField] private float backStepSpeed;
     [SerializeField] private float backStepJumpForce;
-
-    private bool isAttacking = false;
+    [SerializeField] private float tooCloseRange; //너무 가까울시 backwalk
     [SerializeField] private int selectedSkillIndex = -1;
+    public ParticleSystem parryEffect1;
+    public ParticleSystem parryEffect2;
+    private float endIdleTime = 0f;
+    private float endIdleTimeElapsed = 0f;
+
+    [Header("Debug")]
+    public int skillDisplay = -1;
+    [SerializeField] private bool parryAble = false; // 추후 not Serialize
+    [SerializeField] private EnemySwordBattleState state = EnemySwordBattleState.SkillSelctAndGo;
 
     private void Reset()
     {
@@ -42,7 +60,27 @@ public class EnemySword : EnemyBase
 
     protected override void HandleBattle()
     {
-        if (isAttacking) return;
+        switch (state)
+        {
+            case EnemySwordBattleState.SkillSelctAndGo:
+                HandleSkillSelectAndGo();
+                break;
+            case EnemySwordBattleState.SkillUsing:
+                HandleSkillUsing();
+                break;
+            case EnemySwordBattleState.SkillEndIdle:
+                HandleSkillEndIdle();
+                break;
+            case EnemySwordBattleState.Parry:
+                HandleParry();
+                break;
+            case EnemySwordBattleState.OnHit:
+                break;
+        }
+    }
+
+    private void HandleSkillSelectAndGo()
+    {
         if (skills == null || skills.Length == 0) return;
 
         // minRange ~ maxRange 사이에 있는 스킬 중에서 랜덤으로 선택
@@ -90,9 +128,67 @@ public class EnemySword : EnemyBase
         {
             anim.SetInteger("moveLevel", 0);
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            isAttacking = true;
             hitReactImmune = skills[selectedSkillIndex].isImmune;
-            anim.SetTrigger("skill_" + selectedSkillIndex);    
+            anim.SetTrigger("skill_" + selectedSkillIndex);
+
+            state = EnemySwordBattleState.SkillUsing;
+        }
+    }
+    private void HandleSkillUsing()
+    {
+        return;
+    }
+    private void HandleSkillEndIdle()
+    {
+        endIdleTimeElapsed += Time.deltaTime;
+        if (endIdleTimeElapsed > 0.5f)
+        {
+            parryAble = true;
+        }
+        if (distanceToPlayer < tooCloseRange) // 너무 가까우면 Back Walk
+        {
+            anim.SetInteger("moveLevel", 1);
+            rb.linearVelocity = new Vector2(-0.5f * moveSpeed, rb.linearVelocity.y);
+        }
+        if (endIdleTimeElapsed >= endIdleTime)
+        {
+            parryAble = false;
+            selectedSkillIndex = -1;
+            state = EnemySwordBattleState.SkillSelctAndGo;
+        }
+    }
+    private void HandleParry()
+    {
+        return;
+    }
+
+    public override void TakeDamage(float damage)
+    {
+        if (parryAble)
+        {
+            // 패리 성공 → 데미지X, 히트리액트X
+            parryAble = false;
+            state = EnemySwordBattleState.Parry;
+            anim.SetTrigger("parry");
+            parryEffect1.Play();
+            parryEffect2.Play();
+            return;
+        }
+
+        base.TakeDamage(damage);
+    }
+
+    // 피격 시 히트박스 끄고 스킬 종료
+    protected override void OnHitStart()
+    {
+        base.OnHitStart();
+        state = EnemySwordBattleState.OnHit;
+        hitReactImmune = false;
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i].hitbox != null)
+                skills[i].hitbox.SetActive(false);
         }
     }
 
@@ -101,8 +197,22 @@ public class EnemySword : EnemyBase
     //모든 스킬 종료 시
     private void OnAttackEnd()
     {
-        isAttacking = false;
         hitReactImmune = false;
+        state = EnemySwordBattleState.SkillEndIdle;
+        endIdleTime = Random.Range(0.1f, 1.5f);
+        endIdleTimeElapsed = 0f;
+    }
+
+    // 피격, 패리
+    protected override void OnHitEnd()
+    {
+        base.OnHitEnd();
+        state = EnemySwordBattleState.SkillSelctAndGo;
+        selectedSkillIndex = -1;
+    }
+    private void OnParryEnd()
+    {
+        state = EnemySwordBattleState.SkillSelctAndGo;
         selectedSkillIndex = -1;
     }
 
@@ -150,25 +260,5 @@ public class EnemySword : EnemyBase
     {
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         skills[2].weightNow = skills[2].weightInit;
-    }
-
-    // 피격 시 히트박스 끄고 스킬 종료
-    protected override void OnHitStart()
-    {
-        base.OnHitStart();
-
-        isAttacking = false;
-        hitReactImmune = false;
-
-        for (int i = 0; i < skills.Length; i++)
-        {
-            if (skills[i].hitbox != null)
-                skills[i].hitbox.SetActive(false);
-        }
-    }
-
-    protected override void OnHitEnd()
-    {
-        selectedSkillIndex = -1; 
     }
 }
