@@ -11,7 +11,7 @@ public class PlayerAttack : PlayerMovement
     private enum PendingAttackType { None, Normal, Big }
 
     // ⭐ [C# 이벤트 선언] 플레이어가 공격 선딜레이를 시작할 때 발행할 라디오 방송국(이벤트)입니다.
-    // 적 AI 담당자는 이 이벤트를 구독하여 플레이어의 위치(Vector3) 정보를 받아 처리하게 됩니다.
+    // 범위 내 적이 감지되었을 때만 플레이어의 위치(Vector3) 정보를 담아 송출합니다.
     public static event Action<Vector3> OnPlayerAttackAlert;
 
     [Header("Battle Status")]
@@ -212,10 +212,10 @@ public class PlayerAttack : PlayerMovement
     }
 
     // --- [핵심 기능] 선딜 -> 공격/돌진 -> 후딜 제어 코루틴 ---
-    private IEnumerator AttackRoutine(bool isBigAttack) // [교체] 직관적인 매개변수명 적용
+    private IEnumerator AttackRoutine(bool isBigAttack)
     {
         isAttackingRoutineActive = true;
-        currentAction = ActionState.Attacking; // [교체] 공격 중 상태 진입
+        currentAction = ActionState.Attacking; // 공격 중 상태 진입
 
         // 1. 공격 스펙 설정 분기
         float preDelay = isBigAttack ? heavyPreDelay : lightPreDelay;
@@ -231,7 +231,7 @@ public class PlayerAttack : PlayerMovement
             animator.SetTrigger(triggerName);
         }
 
-        // ⭐ [신호 전송] 선딜레이 대기 직전, 이벤트를 구독 중인 객체들에게 공격 위치를 송출합니다!
+        // ⭐ [신호 전송] 선딜레이 대기 직전, 범위 내에 적이 있는지 체크하고 있을 때만 방송을 쏩니다!
         AlertEnemiesOfAttack();
 
         // 선딜레이 시간만큼 대기
@@ -253,20 +253,26 @@ public class PlayerAttack : PlayerMovement
         isAttackingRoutineActive = false;
     }
 
-    // ⭐ [수정] 적의 클래스를 몰라도 공중에 신호(위치값)만 쏘도록 이벤트 연동 적용
+    // ⭐ [체크 및 방송] 공격 히트박스 영역 내에 적이 들어와 있는 경우에만 플레이어의 위치를 전파(이벤트)합니다! 
     private void AlertEnemiesOfAttack()
     {
-        // 이벤트를 구독하고 있는 스크립트가 있을 때만 현재 플레이어의 위치를 매개변수로 담아 이벤트를 전송합니다.
-        OnPlayerAttackAlert?.Invoke(transform.position);
+        // 실제 타격 범위(attackSize) 내에 enemyLayers에 속한 적 콜라이더가 존재하는지 1차로 걸러냅니다. 
+        Collider2D hitEnemy = Physics2D.OverlapBox(attackPoint.position, attackSize, 0f, enemyLayers);
+
+        // 범위 내에 최소 1명 이상의 적이 걸려있을 때만 라디오 주파수로 위치 정보를 송출합니다. 
+        if (hitEnemy != null)
+        {
+            OnPlayerAttackAlert?.Invoke(transform.position);
+        }
     }
 
-    // 감지된 여러 명의 적들 중에서 가장 가까운 단 한 명의 적만 타격하는 정교한 판정 로직
+    // 감지된 여러 명의 적들 중에서 가장 가까운 단 한 명의 적만 타격하는 정교한 판정 로직 [cite: 87]
     private void CheckAttackHit(int damage)
     {
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
 
         Collider2D closestEnemy = null;
-        float closestDistance = Mathf.Infinity; // 최단거리 비교용 기본값 세팅
+        float closestDistance = Mathf.Infinity; // 최단거리 비교용 기본값 세팅 [cite: 91]
 
         // 1. 범위 내의 적들 중 나와 가장 가까운 적을 탐색합니다.
         foreach (Collider2D enemy in hitEnemies)
