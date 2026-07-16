@@ -10,10 +10,6 @@ public class PlayerAttack : PlayerMovement
     // 자동으로 발도 후 수행할 공격의 종류를 예약하기 위한 Enum
     private enum PendingAttackType { None, Normal, Big }
 
-    // ⭐ [C# 이벤트 선언] 플레이어가 공격 선딜레이를 시작할 때 발행할 라디오 방송국(이벤트)입니다.
-    // 범위 내 적이 감지되었을 때만 플레이어의 위치(Vector3) 정보를 담아 송출합니다.
-    public static event Action<Vector3> OnPlayerAttackAlert;
-
     [Header("Battle Status")]
     [SerializeField] private ParryDirection currentParryDirection = ParryDirection.None;
 
@@ -231,7 +227,7 @@ public class PlayerAttack : PlayerMovement
             animator.SetTrigger(triggerName);
         }
 
-        // ⭐ [신호 전송] 선딜레이 대기 직전, 범위 내에 적이 있는지 체크하고 있을 때만 방송을 쏩니다!
+        // ⭐ [신호 전송] 선딜레이 대기 직전, 공격 판정 영역 내부의 적들에게만 직접 1:1로 공격을 시작했다고 신호를 보냅니다.
         AlertEnemiesOfAttack();
 
         // 선딜레이 시간만큼 대기
@@ -253,16 +249,18 @@ public class PlayerAttack : PlayerMovement
         isAttackingRoutineActive = false;
     }
 
-    // ⭐ [체크 및 방송] 공격 히트박스 영역 내에 적이 들어와 있는 경우에만 플레이어의 위치를 전파(이벤트)합니다! 
+    // ⭐ [개별 전송] 타격 박스(attackSize) 내에 들어와 있는 오브젝트들에게 특정 스크립트 참조 없이 다이렉트로 메시지를 쏩니다!
     private void AlertEnemiesOfAttack()
     {
-        // 실제 타격 범위(attackSize) 내에 enemyLayers에 속한 적 콜라이더가 존재하는지 1차로 걸러냅니다. 
-        Collider2D hitEnemy = Physics2D.OverlapBox(attackPoint.position, attackSize, 0f, enemyLayers);
+        // 1. 공격 범위 내에 들어온 모든 적들의 콜라이더를 가져옵니다.
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
 
-        // 범위 내에 최소 1명 이상의 적이 걸려있을 때만 라디오 주파수로 위치 정보를 송출합니다. 
-        if (hitEnemy != null)
+        // 2. 감지된 오브젝트들을 순회하며 "OnPlayerAttackStart"라는 함수를 실행하라고 메시지를 던집니다.
+        foreach (Collider2D enemy in hitEnemies)
         {
-            OnPlayerAttackAlert?.Invoke(transform.position);
+            // 상대방의 스크립트명(EnemyBase 등)을 전혀 쓰지 않고 함수 이름으로만 신호를 보냅니다.
+            // DontRequireReceiver 옵션을 넣어두면, 상대방에게 해당 함수가 없어도 에러를 터뜨리지 않고 안전하게 무시합니다.
+            enemy.gameObject.SendMessage("OnPlayerAttackStart", transform.position, SendMessageOptions.DontRequireReceiver);
         }
     }
 
