@@ -217,14 +217,16 @@ public class PlayerMovement : PlayerBattle
 
     private void OnDash()
     {
-        // 쿨타임 중이거나 이미 대시 중이면 무시
-        if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing) return;
+        // [수정] 쿨타임 중이거나, 이미 대시 중이거나, ★현재 패리(Parrying) 상태★일 때는 대시 불가
+        if (dashCooldownTimer > 0 || currentAction == ActionState.Dashing || currentAction == ActionState.Parrying)
+        {
+            return;
+        }
 
         // 공중 상태에서 대시 버튼 입력을 명확히 수신하되, 
         // 물리적인 대시 상태로 전이하지 않고 입력을 완전히 무효(무시) 처리합니다.
         if (currentPosition == PositionState.Airborne)
         {
-            // 입력을 정상적으로 받았음을 인지하고 로그를 남긴 후, 아무런 상태 변화 없이 반환하여 무효화
             Debug.Log("공중 상태에서 대시 입력이 감지되어 무효 처리되었습니다.");
             return;
         }
