@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttack : PlayerMovement
 {
-    private enum ParryDirection { None, W, A, D }
+    // ⭐ [수정] PlayerBattle이 외부에서 검출해 나갈 수 있도록 public으로 승격
+    public enum ParryDirection { None, W, A, D }
 
     // 자동으로 발도 후 수행할 공격의 종류를 예약하기 위한 Enum
     private enum PendingAttackType { None, Normal, Big }
@@ -174,6 +175,12 @@ public class PlayerAttack : PlayerMovement
         currentParryDirection = ParryDirection.None;
     }
 
+    // ⭐ [추가] PlayerBattle에서 방향 매칭을 위해 사용하는 Getter 메서드
+    public ParryDirection GetCurrentParryDirection()
+    {
+        return currentParryDirection;
+    }
+
     // --- 공격 입력 함수 ---
     private void OnAttack()
     {
@@ -264,13 +271,13 @@ public class PlayerAttack : PlayerMovement
         }
     }
 
-    // 감지된 여러 명의 적들 중에서 가장 가까운 단 한 명의 적만 타격하는 정교한 판정 로직 [cite: 87]
+    // 감지된 여러 명의 적들 중에서 가장 가까운 단 한 명의 적만 타격하는 정교한 판정 로직
     private void CheckAttackHit(int damage)
     {
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(attackPoint.position, attackSize, 0f, enemyLayers);
 
         Collider2D closestEnemy = null;
-        float closestDistance = Mathf.Infinity; // 최단거리 비교용 기본값 세팅 [cite: 91]
+        float closestDistance = Mathf.Infinity; // 최단거리 비교용 기본값 세팅
 
         // 1. 범위 내의 적들 중 나와 가장 가까운 적을 탐색합니다.
         foreach (Collider2D enemy in hitEnemies)

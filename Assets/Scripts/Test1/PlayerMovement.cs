@@ -11,6 +11,10 @@ public class PlayerMovement : PlayerBattle
     [SerializeField] protected PositionState currentPosition = PositionState.Grounded;
     [SerializeField] protected ActionState currentAction = ActionState.None;
 
+    // 외부(PlayerBattle)에서 안전하게 Read하기 위한 캡슐화 프로퍼티/메서드
+    public ActionState CurrentAction => currentAction;
+    public ActionState GetCurrentAction() => currentAction;
+
     [Header("Baldo System")]
     [SerializeField] private BaldoState currentBaldoState = BaldoState.Nabdo;
     [SerializeField][Range(0f, 1f)] private float baldoSpeedMultiplier = 0.6f;
@@ -40,8 +44,8 @@ public class PlayerMovement : PlayerBattle
     private float baldoActionTimer = 0f;
     protected Animator animator; // 애니 컴포넌트 참조용 변수
 
-    private bool isFacingRight = true;  // 처음 시작 시 오른쪽을 바라보고 있다고 가정 [cite: 24]
-    private Vector3 defaultScale;       // 인스펙터에 설정된 기본 Scale 값을 저장할 변수 [cite: 24]
+    private bool isFacingRight = true;  // 처음 시작 시 오른쪽을 바라보고 있다고 가정
+    private Vector3 defaultScale;       // 인스펙터에 설정된 기본 Scale 값을 저장할 변수
 
     // 입력 상태 판정 프로퍼티
     protected bool _isInputW => moveInput.y > 0.5f && currentAction != ActionState.Parrying;
@@ -179,12 +183,20 @@ public class PlayerMovement : PlayerBattle
                 float velYNone = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
                 rb.linearVelocity = new Vector2(targetX, velYNone);
                 break;
+
+            case ActionState.Parrying:
+                // ⭐ 패링 자세 중에는 자리에 완전 고정 처리
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                break;
         }
     }
 
     // 4. 이벤트 기반 콜백 메서드 (입력 데이터 수집 및 방향 보존)
     private void OnMove(InputValue value)
     {
+        // ⭐ 패리 상태일 때는 이동 입력에 의한 몸체 회전(Flip) 및 무브먼트 연산을 완전히 무력화시킵니다.
+        if (currentAction == ActionState.Parrying) return;
+
         moveInput = value.Get<Vector2>();
 
         // 좌우 이동 신호(A, D)가 실시간으로 들어올 때만 정직하게 바라보는 방향 최신화
@@ -210,7 +222,7 @@ public class PlayerMovement : PlayerBattle
         isFacingRight = !isFacingRight;
 
         Vector3 newScale = transform.localScale;
-    
+
         newScale.x = defaultScale.x * (isFacingRight ? 1f : -1f);
         transform.localScale = newScale;
     }
