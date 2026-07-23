@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - EnemyAttack
+  - BossHorse
   layers:
   - Default
   - TransparentFX
@@ -19,9 +20,9 @@ TagManager:
   - Enemy
   - EnemyAttack
   - 
-  - 
-  - 
-  - 
+  - BossH
+  - BossHattack
+  - PassBoss
   - 
   - 
   - 
