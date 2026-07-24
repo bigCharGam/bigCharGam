@@ -40,24 +40,12 @@ public class MidBoss : EnemyBase
     public GameObject skill4Hitbox2;
 
     [Header("Debug")]
-    public int skillDisplay = -1;
     [SerializeField] private bool parryAble = false; // 추후 not Serialize
     [SerializeField] private MidBossBattleState state = MidBossBattleState.SkillSelctAndGo;
-
-    private void Reset()
-    {
-        maxHealth = 150f;
-        moveSpeed = 8f;
-        backStepSpeed = 30f;
-        detectionRange = 10f;
-        runSpeed = 12f;
-    }
 
     protected override void Start()
     {
         base.Start();
-        currentHealth = maxHealth;
-        anim = GetComponent<Animator>();
 
         for (int i = 0; i < skills.Length; i++)
         {

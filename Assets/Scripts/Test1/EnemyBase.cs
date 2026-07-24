@@ -60,7 +60,7 @@ public class EnemyBase : CharacterBaseStats
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected Waypoint[] waypoints;
     [SerializeField] protected bool patrolLoop = true; // 순찰 반복 여부
-    public Transform playerTransform;
+    protected Transform playerTransform;
 
     protected EnemyState currentState = EnemyState.Patrol;
     protected Animator anim;
@@ -87,6 +87,7 @@ public class EnemyBase : CharacterBaseStats
 
     override protected void Start()
     {
+        currentHealth = maxHealth;
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
 
