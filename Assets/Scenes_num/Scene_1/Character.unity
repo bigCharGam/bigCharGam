@@ -212,6 +212,7 @@ GameObject:
   - component: {fileID: 481326624}
   - component: {fileID: 481326625}
   - component: {fileID: 481326626}
+  - component: {fileID: 481326627}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -481,6 +482,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &481326627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481326618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7283ae909a76d4a46970647a614087e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossOverlapDamage
+  damagePerSecond: 10
+  bossLayer:
+    serializedVersion: 2
+    m_Bits: 4096
 --- !u!1 &1033338498
 GameObject:
   m_ObjectHideFlags: 0

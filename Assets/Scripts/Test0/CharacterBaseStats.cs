@@ -4,7 +4,7 @@ public class CharacterBaseStats : MonoBehaviour
 {
     [Header("BaseStats")]
     [SerializeField] protected float maxHealth;
-    [SerializeField] protected float currentHealth;
+    [SerializeField] public float currentHealth;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float baseAttackPower;
 

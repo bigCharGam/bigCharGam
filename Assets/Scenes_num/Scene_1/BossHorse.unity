@@ -270,6 +270,9 @@ GameObject:
   - component: {fileID: 1354593747}
   - component: {fileID: 1354593751}
   - component: {fileID: 1354593752}
+  - component: {fileID: 1354593753}
+  - component: {fileID: 1354593754}
+  - component: {fileID: 1354593755}
   m_Layer: 12
   m_Name: Boss_silver_NoBack_0
   m_TagString: BossHorse
@@ -457,6 +460,72 @@ MonoBehaviour:
   rushDuration: 0.5
   rushCooldown: 0.5
   playerTransform: {fileID: 0}
+--- !u!114 &1354593753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354593746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22280d324a155f4eb210180e2bf105f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossNormalAttack
+  attackDamage: 15
+  preAttackDelay: 1
+  postAttackDelay: 1
+  attackCooldown: 1
+  autoAttack: 1
+  detectRadius: 15
+  playerTransform: {fileID: 0}
+  attackPoint: {fileID: 0}
+  attackPointOffset: {x: 10, y: -5}
+  attackBoxSize: {x: 10, y: 5}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!114 &1354593754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354593746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768939968f15ed147a08646594b076a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBodySlam
+  knockbackSpeedX: 100
+  knockbackSpeedY: 30
+  knockbackDuration: 0.35
+  damage: 20
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!114 &1354593755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354593746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc2c7b23e7427b14aaac1812f92395fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossRearAttack
+  playerTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  rearDetectRange: 15
+  attackCooldown: 0
+  attackDamage: 35
+  knockbackSpeedX: 100
+  knockbackSpeedY: 30
+  knockbackDuration: 0.35
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
