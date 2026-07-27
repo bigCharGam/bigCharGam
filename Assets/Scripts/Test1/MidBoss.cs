@@ -22,8 +22,6 @@ public class MidBoss : EnemyBase
     [SerializeField] private float backStepJumpForce;
     [SerializeField] private float tooCloseRange; //너무 가까울시 backwalk
     [SerializeField] private int selectedSkillIndex = -1;
-    public ParticleSystem parryEffect1;
-    public ParticleSystem parryEffect2;
     private float endIdleTime = 0f;
     private float endIdleTimeElapsed = 0f;
 
@@ -43,10 +41,18 @@ public class MidBoss : EnemyBase
     [SerializeField] private bool parryAble = false; // 추후 not Serialize
     [SerializeField] private MidBossBattleState state = MidBossBattleState.SkillSelctAndGo;
 
+    // 히트박스 판정 기즈모 표시용
+    // None: 표시 안함, PreActive(노랑): 판정시작~히트박스On, Active(빨강): 히트박스On~Off, PostActive(파랑): 히트박스Off~공격종료
+    private enum HitboxGizmoPhase { None, PreActive, Active, PostActive }
+    private HitboxGizmoPhase[] skillGizmoPhase;
+    private HitboxGizmoPhase skill3Hitbox2GizmoPhase = HitboxGizmoPhase.None;
+    private HitboxGizmoPhase skill4Hitbox2GizmoPhase = HitboxGizmoPhase.None;
+
     protected override void Start()
     {
         base.Start();
 
+        skillGizmoPhase = new HitboxGizmoPhase[skills.Length];
         for (int i = 0; i < skills.Length; i++)
         {
             skills[i].weightNow = skills[i].weightInit;
@@ -135,6 +141,14 @@ public class MidBoss : EnemyBase
             hitReactImmune = skills[selectedSkillIndex].isImmune;
             anim.SetTrigger("skill_" + selectedSkillIndex);    
 
+            // 공격 판정 시작: 기즈모 노랑 단계로 진입
+            if (skillGizmoPhase != null && selectedSkillIndex >= 0 && selectedSkillIndex < skillGizmoPhase.Length)
+                skillGizmoPhase[selectedSkillIndex] = HitboxGizmoPhase.PreActive;
+            if (selectedSkillIndex == 3)
+                skill3Hitbox2GizmoPhase = HitboxGizmoPhase.PreActive;
+            if (selectedSkillIndex == 4)
+                skill4Hitbox2GizmoPhase = HitboxGizmoPhase.PreActive;
+
             state = MidBossBattleState.SkillUsing;
         }
     }
@@ -174,12 +188,12 @@ public class MidBoss : EnemyBase
             parryAble = false;
             state = MidBossBattleState.Parry;
             anim.SetTrigger("parry");
-            parryEffect1.Play();
-            parryEffect2.Play();
             return;
         }
 
         base.TakeDamage(damage);
+
+        UIManager.instance.updateBossHP(currentHealth, maxHealth);
     }
 
     protected override void OnHitStart()
@@ -195,6 +209,8 @@ public class MidBoss : EnemyBase
         }
         if (skill3Hitbox2 != null)
             skill3Hitbox2.SetActive(false);
+
+        ResetAllGizmoPhases();
     }
 
 
@@ -207,6 +223,19 @@ public class MidBoss : EnemyBase
         state = MidBossBattleState.SkillEndIdle;
         endIdleTime = Random.Range(0.1f, 1.5f);
         endIdleTimeElapsed = 0f;
+
+        ResetAllGizmoPhases();
+    }
+
+    private void ResetAllGizmoPhases()
+    {
+        if (skillGizmoPhase != null)
+        {
+            for (int i = 0; i < skillGizmoPhase.Length; i++)
+                skillGizmoPhase[i] = HitboxGizmoPhase.None;
+        }
+        skill3Hitbox2GizmoPhase = HitboxGizmoPhase.None;
+        skill4Hitbox2GizmoPhase = HitboxGizmoPhase.None;
     }
 
     // 피격, 패리
@@ -235,6 +264,9 @@ public class MidBoss : EnemyBase
             hitboxComp.parryPerfectReduction = skills[index].parryPerfectReduction;
             hitboxComp.isReflectable = skills[index].isReflectable;
         }
+
+        if (skillGizmoPhase != null && index < skillGizmoPhase.Length)
+            skillGizmoPhase[index] = active ? HitboxGizmoPhase.Active : HitboxGizmoPhase.PostActive;
     }
 
     //스킬0
@@ -296,10 +328,12 @@ public class MidBoss : EnemyBase
     private void S3_HitboxOn_2()
     {
         skill3Hitbox2.SetActive(true);
+        skill3Hitbox2GizmoPhase = HitboxGizmoPhase.Active;
     }
     private void S3_HitboxOff_2()
     {
         skill3Hitbox2.SetActive(false);
+        skill3Hitbox2GizmoPhase = HitboxGizmoPhase.PostActive;
     }
 
     //스킬4
@@ -328,10 +362,12 @@ public class MidBoss : EnemyBase
     private void S4_HitboxOn_2()
     {
         skill4Hitbox2.SetActive(true);
+        skill4Hitbox2GizmoPhase = HitboxGizmoPhase.Active;
     }
     private void S4_HitboxOff_2()
     {
         skill4Hitbox2.SetActive(false);
+        skill4Hitbox2GizmoPhase = HitboxGizmoPhase.PostActive;
     }
 
     //스킬5
@@ -352,5 +388,62 @@ public class MidBoss : EnemyBase
     private void S6_HitboxOff()
     {
         SetHitbox(6, false);
+    }
+
+    // 히트박스 판정 구간 시각화 (노랑: 판정시작~On, 빨강: On~Off, 파랑: Off~공격종료)
+    private void OnDrawGizmos()
+    {
+        if (skills == null) return;
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            HitboxGizmoPhase phase = (skillGizmoPhase != null && i < skillGizmoPhase.Length)
+                ? skillGizmoPhase[i]
+                : HitboxGizmoPhase.None;
+            DrawHitboxGizmo(skills[i].hitbox, phase);
+        }
+
+        DrawHitboxGizmo(skill3Hitbox2, skill3Hitbox2GizmoPhase);
+        DrawHitboxGizmo(skill4Hitbox2, skill4Hitbox2GizmoPhase);
+    }
+
+    private void DrawHitboxGizmo(GameObject hitboxObj, HitboxGizmoPhase phase)
+    {
+        if (hitboxObj == null || phase == HitboxGizmoPhase.None) return;
+
+        switch (phase)
+        {
+            case HitboxGizmoPhase.PreActive:
+                Gizmos.color = Color.yellow;
+                break;
+            case HitboxGizmoPhase.Active:
+                Gizmos.color = Color.red;
+                break;
+            case HitboxGizmoPhase.PostActive:
+                Gizmos.color = Color.blue;
+                break;
+        }
+
+        Transform t = hitboxObj.transform;
+        BoxCollider2D box = hitboxObj.GetComponent<BoxCollider2D>();
+        if (box != null)
+        {
+            Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
+            Gizmos.DrawWireCube(box.offset, box.size);
+            Gizmos.matrix = Matrix4x4.identity;
+            return;
+        }
+
+        CircleCollider2D circle = hitboxObj.GetComponent<CircleCollider2D>();
+        if (circle != null)
+        {
+            Vector3 center = t.TransformPoint(circle.offset);
+            float radius = circle.radius * Mathf.Max(t.lossyScale.x, t.lossyScale.y);
+            Gizmos.DrawWireSphere(center, radius);
+            return;
+        }
+
+        // 콜라이더를 못 찾은 경우 대략적인 위치 표시
+        Gizmos.DrawWireCube(t.position, Vector3.one * 0.3f);
     }
 }

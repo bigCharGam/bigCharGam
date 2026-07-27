@@ -10,6 +10,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image bossHPInnerbar;
     [SerializeField] private float lerpSpeed = 8f;
 
+    private float playerHPTarget = 1f;
+    private float playerMPTarget = 1f;
+    private float bossHPTarget = 1f;
+
     void Awake()
     {
         if (instance == null)
@@ -22,25 +26,35 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (playerHPInnerbar != null)
+            playerHPInnerbar.fillAmount = Mathf.Lerp(playerHPInnerbar.fillAmount, playerHPTarget, lerpSpeed * Time.deltaTime);
+
+        if (playerMPInnerbar != null)
+            playerMPInnerbar.fillAmount = Mathf.Lerp(playerMPInnerbar.fillAmount, playerMPTarget, lerpSpeed * Time.deltaTime);
+
+        if (bossHPInnerbar != null)
+            bossHPInnerbar.fillAmount = Mathf.Lerp(bossHPInnerbar.fillAmount, bossHPTarget, lerpSpeed * Time.deltaTime);
+    }
+
     public void updatePlayerHP(float currentHp, float maxHp)
     {
         if (playerHPInnerbar == null) return;
-        float target = NormalizeRatio(currentHp, maxHp);
-        playerHPInnerbar.fillAmount = Mathf.Lerp(playerHPInnerbar.fillAmount, target, lerpSpeed * Time.deltaTime);
+        playerHPTarget = NormalizeRatio(currentHp, maxHp);
     }
 
     public void updatePlayerMP(float currentMp, float maxMp)
     {
         if (playerMPInnerbar == null) return;
-        float target = NormalizeRatio(currentMp, maxMp);
-        playerMPInnerbar.fillAmount = Mathf.Lerp(playerMPInnerbar.fillAmount, target, lerpSpeed * Time.deltaTime);
+        playerMPTarget = NormalizeRatio(currentMp, maxMp);
     }
 
     public void updateBossHP(float currentHp, float maxHp)
     {
         if (bossHPInnerbar == null) return;
-        float target = NormalizeRatio(currentHp, maxHp);
-        bossHPInnerbar.fillAmount = Mathf.Lerp(bossHPInnerbar.fillAmount, target, lerpSpeed * Time.deltaTime);
+        Debug.Log($"Updating Boss HP: Current HP = {currentHp}, Max HP = {maxHp}");
+        bossHPTarget = NormalizeRatio(currentHp, maxHp);
     }
 
     private float NormalizeRatio(float current, float max)

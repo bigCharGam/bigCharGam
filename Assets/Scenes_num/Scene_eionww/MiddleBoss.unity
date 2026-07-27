@@ -586,6 +586,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MidBoss
       objectReference: {fileID: 0}
+    - target: {fileID: 2560147289715310244, guid: 1bb73689e1feb0c4491c54dbe66741f1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4649121535164018699, guid: 1bb73689e1feb0c4491c54dbe66741f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.96445
@@ -1070,9 +1074,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22513293639ef1e4bab681a4df9cc9e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  playerHPInnerbar: {fileID: 0}
-  playerMPInnerbar: {fileID: 0}
-  bossHPInnerbar: {fileID: 0}
+  playerHPInnerbar: {fileID: 1810416478}
+  playerMPInnerbar: {fileID: 1613945823}
+  bossHPInnerbar: {fileID: 778319290}
   lerpSpeed: 0.1
 --- !u!1 &1680796258
 GameObject:
@@ -1210,7 +1214,7 @@ GameObject:
   - component: {fileID: 1810416477}
   - component: {fileID: 1810416478}
   m_Layer: 5
-  m_Name: PlayerHealtBar
+  m_Name: PlayerHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
