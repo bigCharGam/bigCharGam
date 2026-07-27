@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9c2fcff8a35e939498f0450760d1f4e0
+guid: 2aa0563743a5aeb47b439a29cf595451
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1395029800716772744
-    second: Boss_NoHorseArmor_0
+      213: -4024554274393238100
+    second: BossH_DIE_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 400
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Boss_NoHorseArmor_0
+      name: BossH_DIE_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2070
-        height: 2048
+        width: 1952
+        height: 2158
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 87a513599cbd3ace0800000000000000
-      internalID: -1395029800716772744
+      spriteID: ca5d28fd539e528c0800000000000000
+      internalID: -4024554274393238100
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Boss_NoHorseArmor_0: -1395029800716772744
+      BossH_DIE_0: -4024554274393238100
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: 481326625}
   - component: {fileID: 481326626}
   - component: {fileID: 481326627}
+  - component: {fileID: 481326628}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -498,6 +499,22 @@ MonoBehaviour:
   bossLayer:
     serializedVersion: 2
     m_Bits: 4096
+--- !u!114 &481326628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481326618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5b370cf777c51f45896a79b17fe3d7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
+  playerBattle: {fileID: 0}
+  playerInput: {fileID: 0}
+  animator: {fileID: 0}
+  deathAnimationTrigger: Die
 --- !u!1 &1033338498
 GameObject:
   m_ObjectHideFlags: 0

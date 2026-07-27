@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: eadb29207d136b647b1d68428b3dedeb
+guid: 9fe46817511f3b647b81978c2aa0c9e7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2379159613143334139
-    second: Boss_silver_NoBack_0
+      213: -8890048834120944552
+    second: BossH_Spare_UP_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 400
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,93 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Boss_silver_NoBack_0
+      name: BossH_Spare_UP_0
       rect:
         serializedVersion: 2
-        x: 176
-        y: 91
-        width: 1796
-        height: 1836
+        x: 0
+        y: 0
+        width: 1952
+        height: 2158
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape:
-      - - {x: -395, y: 334}
-        - {x: -389, y: 295}
-        - {x: -395, y: 206}
-        - {x: -359, y: 174}
-        - {x: -343, y: 135}
-        - {x: -450, y: 77}
-        - {x: -584, y: -5}
-        - {x: -654, y: -66}
-        - {x: -690, y: -160}
-        - {x: -680, y: -604}
-        - {x: -606, y: -489}
-        - {x: -586, y: -504}
-        - {x: -587, y: -629}
-        - {x: -579, y: -729}
-        - {x: -585, y: -792}
-        - {x: -572, y: -822}
-        - {x: -573, y: -863}
-        - {x: -547, y: -877}
-        - {x: -472, y: -880}
-        - {x: -476, y: -848}
-        - {x: -517, y: -795}
-        - {x: -521, y: -750}
-        - {x: -536, y: -733}
-        - {x: -532, y: -598}
-        - {x: -495, y: -549}
-        - {x: -483, y: -529}
-        - {x: -416, y: -554}
-        - {x: -384, y: -755}
-        - {x: -343, y: -845}
-        - {x: -259, y: -847}
-        - {x: -328, y: -734}
-        - {x: -342, y: -557}
-        - {x: -269, y: -496}
-        - {x: -153, y: -505}
-        - {x: -142, y: -437}
-        - {x: 21, y: -436}
-        - {x: 70, y: -504}
-        - {x: 94, y: -892}
-        - {x: 183, y: -910}
-        - {x: 136, y: -736}
-        - {x: 165, y: -515}
-        - {x: 204, y: -512}
-        - {x: 206, y: -607}
-        - {x: 216, y: -882}
-        - {x: 307, y: -882}
-        - {x: 252, y: -719}
-        - {x: 286, y: -523}
-        - {x: 406, y: -485}
-        - {x: 381, y: -235}
-        - {x: 419, y: -75}
-        - {x: 514, y: 29}
-        - {x: 650, y: -14}
-        - {x: 731, y: -92}
-        - {x: 781, y: -6}
-        - {x: 659, y: 286}
-        - {x: 397, y: 249}
-        - {x: 164, y: 118}
-        - {x: 69, y: 309}
-        - {x: -2, y: 453}
-        - {x: -47, y: 557}
-        - {x: -42, y: 605}
-        - {x: -58, y: 617}
-        - {x: -60, y: 643}
-        - {x: -86, y: 679}
-        - {x: -148, y: 708}
-        - {x: -186, y: 681}
-        - {x: -212, y: 647}
-        - {x: -236, y: 550}
-        - {x: -289, y: 483}
-        - {x: -352, y: 397}
-      tessellationDetail: 0
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
-      spriteID: bfc3d551019740120800000000000000
-      internalID: 2379159613143334139
+      spriteID: 8547856dfa330a480800000000000000
+      internalID: -8890048834120944552
       vertices: []
       indices: 
       edges: []
@@ -195,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0150f317070dab24d825af7c09bddd80
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -205,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Boss_silver_NoBack_0: 2379159613143334139
+      BossH_Spare_UP_0: -8890048834120944552
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

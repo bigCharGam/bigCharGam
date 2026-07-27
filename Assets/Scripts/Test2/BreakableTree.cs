@@ -8,6 +8,11 @@ public class BreakableTree : EnemyBase
     [Header("Tree Settings")]
     public Sprite brokenSprite; // 부서진 나무 이미지
 
+    // 7.27 추가된 부분: 문이 열렸을 때 활성화될 EnterZone 트리거
+    [Header("Interaction Settings")]
+    [Tooltip("문이 부서지면 켜질 EnterZone (Hierarchy에서 할당)")]
+    public GameObject enterZoneTrigger;
+
     private SpriteRenderer spriteRenderer;
     private Collider2D treeCollider;
 
@@ -21,6 +26,12 @@ public class BreakableTree : EnemyBase
 
         // CharacterBaseStats에 정의된 체력 변수(currentHealth)를 1로 고정하여 한 방에 부서지게 설정
         currentHealth = 1f;
+
+        // 7.27 추가된 부분: 씬 시작 시 EnterZone이 켜져있다면 확실하게 꺼둡니다.
+        if (enterZoneTrigger != null)
+        {
+            enterZoneTrigger.SetActive(false);
+        }
     }
 
     protected override void Update()
@@ -41,6 +52,12 @@ public class BreakableTree : EnemyBase
         if (treeCollider != null)
         {
             treeCollider.enabled = false;
+        }
+
+        // 7.27 추가된 부분: 문이 부서지면 EnterZone을 켜서 상호작용(F키)이 가능하게 만듭니다.
+        if (enterZoneTrigger != null)
+        {
+            enterZoneTrigger.SetActive(true);
         }
 
         // 추가적인 연출(먼지 파티클 생성, 효과음 재생 등)을 여기에 넣을 수 있습니다.
