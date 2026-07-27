@@ -1077,7 +1077,7 @@ MonoBehaviour:
   playerHPInnerbar: {fileID: 1810416478}
   playerMPInnerbar: {fileID: 1613945823}
   bossHPInnerbar: {fileID: 778319290}
-  lerpSpeed: 0.1
+  lerpSpeed: 20
 --- !u!1 &1680796258
 GameObject:
   m_ObjectHideFlags: 0
@@ -1563,6 +1563,10 @@ PrefabInstance:
     - target: {fileID: 7131770704373151474, guid: c54ddcfd134f35c4ebc97e9e812c7ab6, type: 3}
       propertyPath: m_Name
       value: EnemySpear
+      objectReference: {fileID: 0}
+    - target: {fileID: 7131770704373151474, guid: c54ddcfd134f35c4ebc97e9e812c7ab6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7709800719114950319, guid: c54ddcfd134f35c4ebc97e9e812c7ab6, type: 3}
       propertyPath: m_LocalPosition.x
