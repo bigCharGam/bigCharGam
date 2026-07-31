@@ -461,6 +461,8 @@ MonoBehaviour:
   rushSpeed: 50
   rushDuration: 0.5
   rushCooldown: 0.5
+  anim: {fileID: 0}
+  rushBoolName: IsRushing
   playerTransform: {fileID: 0}
 --- !u!114 &1354593753
 MonoBehaviour:
@@ -474,19 +476,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22280d324a155f4eb210180e2bf105f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossNormalAttack
-  attackDamage: 1
-  preAttackDelay: 1
-  postAttackDelay: 1
-  attackCooldown: 1
-  autoAttack: 1
-  detectRadius: 10
   playerTransform: {fileID: 0}
-  attackPoint: {fileID: 0}
-  attackPointOffset: {x: 10, y: -5}
-  attackBoxSize: {x: 10, y: 5}
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
+  animator: {fileID: 0}
+  normalAttackBoolName: isNormalAttack
+  attackRange: 2.5
+  attackCooldown: 1
+  attackDamage: 1
+  knockbackSpeedX: 10
+  knockbackSpeedY: 4
+  knockbackDuration: 0.2
 --- !u!114 &1354593754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,6 +523,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
+  animator: {fileID: 0}
+  backAttackBoolName: isBackAttack
   rearDetectRange: 15
   attackCooldown: 0
   attackDamage: 1

@@ -1,11 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
-public class BossRearAttack : MonoBehaviour
+public class BossBackAttack : MonoBehaviour
 {
     [Header("Target & Layer Settings")]
     [SerializeField] private Transform playerTransform;
     [SerializeField] private LayerMask playerLayer;
+
+    [Header("Animation Settings")]
+    [SerializeField] private Animator animator;                     // 애니메이터 컴포넌트
+    [SerializeField] private string backAttackBoolName = "isBackAttack"; // 애니메이터 Bool 파라미터 이름
 
     [Header("Attack Settings")]
     [SerializeField] private float rearDetectRange = 4.0f;  // 후방 감지 거리
@@ -22,6 +26,16 @@ public class BossRearAttack : MonoBehaviour
 
     private void Start()
     {
+        // Animator 자동 검색 (지정 안 되어있을 경우)
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+            if (animator == null)
+            {
+                animator = GetComponentInChildren<Animator>();
+            }
+        }
+
         // 타깃 자동 검색 (Player 태그 활용)
         if (playerTransform == null)
         {
@@ -74,25 +88,31 @@ public class BossRearAttack : MonoBehaviour
     private IEnumerator RearAttackRoutine()
     {
         isAttacking = true;
-        Debug.Log("<color=yellow>[보스 후방 공격] 플레이어 후방 감지! 선딜레이 시작...</color>");
+        Debug.Log("<color=yellow>[보스 후방 공격] 플레이어 후방 감지! 후방 공격 시작...</color>");
 
-        // 1. 공격 선딜레이 (필요시 animator.SetTrigger("RearAttack") 등 연동)
+        // 1. 애니메이션 시작 (isBackAttack = true)
+        if (animator != null)
+        {
+            animator.SetBool(backAttackBoolName, true);
+        }
+
+        // 2. 공격 선딜레이 (애니메이션 공격 모션에 맞게 조정 가능)
         yield return new WaitForSeconds(0.3f);
 
-        // 2. 공격 시점 타격 판정
+        // 3. 공격 시점 타격 판정
         Collider2D hitPlayer = Physics2D.OverlapCircle(transform.position, rearDetectRange, playerLayer);
 
         if (hitPlayer != null && IsPlayerBehind())
         {
             Debug.Log("<color=red>[보스 후방 공격] 타격 성공! 데미지 및 강력한 넉백 적용</color>");
 
-            // 데미지 전달 (PlayerBattle의 TakeDamage 호출)
+            // 데미지 전달
             if (hitPlayer.TryGetComponent<PlayerBattle>(out var playerBattle))
             {
                 playerBattle.TakeDamage(attackDamage);
             }
 
-            // PlayerMovement 스크립트를 건드리지 않고 보스 스크립트 내에서 넉백을 강제 유지시킴
+            // 넉백 강제 유지
             if (hitPlayer.TryGetComponent<Rigidbody2D>(out var playerRb))
             {
                 StartCoroutine(ForceKnockbackRoutine(playerRb));
@@ -103,11 +123,17 @@ public class BossRearAttack : MonoBehaviour
             Debug.Log("<color=gray>[보스 후방 공격] 타격 실패 (플레이어가 범위 탈출)</color>");
         }
 
-        // 3. 공격 후딜레이
+        // 4. 공격 후딜레이
         yield return new WaitForSeconds(0.5f);
+
+        // 5. 애니메이션 종료 (isBackAttack = false) 및 상태 해제
+        if (animator != null)
+        {
+            animator.SetBool(backAttackBoolName, false);
+        }
         isAttacking = false;
 
-        // 4. 쿨타임 시작
+        // 6. 쿨타임 시작
         isCooldown = true;
         Debug.Log($"[보스 후방 공격] 쿨타임 시작 ({attackCooldown}초)");
         yield return new WaitForSeconds(attackCooldown);
@@ -130,7 +156,6 @@ public class BossRearAttack : MonoBehaviour
         {
             if (targetRb == null) yield break;
 
-            // 매 FixedUpdate 프레임마다 플레이어의 FixedUpdate 덮어쓰기보다 강력하게 속도를 고정대입
             targetRb.linearVelocity = new Vector2(knockbackDirectionX * knockbackSpeedX, knockbackSpeedY);
 
             timer += Time.fixedDeltaTime;
