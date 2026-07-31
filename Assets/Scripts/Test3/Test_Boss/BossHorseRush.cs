@@ -11,6 +11,10 @@ public class BossHorseRush : MonoBehaviour
     [SerializeField] private float rushDuration = 1.0f;
     [SerializeField] private float rushCooldown = 3.0f;
 
+    [Header("=== 애니메이션 설정 ===")]
+    [SerializeField] private Animator anim; // 인스펙터에서 직접 할당하거나 Awake에서 가져옵니다.
+    [SerializeField] private string rushBoolName = "IsRushing"; // 애니메이터 파라미터 이름
+
     [Header("=== 타깃 설정 ===")]
     [SerializeField] private Transform playerTransform;
 
@@ -29,6 +33,12 @@ public class BossHorseRush : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         bossCollider = GetComponent<Collider2D>();
         bossLayer = gameObject.layer;
+
+        // Animator가 할당되지 않았다면 자식이나 본인에게서 컴포넌트를 찾습니다.
+        if (anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
     }
 
     private void Start()
@@ -39,54 +49,43 @@ public class BossHorseRush : MonoBehaviour
             if (playerObj != null)
             {
                 playerTransform = playerObj.transform;
+                playerCollider = playerObj.GetComponent<Collider2D>();
+                playerLayer = playerObj.layer;
             }
-        }
-
-        if (playerTransform != null)
-        {
-            playerLayer = playerTransform.gameObject.layer;
-            playerCollider = playerTransform.GetComponent<Collider2D>();
         }
     }
 
     private void Update()
     {
-        if (playerTransform == null || isRushing || isCooldown) return;
+        if (isRushing || isCooldown || playerTransform == null) return;
 
+        // 플레이어가 감지 범위 내에 들어왔는지 체크
         if (IsPlayerInDetectBox())
         {
             StartCoroutine(RushRoutine());
         }
     }
 
-    private bool IsPlayerInDetectBox()
-    {
-        Vector2 center = (Vector2)transform.position + detectBoxOffset;
-        Vector2 playerPos = playerTransform.position;
-
-        float halfWidth = detectBoxSize.x * 0.5f;
-        float halfHeight = detectBoxSize.y * 0.5f;
-
-        bool inX = (playerPos.x >= center.x - halfWidth) && (playerPos.x <= center.x + halfWidth);
-        bool inY = (playerPos.y >= center.y - halfHeight) && (playerPos.y <= center.y + halfHeight);
-
-        return inX && inY;
-    }
-
     private IEnumerator RushRoutine()
     {
         isRushing = true;
 
-        // 1. 돌진 시작: 주인공 레이어와의 물리 충돌 무시 (바닥 지형 충돌은 유지)
+        // 1. 돌진 방향 설정
+        float directionX = (playerTransform.position.x > transform.position.x) ? 1.0f : -1.0f;
+
+        // 스프라이트 좌우 반전 처리 (필요시)
+        if (directionX > 0)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        else
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
+        // 2. 플레이어와 충돌 무시 (통과 처리)
         Physics2D.IgnoreLayerCollision(bossLayer, playerLayer, true);
 
-        // 2. 방향 계산 및 Scale X 반전
-        float directionX = (playerTransform.position.x - transform.position.x) > 0 ? 1.0f : -1.0f;
-        Vector3 currentScale = transform.localScale;
-        if ((directionX > 0 && currentScale.x < 0) || (directionX < 0 && currentScale.x > 0))
+        // ★ [핵심] 돌진 애니메이션 재생 시작
+        if (anim != null)
         {
-            currentScale.x *= -1f;
-            transform.localScale = currentScale;
+            anim.SetBool(rushBoolName, true);
         }
 
         // 3. 지정된 시간 동안 돌진
@@ -101,12 +100,18 @@ public class BossHorseRush : MonoBehaviour
         // 4. 돌진 종료 및 감속 정지
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
-        // 5. ★ [핵심] 보스와 주인공의 콜라이더가 여전히 겹쳐 있다면 겹침이 해제될 때까지 대기
+        // ★ [핵심] 돌진 애니메이션 종료 (Idle 상태 등으로 복구)
+        if (anim != null)
+        {
+            anim.SetBool(rushBoolName, false);
+        }
+
+        // 5. 보스와 주인공의 콜라이더가 여전히 겹쳐 있다면 겹침이 해제될 때까지 대기
         if (bossCollider != null && playerCollider != null)
         {
-            while (bossCollider.BoundsIsOverlapped(playerCollider))
+            while (bossCollider.bounds.Intersects(playerCollider.bounds))
             {
-                yield return null; // 겹쳐있는 동안 프레임 대기
+                yield return null;
             }
         }
 
@@ -121,24 +126,30 @@ public class BossHorseRush : MonoBehaviour
         isCooldown = false;
     }
 
+    private bool IsPlayerInDetectBox()
+    {
+        Vector2 boxCenter = (Vector2)transform.position + detectBoxOffset;
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, detectBoxSize, 0f);
+        foreach (var hit in hits)
+        {
+            if (hit.transform == playerTransform) return true;
+        }
+        return false;
+    }
+
     private void OnDisable()
     {
         Physics2D.IgnoreLayerCollision(bossLayer, playerLayer, false);
+        if (anim != null)
+        {
+            anim.SetBool(rushBoolName, false);
+        }
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Vector2 center = (Vector2)transform.position + detectBoxOffset;
-        Gizmos.DrawWireCube(center, detectBoxSize);
-    }
-}
-
-// 겹침 판정을 돕는 확장 메서드
-public static class ColliderExtensions
-{
-    public static bool BoundsIsOverlapped(this Collider2D col1, Collider2D col2)
-    {
-        return col1.bounds.Intersects(col2.bounds);
+        Vector2 boxCenter = (Vector2)transform.position + detectBoxOffset;
+        Gizmos.DrawWireCube(boxCenter, detectBoxSize);
     }
 }
