@@ -12,7 +12,6 @@ public class PlayerStats : CharacterBaseStats
     {
         maxHealth = 100f;
         moveSpeed = 10f;
-        baseAttackPower = 10f;
         maxStamina = 100f;
         staminaRegenRate = 5f;
         staminaRegenDelay = 2f;
