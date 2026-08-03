@@ -27,9 +27,19 @@ public class BossSpinAttack : MonoBehaviour
     [Tooltip("넉백 물리 속도가 유지될 지속 시간")]
     [SerializeField] private float knockbackDuration = 0.35f;
 
-    [Header("⏱️ 패턴 타이머")]
+    [Header("⏱️ 패턴 타이머 및 자동 발동 설정")]
     [Tooltip("스킬 재사용 쿨타임 (초)")]
     [SerializeField] private float attackCooldown = 6.0f;
+
+    [Tooltip("플레이어가 감지 범위 내에 들어오면 자동으로 발동할지 여부")]
+    [SerializeField] private bool autoTrigger = true;
+
+    [Header("🎬 애니메이션 설정")]
+    [Tooltip("애니메이터 컴포넌트 (비워둘 경우 자동으로 GetComponent를 시도합니다)")]
+    [SerializeField] private Animator animator;
+
+    // Animator 불 파라미터 이름 해시
+    private static readonly int IsSpinAttackHash = Animator.StringToHash("isSpinAttack");
 
     private bool isAttacking = false;
     private bool isCooldown = false;
@@ -41,10 +51,41 @@ public class BossSpinAttack : MonoBehaviour
         {
             attackCenter = transform;
         }
+
+        // animator가 인스펙터에서 지정되지 않았다면 자동으로 가져옵니다.
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+            if (animator == null)
+            {
+                animator = GetComponentInChildren<Animator>();
+            }
+        }
+    }
+
+    private void Update()
+    {
+        // 자동 발동 옵션이 꺼져있거나, 이미 공격 중이거나, 쿨타임 중이면 검사하지 않음
+        if (!autoTrigger || isAttacking || isCooldown) return;
+
+        // 범위 내에 플레이어가 존재하는지 실시간 탐지
+        if (IsPlayerInAttackRange())
+        {
+            TriggerSpinAttack();
+        }
     }
 
     /// <summary>
-    /// 외부 AI나 패턴 컨트롤러에서 회전 공격을 발동시킬 때 호출하는 메서드
+    /// 공격 범위 내에 플레이어가 존재하는지 검사하는 메서드
+    /// </summary>
+    private bool IsPlayerInAttackRange()
+    {
+        Vector3 centerPos = (attackCenter != null) ? attackCenter.position : transform.position;
+        return Physics2D.OverlapCircle(centerPos, attackRadius, playerLayer) != null;
+    }
+
+    /// <summary>
+    /// 외부 AI나 내부 Update에서 회전 공격을 발동시킬 때 호출하는 메서드
     /// </summary>
     public void TriggerSpinAttack()
     {
@@ -57,6 +98,12 @@ public class BossSpinAttack : MonoBehaviour
     {
         isAttacking = true;
         isCooldown = true;
+
+        // 애니메이터에 isSpinAttack = true 전달
+        if (animator != null)
+        {
+            animator.SetBool(IsSpinAttackHash, true);
+        }
 
         Debug.Log("<color=yellow>[⚔️ BOSS] 보스가 회전 창 공격을 시작합니다!</color>");
 
@@ -81,6 +128,13 @@ public class BossSpinAttack : MonoBehaviour
 
         // 공격 액션 유지시간 (애니메이션 길이에 맞추어 조정 가능)
         yield return new WaitForSeconds(0.5f);
+
+        // 애니메이션 재생 종료 후 isSpinAttack = false 로 원복
+        if (animator != null)
+        {
+            animator.SetBool(IsSpinAttackHash, false);
+        }
+
         isAttacking = false;
 
         // 쿨타임 대기
