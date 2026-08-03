@@ -59,5 +59,11 @@ TagManager:
   - name: Foreground
     uniqueID: 1245012157
     locked: 0
+  - name: QTE
+    uniqueID: 2661143913
+    locked: 0
+  - name: SkillEffect
+    uniqueID: 3541892981
+    locked: 0
   m_RenderingLayers:
   - Default

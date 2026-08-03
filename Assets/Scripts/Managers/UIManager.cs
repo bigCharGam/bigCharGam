@@ -14,6 +14,10 @@ public class UIManager : MonoBehaviour
     private float playerMPTarget = 1f;
     private float bossHPTarget = 1f;
 
+    [Header("Skill")]
+    [SerializeField] private Image[] skillOnImage;
+    [SerializeField] private Image[] skillOffImage;
+
     void Awake()
     {
         if (instance == null)
@@ -61,5 +65,11 @@ public class UIManager : MonoBehaviour
     {
         if (max <= 0f) return 0f;
         return Mathf.Clamp01(current / max);
+    }
+
+    public void SetSkillImage(int index, bool on)
+    {
+        skillOnImage[index].gameObject.SetActive(on);
+        skillOffImage[index].gameObject.SetActive(!on);
     }
 }
