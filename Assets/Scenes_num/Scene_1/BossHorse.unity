@@ -482,7 +482,7 @@ MonoBehaviour:
     m_Bits: 128
   animator: {fileID: 0}
   normalAttackBoolName: isNormalAttack
-  attackRange: 2.5
+  attackRange: 17.5
   attackCooldown: 1
   attackDamage: 1
   knockbackSpeedX: 10
@@ -553,6 +553,8 @@ MonoBehaviour:
   knockbackSpeedY: 8
   knockbackDuration: 0
   attackCooldown: 0
+  autoTrigger: 1
+  animator: {fileID: 0}
 --- !u!95 &1354593757
 Animator:
   serializedVersion: 7
