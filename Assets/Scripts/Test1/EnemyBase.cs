@@ -72,6 +72,13 @@ public class EnemyBase : CharacterBaseStats
     protected bool isDead = false;
     protected bool isHit = false;
 
+    public void SetWaypoints(Waypoint[] newWaypoints)
+    {
+        waypoints = newWaypoints;
+        currentWaypointIndex = 0;
+        currentState = EnemyState.Patrol;
+    }
+
     // 특정 스킬 실행 중(선딜~후딜) 피격당해도 히트리액트 X
     protected bool hitReactImmune = false;
 

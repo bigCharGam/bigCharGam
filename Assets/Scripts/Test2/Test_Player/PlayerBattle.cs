@@ -79,7 +79,7 @@ public class PlayerBattle : PlayerStats
         }
     }
 
-    public virtual void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage, EnemyBase attacker = null, float parryReduction = 0f, float parryPerfectReduction = 1f, bool isReflectable = false)
     {
         var movement = GetComponent<PlayerMovement>();
         var attackScript = GetComponent<PlayerAttack>();

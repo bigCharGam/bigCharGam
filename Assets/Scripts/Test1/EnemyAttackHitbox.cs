@@ -23,7 +23,7 @@ public class EnemyAttackHitbox : MonoBehaviour
     {
         if (col.CompareTag("Player"))
         {
-            col.GetComponent<Tester>()?.TakeDamage(
+            col.GetComponent<PlayerBattle>()?.TakeDamage(
                 damage, ownerEnemy, parryReduction, parryPerfectReduction, isReflectable);
         }
     }

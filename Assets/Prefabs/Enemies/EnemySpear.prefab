@@ -529,7 +529,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7, y: 1.2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3045759019112622601}
@@ -585,8 +585,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1946901895
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7579325349694084374, guid: 942b0fa83aa297e49a2cbdf4f947c66b, type: 3}
@@ -614,7 +614,6 @@ MonoBehaviour:
   maxHealth: 150
   currentHealth: 0
   moveSpeed: 8
-  baseAttackPower: 0
   detectionRange: 30
   playerLayer:
     serializedVersion: 2

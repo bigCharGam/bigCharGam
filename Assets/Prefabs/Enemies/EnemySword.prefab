@@ -152,6 +152,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackHitbox
   damage: 0
+  parryReduction: 0
+  parryPerfectReduction: 1
+  isReflectable: 0
 --- !u!1 &7815302192937100778
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,6 +307,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackHitbox
   damage: 0
+  parryReduction: 0
+  parryPerfectReduction: 1
+  isReflectable: 0
 --- !u!1 &8255107882870740068
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +325,7 @@ GameObject:
   - component: {fileID: 455727783440973083}
   - component: {fileID: 2024914312925850957}
   m_Layer: 9
-  m_Name: EnemySword 1
+  m_Name: EnemySword
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,7 +341,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 45, y: 1.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 767503752674908740}
@@ -387,8 +393,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1946901895
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1030561278236814967, guid: e7cb0613b1cc19144baf6df676b9fd2b, type: 3}
@@ -438,7 +444,6 @@ MonoBehaviour:
   maxHealth: 150
   currentHealth: 0
   moveSpeed: 8
-  baseAttackPower: 12
   detectionRange: 25
   playerLayer:
     serializedVersion: 2
@@ -452,31 +457,52 @@ MonoBehaviour:
     waitTime: 1
   patrolLoop: 1
   skills:
-  - hitbox: {fileID: 5499297599995935795}
+  - skillName: 
+    hitbox: {fileID: 5499297599995935795}
     damage: 10
     minRange: 0
     maxRange: 9999
     UseRange: 6
     weightInit: 70
     weightNow: 0
-  - hitbox: {fileID: 7815302192937100778}
+    parryReduction: 0
+    parryPerfectReduction: 0
+    isImmune: 0
+    isReflectable: 0
+  - skillName: 
+    hitbox: {fileID: 7815302192937100778}
     damage: 20
     minRange: 5
     maxRange: 9999
     UseRange: 7
     weightInit: 30
     weightNow: 0
-  - hitbox: {fileID: 0}
+    parryReduction: 0
+    parryPerfectReduction: 0
+    isImmune: 0
+    isReflectable: 0
+  - skillName: 
+    hitbox: {fileID: 0}
     damage: 0
     minRange: 0
     maxRange: 5
     UseRange: 9999
     weightInit: 50
     weightNow: 0
+    parryReduction: 0
+    parryPerfectReduction: 0
+    isImmune: 0
+    isReflectable: 0
   runSpeed: 15
   backStepSpeed: 20
   backStepJumpForce: 3
+  tooCloseRange: 0
   selectedSkillIndex: -1
+  parryEffect1: {fileID: 0}
+  parryEffect2: {fileID: 0}
+  skillDisplay: -1
+  parryAble: 0
+  state: 0
 --- !u!61 &455727783440973083
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -511,7 +537,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.3, y: 0}
+  m_Offset: {x: -0.5863689, y: -0.5802746}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -521,7 +547,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.5, y: 11}
+  m_Size: {x: 2.927262, y: 9.839451}
   m_EdgeRadius: 0
 --- !u!50 &2024914312925850957
 Rigidbody2D:

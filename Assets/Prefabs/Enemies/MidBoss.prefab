@@ -374,8 +374,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1946901895
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4723107735738678597, guid: 5c33ed328d83d1e4fafe845fce51202e, type: 3}
@@ -403,7 +403,6 @@ MonoBehaviour:
   maxHealth: 400
   currentHealth: 0
   moveSpeed: 8
-  baseAttackPower: 0
   detectionRange: 100
   playerLayer:
     serializedVersion: 2
@@ -500,8 +499,6 @@ MonoBehaviour:
   backStepJumpForce: 2
   tooCloseRange: 0
   selectedSkillIndex: -1
-  parryEffect1: {fileID: 0}
-  parryEffect2: {fileID: 0}
   skill3ActualUseRange: 15
   skill3RunSpeed: 25
   skill3Hitbox2: {fileID: 5173072346197732190}

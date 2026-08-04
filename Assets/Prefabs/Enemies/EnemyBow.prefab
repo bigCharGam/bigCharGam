@@ -51,7 +51,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4991169540520784881
 Transform:
   m_ObjectHideFlags: 0
@@ -62,7 +62,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 60, y: 1.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6211264586825211518}
@@ -164,7 +164,6 @@ MonoBehaviour:
   maxHealth: 150
   currentHealth: 0
   moveSpeed: 8
-  baseAttackPower: 0
   detectionRange: 45
   playerLayer:
     serializedVersion: 2
@@ -173,7 +172,6 @@ MonoBehaviour:
   - transform: {fileID: 0}
     waitTime: 0
   patrolLoop: 1
-  playerTransform: {fileID: 0}
   skills:
   - skillName: Shoot
     damage: 15
