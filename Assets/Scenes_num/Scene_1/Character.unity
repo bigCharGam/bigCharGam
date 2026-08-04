@@ -289,7 +289,7 @@ Transform:
   m_GameObject: {fileID: 481326618}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.09, y: 13.5, z: 0}
+  m_LocalPosition: {x: 24.8, y: -19.4, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -417,7 +417,6 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   moveSpeed: 30
-  baseAttackPower: 10
   maxStamina: 100
   currentStamina: 0
   staminaRegenRate: 5
