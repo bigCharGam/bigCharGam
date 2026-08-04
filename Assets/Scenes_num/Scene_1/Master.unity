@@ -137,11 +137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5909988784672410120, guid: a04ef5398eb57cc45bc4e2e68382044a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 5909988784672410120, guid: a04ef5398eb57cc45bc4e2e68382044a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -31.7204
       objectReference: {fileID: 0}
     - target: {fileID: 5909988784672410120, guid: a04ef5398eb57cc45bc4e2e68382044a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4fe6400589fd1647a9b991031e1349e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MultiSceneCameraFollow
-  offset: {x: 0, y: 2, z: -10}
+  offset: {x: 0, y: 19, z: -9}
   smoothSpeed: 5
   minX: 0
   maxX: 900
@@ -214,11 +214,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3614262120754149206, guid: f6af84240a8bcb847abfd67015984452, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3614262120754149206, guid: f6af84240a8bcb847abfd67015984452, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -46.4204
       objectReference: {fileID: 0}
     - target: {fileID: 3614262120754149206, guid: f6af84240a8bcb847abfd67015984452, type: 3}
       propertyPath: m_LocalPosition.z
