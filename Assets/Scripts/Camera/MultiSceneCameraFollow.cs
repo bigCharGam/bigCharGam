@@ -5,8 +5,18 @@ public class MultiSceneCameraFollow : MonoBehaviour
 {
     [Header("Follow Settings")]
     public Vector3 offset = new Vector3(0f, 2f, -10f);
-    [Range(1f, 10f)]
-    public float smoothSpeed = 5f;
+
+    [Header("Camera Window (관성/감속 없는 리지드 추적)")]
+    [Tooltip("이 폭 안에서는 카메라가 절대 움직이지 않습니다. " +
+             "플레이어가 이 범위를 벗어나려는 만큼만 카메라가 '즉시, 정확히' 그 거리만큼 이동합니다. " +
+             "Lerp처럼 감속하며 안착하지 않기 때문에 멈췄을 때 카메라도 같이 딱 멈춥니다.")]
+    public float horizontalWindow = 2.5f;
+    public float verticalWindow = 1.5f;
+
+    [Header("Extra Smoothing (선택, 0이면 완전 리지드)")]
+    [Tooltip("윈도우를 벗어난 이동 자체에 아주 약간의 부드러움을 주고 싶을 때만 0보다 크게. " +
+             "기본은 0(완전 리지드)을 권장 - 값을 넣을수록 다시 예전의 관성 느낌이 조금씩 살아남.")]
+    [Range(0f, 1f)] public float extraSmoothing = 0f;
 
     [Header("Camera Boundary (맵 제한)")]
     [Tooltip("카메라가 갈 수 있는 왼쪽 끝 X 좌표")]
@@ -36,45 +46,62 @@ public class MultiSceneCameraFollow : MonoBehaviour
 
             if (playerObj != null)
             {
-                // 플레이어를 찾았다면 타겟으로 설정
                 playerTarget = playerObj.transform;
 
                 // 카메라가 플레이어를 찾자마자 부자연스럽게 날아오지 않도록 즉시 이동
                 Vector3 startPos = playerTarget.position + offset;
-                startPos.x = Mathf.Clamp(startPos.x, minX, maxX); // 시작할 때도 맵 밖으로 안 나가게 제한
+                startPos.x = Mathf.Clamp(startPos.x, minX, maxX);
                 transform.position = startPos;
             }
             else
             {
-                // 아직 플레이어가 없으면 에러를 내지 않고 이번 프레임 대기
                 return;
             }
         }
 
-        // 2. 정상적인 카메라 추적 로직 ( Clamp 로직이 들어갈 올바른 위치)
         Vector3 desiredPosition = playerTarget.position + offset;
-
-        // 목표 위치의 X값을 minX와 maxX 사이로 꼼짝 못하게 가둡니다.
         desiredPosition.x = Mathf.Clamp(desiredPosition.x, minX, maxX);
 
-        // 제한된 위치로 부드럽게 이동합니다.
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+        Vector3 nextPos = transform.position;
+
+        // 2. X: 윈도우를 벗어난 만큼만 정확히 이동 (감속 없음 = 관성 없음)
+        float xDiff = desiredPosition.x - transform.position.x;
+        if (Mathf.Abs(xDiff) > horizontalWindow)
+        {
+            float excessX = xDiff - Mathf.Sign(xDiff) * horizontalWindow;
+            nextPos.x += excessX;
+        }
+
+        // 3. Y: 동일한 윈도우 방식 (기존 데드존을 리지드 윈도우로 통합)
+        float yDiff = desiredPosition.y - transform.position.y;
+        if (Mathf.Abs(yDiff) > verticalWindow)
+        {
+            float excessY = yDiff - Mathf.Sign(yDiff) * verticalWindow;
+            nextPos.y += excessY;
+        }
+
+        // 4. extraSmoothing이 0보다 크면 그만큼만 부드럽게, 0이면 완전 리지드로 즉시 적용
+        if (extraSmoothing > 0f)
+        {
+            transform.position = Vector3.Lerp(transform.position, nextPos, (1f - extraSmoothing) * 20f * Time.deltaTime);
+        }
+        else
+        {
+            transform.position = nextPos;
+        }
     }
 
-    // 3. (옵션) 매니저 스크립트가 플레이어 생성 직후 직접 타겟을 꽂아줄 때 사용하는 함수
     public void SetTarget(Transform newTarget)
     {
         playerTarget = newTarget;
     }
 
-    // 전투 방에 들어갔을 때 카메라를 좁은 구역에 가두는 함수
     public void SetBoundary(float newMin, float newMax)
     {
         minX = newMin;
         maxX = newMax;
     }
 
-    // 전투 방을 클리어하면 다시 원래 맵 전체 크기로 풀어주는 함수
     public void ResetBoundary()
     {
         minX = defaultMinX;

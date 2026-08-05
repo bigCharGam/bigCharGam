@@ -8,10 +8,19 @@ public class AutoParallax : MonoBehaviour
     [Range(0f, 1f)] public float parallaxFactorY = 0f;
     public bool isInfinite = true;
 
+    [Header("미세 떨림 방지 (Jitter Threshold)")]
+    [Tooltip("카메라가 이 값보다 적게 움직였을 땐 '움직이지 않은 것'으로 취급합니다. " +
+             "Cinemachine PixelPerfect나 물리 기반 캐릭터의 서브픽셀 떨림이 배경에 그대로 반영되는 걸 막아줍니다.")]
+    public float movementThreshold = 0.01f;
+
     private Transform cam;
     private Vector3 startPos;
     private Vector3 camStartPos;
     private float boundSizeX;
+
+    // 마지막으로 '유의미하다고 판단해 반영한' 카메라 이동량 (스냅 방지용 기준점)
+    private float lastAppliedTravelX;
+    private float lastAppliedTravelY;
 
     void Start()
     {
@@ -39,13 +48,24 @@ public class AutoParallax : MonoBehaviour
         float travelX = cam.position.x - camStartPos.x;
         float travelY = cam.position.y - camStartPos.y;
 
+        // 2. 직전에 반영한 값과 비교해서, 변화량이 threshold보다 작으면 무시합니다.
+        //    (카메라의 서브픽셀 떨림이 배경에 그대로 곱해져 노이즈로 보이는 것을 방지)
+        if (Mathf.Abs(travelX - lastAppliedTravelX) >= movementThreshold)
+        {
+            lastAppliedTravelX = travelX;
+        }
+        if (Mathf.Abs(travelY - lastAppliedTravelY) >= movementThreshold)
+        {
+            lastAppliedTravelY = travelY;
+        }
+
         transform.position = new Vector3(
-            startPos.x + travelX * parallaxFactorX,
-            startPos.y + travelY * parallaxFactorY,
+            startPos.x + lastAppliedTravelX * parallaxFactorX,
+            startPos.y + lastAppliedTravelY * parallaxFactorY,
             transform.position.z
         );
 
-        // 2. Factor가 1 미만일 때만 무한 루프를 돌립니다. (1이면 벗어날 일이 없으므로 생략)
+        // 3. Factor가 1 미만일 때만 무한 루프를 돌립니다. (1이면 벗어날 일이 없으므로 생략)
         if (isInfinite && boundSizeX > 0 && parallaxFactorX < 1f)
         {
             float distance = cam.position.x - transform.position.x;

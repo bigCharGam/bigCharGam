@@ -1409,8 +1409,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4fe6400589fd1647a9b991031e1349e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MultiSceneCameraFollow
-  offset: {x: 0, y: 21, z: -9}
-  smoothSpeed: 10
+  offset: {x: 0, y: 17, z: -9}
+  horizontalWindow: 2.5
+  verticalWindow: 15
+  extraSmoothing: 0
   minX: 0
   maxX: 900
 --- !u!1001 &694985315
