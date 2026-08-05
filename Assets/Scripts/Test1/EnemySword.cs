@@ -168,8 +168,8 @@ public class EnemySword : EnemyBase
             parryAble = false;
             state = EnemySwordBattleState.Parry;
             anim.SetTrigger("parry");
-            parryEffect1.Play();
-            parryEffect2.Play();
+            //parryEffect1.Play();
+            //parryEffect2.Play();
             return;
         }
 

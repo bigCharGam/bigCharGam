@@ -178,7 +178,8 @@ public class PlayerBattle : PlayerStats
 
         // 2. 패리 상태가 아니거나 패리에 실패했을 때만 실제 대미지 적용
         currentHealth -= damage;
-        Debug.Log("Player 남은 체력 : " + currentHealth);
+        UIManager.instance.UpdatePlayerHP(currentHealth, maxHealth);
+        //Debug.Log("Player 남은 체력 : " + currentHealth);
 
         hasFirstContact = false;
 
