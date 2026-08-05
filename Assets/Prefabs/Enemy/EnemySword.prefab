@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66fa2e97cd45ee346987bd3400be52a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy1
-  maxHealth: 150
+  maxHealth: 5
   currentHealth: 0
   moveSpeed: 8
   detectionRange: 25
@@ -456,6 +456,7 @@ MonoBehaviour:
   - transform: {fileID: 0}
     waitTime: 1
   patrolLoop: 1
+  dropExp: 180
   skills:
   - skillName: 
     hitbox: {fileID: 5499297599995935795}

@@ -60,8 +60,9 @@ public class EnemyBase : CharacterBaseStats
     [SerializeField] protected LayerMask playerLayer;
     [SerializeField] protected Waypoint[] waypoints;
     [SerializeField] protected bool patrolLoop = true; // 순찰 반복 여부
-    protected Transform playerTransform;
+    [SerializeField] protected int dropExp;
 
+    protected Transform playerTransform;
     protected EnemyState currentState = EnemyState.Patrol;
     protected Animator anim;
     protected Rigidbody2D rb;
@@ -248,6 +249,8 @@ public class EnemyBase : CharacterBaseStats
         yield return new WaitForSeconds(0.8f); //죽고나서 물리판정 지속시간
         rb.simulated = false;
         yield return new WaitForSeconds(1f);
+
+        BattleManager.instance?.AddExp(dropExp);
         Destroy(gameObject);
     }
 }
