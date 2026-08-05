@@ -1,12 +1,14 @@
 using UnityEngine;
 
-public class ParallaxBackground : MonoBehaviour
+public class AdvancedParallax : MonoBehaviour
 {
     [Header("패럴렉스 설정")]
-    [Range(0f, 1f)]
+    [Tooltip("-1: 카메라 이동 속도의 2배로 이동, 0: 제자리 고정, 1: 카메라에 완벽히 고정(겹침)")]
+    [Range(-1f, 1f)]
     [SerializeField] private float parallaxFactorX = 0.8f;
 
-    [Range(0f, 1f)]
+    [Tooltip("-1: 카메라 이동 속도의 2배로 이동, 0: 제자리 고정, 1: 카메라에 완벽히 고정(겹침)")]
+    [Range(-1f, 1f)]
     [SerializeField] private float parallaxFactorY = 0f;
 
     [SerializeField] private bool isInfinite = true;
@@ -37,13 +39,15 @@ public class ParallaxBackground : MonoBehaviour
             if (!TryInitializeCamera()) return;
         }
 
-        // 카메라 이동량 계산
+        // 지난 프레임 대비 카메라 이동량 계산
         Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
 
-        // X, Y축 개별 패럴렉스 비율 적용 이동
+        // Factor가 1일 때 deltaMovement 만큼 100% 이동하여 카메라와 동기화(완전히 겹침)
+        // Factor가 0일 때 이동량 0 (월드 좌표 고정)
+        // Factor가 -1일 때 deltaMovement * -1 만큼 이동 (카메라 반대 방향)
         transform.position += new Vector3(
-            deltaMovement.x * (1f - parallaxFactorX),
-            deltaMovement.y * (1f - parallaxFactorY),
+            deltaMovement.x * parallaxFactorX,
+            deltaMovement.y * parallaxFactorY,
             0f
         );
 
