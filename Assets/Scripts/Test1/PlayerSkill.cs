@@ -63,7 +63,7 @@ public class PlayerSkill : MonoBehaviour
         if (playerStats == null || playerStats.currentStamina < skills[0].usingStamina) return;
 
         playerStats.currentStamina -= skills[0].usingStamina;
-        UIManager.instance?.updatePlayerMP(playerStats.currentStamina, playerStats.maxStamina);
+        UIManager.instance?.UpdatePlayerMP(playerStats.currentStamina, playerStats.maxStamina);
         UIManager.instance?.SetSkillImage(0, false); // 스킬 쿨타임 도는 이미지
 
         playerInput.SwitchCurrentActionMap("OnSkill");

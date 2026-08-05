@@ -42,19 +42,19 @@ public class UIManager : MonoBehaviour
             bossHPInnerbar.fillAmount = Mathf.Lerp(bossHPInnerbar.fillAmount, bossHPTarget, lerpSpeed * Time.deltaTime);
     }
 
-    public void updatePlayerHP(float currentHp, float maxHp)
+    public void UpdatePlayerHP(float currentHp, float maxHp)
     {
         if (playerHPInnerbar == null) return;
         playerHPTarget = NormalizeRatio(currentHp, maxHp);
     }
 
-    public void updatePlayerMP(float currentMp, float maxMp)
+    public void UpdatePlayerMP(float currentMp, float maxMp)
     {
         if (playerMPInnerbar == null) return;
         playerMPTarget = NormalizeRatio(currentMp, maxMp);
     }
 
-    public void updateBossHP(float currentHp, float maxHp)
+    public void UpdateBossHP(float currentHp, float maxHp)
     {
         if (bossHPInnerbar == null) return;
         Debug.Log($"Updating Boss HP: Current HP = {currentHp}, Max HP = {maxHp}");

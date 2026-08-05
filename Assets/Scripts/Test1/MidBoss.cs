@@ -193,7 +193,7 @@ public class MidBoss : EnemyBase
 
         base.TakeDamage(damage);
 
-        UIManager.instance.updateBossHP(currentHealth, maxHealth);
+        UIManager.instance.UpdateBossHP(currentHealth, maxHealth);
     }
 
     protected override void OnHitStart()
