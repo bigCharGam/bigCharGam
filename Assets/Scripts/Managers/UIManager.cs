@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
     private float expTarget = 0f;
 
     [Header("Skill")]
+    [SerializeField] private int skillsCount;
+    [SerializeField] private Image[] notLearnedSkillImage;
     [SerializeField] private Image[] skillOnImage;
     [SerializeField] private Image[] skillOffImage;
 
@@ -34,6 +36,16 @@ public class UIManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    void Start()
+    {
+        for (int i = 0; i < skillsCount; i++)
+        {
+            notLearnedSkillImage[i].gameObject.SetActive(BattleManager.instance.skillLevels[i] == 0);
+            skillOnImage[i].gameObject.SetActive(true && BattleManager.instance.skillLevels[i] > 0);
+            skillOffImage[i].gameObject.SetActive(false && BattleManager.instance.skillLevels[i] > 0);
         }
     }
 
@@ -94,7 +106,9 @@ public class UIManager : MonoBehaviour
 
     public void SetSkillImage(int index, bool on)
     {
-        skillOnImage[index].gameObject.SetActive(on);
-        skillOffImage[index].gameObject.SetActive(!on);
+        bool learned = BattleManager.instance.skillLevels[index] > 0;
+        notLearnedSkillImage[index].gameObject.SetActive(!learned);
+        skillOnImage[index].gameObject.SetActive(on && learned);
+        skillOffImage[index].gameObject.SetActive(!on && learned);
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3530765083038413596}
   - component: {fileID: 3238617177196393175}
   - component: {fileID: 2635922316740225404}
-  m_Layer: 9
+  m_Layer: 16
   m_Name: Tree2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,11 +107,12 @@ MonoBehaviour:
   maxHealth: 0
   currentHealth: 0
   moveSpeed: 0
-  baseAttackPower: 0
   detectionRange: 0
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
   waypoints: []
   patrolLoop: 1
+  dropExp: 0
   brokenSprite: {fileID: -2167553694696836082, guid: 9849a99163fa6734a90eac7c196c75bb, type: 3}
+  enterZoneTrigger: {fileID: 0}

@@ -22,11 +22,27 @@ public class QTEIndicator : MonoBehaviour
         skipToStage4 = true;
     }
 
+    // Skill2가 여러 QTE의 스폰/퍼펙트 시점을 미리 계산할 때 재사용하는 고정 공식
+    public static float ComputeMoveTime1(SkillTimeDamageGraph graph)
+    {
+        return (graph.damageGraph[2].time + graph.damageGraph[3].time) / 2f - graph.damageGraph[1].time;
+    }
+
+    public static float ComputeLeadTime(SkillTimeDamageGraph graph)
+    {
+        return graph.damageGraph[1].time + ComputeMoveTime1(graph);
+    }
+
+    public static float ComputePerfectWindow(SkillTimeDamageGraph graph)
+    {
+        return graph.damageGraph[3].time - graph.damageGraph[2].time;
+    }
+
     private void Start()
     {
         setUpTime1 = skillTimeDamageGraph.damageGraph[0].time;
-        setUpTime2 = skillTimeDamageGraph.damageGraph[1].time - skillTimeDamageGraph.damageGraph[0].time;
-        moveTime1 = (skillTimeDamageGraph.damageGraph[2].time + skillTimeDamageGraph.damageGraph[3].time) / 2 - skillTimeDamageGraph.damageGraph[1].time;
+        setUpTime2 = skillTimeDamageGraph.damageGraph[1].time - setUpTime1;
+        moveTime1 = ComputeMoveTime1(skillTimeDamageGraph);
         moveTime2 = skillTimeDamageGraph.damageGraph[4].time - (skillTimeDamageGraph.damageGraph[2].time + skillTimeDamageGraph.damageGraph[3].time) / 2;
         StartCoroutine(PlayCoroutine());
     }

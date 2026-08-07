@@ -15,6 +15,16 @@ public class PlayerMovement : PlayerBattle
     public ActionState CurrentAction => currentAction;
     public ActionState GetCurrentAction() => currentAction;
 
+    public void BeginSkillUsing()
+    {
+        currentAction = ActionState.SkillUsing;
+    }
+
+    public void EndSkillUsing()
+    {
+        currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
+    }
+
     [Header("Baldo System")]
     [SerializeField] private BaldoState currentBaldoState = BaldoState.Nabdo;
     [SerializeField][Range(0f, 1f)] private float baldoSpeedMultiplier = 0.6f;
@@ -182,6 +192,9 @@ public class PlayerMovement : PlayerBattle
                 // 물리 주기 시점에 실시간으로 W(위쪽) 키 입력 확인 시 즉시 점프 주입
                 float velYNone = (currentPosition == PositionState.Grounded && _isInputW) ? jumpForce : rb.linearVelocity.y;
                 rb.linearVelocity = new Vector2(targetX, velYNone);
+                break;
+
+            case ActionState.SkillUsing:
                 break;
 
             case ActionState.Parrying:

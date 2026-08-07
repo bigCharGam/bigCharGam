@@ -28,6 +28,8 @@ public class BattleManager : MonoBehaviour
 
     private int pendingExp;
     private bool isProcessingExp;
+
+    public int[] skillLevels;
     
     public GameObject midBossPrefab; 
     public GameObject midBossSpawnPoint;

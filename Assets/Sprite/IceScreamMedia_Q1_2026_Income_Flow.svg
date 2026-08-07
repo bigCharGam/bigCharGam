@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title description">
+  <title id="title">i-Scream Media Q1 2026 Income Statement Flow</title>
+  <desc id="description">A Sankey diagram showing i-Scream Media's Q1 2026 revenue by business segment and subsequent income statement flow.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8f4; }
+      .title { fill: #123d5a; font-family: Arial, sans-serif; font-size: 47px; font-weight: 700; }
+      .subtitle { fill: #65727b; font-family: Arial, sans-serif; font-size: 18px; }
+      .label { fill: #1f2d36; font-family: Arial, sans-serif; font-size: 21px; font-weight: 700; }
+      .value { fill: #1f2d36; font-family: Arial, sans-serif; font-size: 27px; font-weight: 700; }
+      .detail { fill: #65727b; font-family: Arial, sans-serif; font-size: 16px; }
+      .note { fill: #65727b; font-family: Arial, sans-serif; font-size: 14px; }
+      .node { stroke: #ffffff; stroke-width: 3; }
+    </style>
+    <linearGradient id="commerce" x1="0" x2="1"><stop offset="0" stop-color="#173b55" stop-opacity=".73"/><stop offset="1" stop-color="#254f68" stop-opacity=".68"/></linearGradient>
+    <linearGradient id="publishing" x1="0" x2="1"><stop offset="0" stop-color="#57a969" stop-opacity=".73"/><stop offset="1" stop-color="#254f68" stop-opacity=".68"/></linearGradient>
+    <linearGradient id="training" x1="0" x2="1"><stop offset="0" stop-color="#d7aa43" stop-opacity=".73"/><stop offset="1" stop-color="#254f68" stop-opacity=".68"/></linearGradient>
+    <linearGradient id="gross" x1="0" x2="1"><stop offset="0" stop-color="#254f68" stop-opacity=".70"/><stop offset="1" stop-color="#43a35c" stop-opacity=".68"/></linearGradient>
+    <linearGradient id="expense" x1="0" x2="1"><stop offset="0" stop-color="#43a35c" stop-opacity=".68"/><stop offset="1" stop-color="#d95550" stop-opacity=".70"/></linearGradient>
+  </defs>
+
+  <rect class="bg" width="1600" height="980"/>
+  <text x="65" y="76" class="title">아이스크림미디어 2026년 1분기 손익 흐름</text>
+  <text x="67" y="108" class="subtitle">단위: 억원 | 별도 재무제표 | 2026.01.01 - 2026.03.31</text>
+  <text x="65" y="165" class="label">어디서 돈을 벌었나</text>
+
+  <path d="M 250 210 C 320 210, 350 290, 430 290 L 430 490 C 350 490, 320 410, 250 410 Z" fill="url(#commerce)"/>
+  <path d="M 250 475 C 320 475, 350 490, 430 490 L 430 561 C 350 561, 320 546, 250 546 Z" fill="url(#publishing)"/>
+  <path d="M 250 610 C 320 610, 350 561, 430 561 L 430 593 C 350 593, 320 642, 250 642 Z" fill="url(#training)"/>
+  <path d="M 250 705 C 320 705, 350 593, 430 593 L 430 596 C 350 596, 320 708, 250 708 Z" fill="#d95550" fill-opacity=".7"/>
+  <path d="M 462 290 C 560 290, 620 250, 730 250 L 730 435 C 620 435, 560 475, 462 475 Z" fill="url(#gross)"/>
+  <path d="M 462 475 C 560 475, 620 475, 730 475 L 730 596 C 620 596, 560 596, 462 596 Z" fill="#dd8178" fill-opacity=".7"/>
+  <path d="M 762 250 C 850 250, 910 230, 1010 230 L 1010 415 C 910 415, 850 435, 762 435 Z" fill="url(#expense)"/>
+  <path d="M 762 680 C 850 680, 910 445, 1010 445 L 1010 613 C 910 613, 850 848, 762 848 Z" fill="#dd8178" fill-opacity=".7"/>
+  <path d="M 1065 613 C 1150 613, 1190 625, 1280 625 L 1280 771 C 1190 771, 1150 759, 1065 759 Z" fill="#d95550" fill-opacity=".72"/>
+  <path d="M 1312 642 C 1380 642, 1415 649, 1500 649 L 1500 766 C 1415 766, 1380 759, 1312 759 Z" fill="#be3733" fill-opacity=".78"/>
+
+  <rect x="218" y="210" width="32" height="200" rx="3" class="node" fill="#173b55"/>
+  <rect x="218" y="475" width="32" height="71" rx="3" class="node" fill="#57a969"/>
+  <rect x="218" y="610" width="32" height="32" rx="3" class="node" fill="#d7aa43"/>
+  <rect x="218" y="705" width="32" height="3" rx="2" class="node" fill="#d95550"/>
+  <rect x="430" y="290" width="32" height="306" rx="3" class="node" fill="#254f68"/>
+  <rect x="730" y="250" width="32" height="185" rx="3" class="node" fill="#43a35c"/>
+  <rect x="730" y="475" width="32" height="121" rx="3" class="node" fill="#d95550"/>
+  <rect x="730" y="680" width="32" height="168" rx="3" class="node" fill="#d95550"/>
+  <rect x="1010" y="230" width="55" height="383" rx="3" class="node" fill="#d9504b"/>
+  <rect x="1280" y="625" width="32" height="146" rx="3" class="node" fill="#c84843"/>
+  <rect x="1500" y="649" width="48" height="117" rx="3" class="node" fill="#b4312d"/>
+
+  <text x="55" y="245" class="label">커머스</text><text x="55" y="278" class="value">99.8억원</text><text x="55" y="304" class="detail">65.3% | 아이스크림몰·하이스토어</text>
+  <text x="55" y="455" class="label">교육출판</text><text x="55" y="488" class="value">35.4억원</text><text x="55" y="514" class="detail">23.1% | 교과서·교재·콘텐츠</text>
+  <text x="55" y="590" class="label">연수사업</text><text x="55" y="623" class="value">16.2억원</text><text x="55" y="649" class="detail">10.6% | 교원 연수·위탁 연수</text>
+  <text x="55" y="690" class="label">기타</text><text x="55" y="723" class="value">1.6억원</text><text x="55" y="749" class="detail">1.0%</text>
+
+  <text x="446" y="254" text-anchor="middle" class="label">총매출</text><text x="446" y="286" text-anchor="middle" class="value">153.0억원</text><text x="446" y="620" text-anchor="middle" class="detail">전년 동기 대비 +14.6%</text>
+  <text x="660" y="195" text-anchor="middle" class="label">매출총이익</text><text x="660" y="227" text-anchor="middle" class="value">92.3억원</text><text x="660" y="250" text-anchor="middle" class="detail">매출총이익률 60.4%</text>
+  <text x="660" y="632" text-anchor="middle" class="label">매출원가</text><text x="660" y="664" text-anchor="middle" class="value">60.6억원</text><text x="660" y="688" text-anchor="middle" class="detail">매출의 39.6%</text>
+  <text x="860" y="874" text-anchor="middle" class="label">영업손실 갭</text><text x="860" y="906" text-anchor="middle" class="value">84.3억원</text><text x="860" y="932" text-anchor="middle" class="detail">판관비가 매출총이익을 초과한 부분</text>
+  <text x="1080" y="190" text-anchor="middle" class="label">판매비와관리비</text><text x="1080" y="222" text-anchor="middle" class="value">176.6억원</text><text x="1080" y="248" text-anchor="middle" class="detail">인건비 · R&amp;D · 지급수수료 등</text>
+  <text x="1170" y="582" text-anchor="middle" class="label">영업손실</text><text x="1170" y="614" text-anchor="middle" class="value">84.3억원</text>
+  <text x="1296" y="586" text-anchor="middle" class="label">세전손실</text><text x="1296" y="618" text-anchor="middle" class="value">72.5억원</text><text x="1296" y="797" text-anchor="middle" class="detail">금융·기타손익 순효과 +11.8억원</text>
+  <text x="1524" y="610" text-anchor="middle" class="label">당기순손실</text><text x="1524" y="642" text-anchor="middle" class="value">73.4억원</text><text x="1524" y="793" text-anchor="middle" class="detail">기본 EPS -552원</text>
+  <text x="65" y="960" class="note">출처: 아이스크림미디어 2026년 1분기 분기보고서. 반올림에 따라 합계와 차이가 있을 수 있습니다.</text>
+</svg>
