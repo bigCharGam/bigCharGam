@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class MainCameraGenerator : MonoBehaviour
 {
@@ -6,12 +6,12 @@ public class MainCameraGenerator : MonoBehaviour
 
     void Awake()
     {
-        // ¾À¿¡ ¸ÞÀÎ Ä«¸Þ¶ó°¡ ¾øÀ» ¶§¸¸ ½ÇÇà
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (Camera.main == null)
         {
             if (mainCameraPrefab != null)
             {
-                // ÇÁ¸®ÆÕ ¿øº»ÀÌ °¡Áö°í ÀÖ´Â ÀÚÃ¼ Transform(À§Ä¡, È¸Àü) Á¤º¸ ±×´ë·Î »ý¼º!
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Ã¼ Transform(ï¿½ï¿½Ä¡, È¸ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!
                 Transform prefabTransform = mainCameraPrefab.transform;
 
                 Instantiate(
@@ -22,7 +22,7 @@ public class MainCameraGenerator : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("MainCameraGenerator: Ä«¸Þ¶ó ÇÁ¸®ÆÕÀÌ µî·ÏµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+                Debug.LogWarning("MainCameraGenerator: Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½.");
             }
         }
     }
