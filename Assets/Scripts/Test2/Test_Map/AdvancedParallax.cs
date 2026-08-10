@@ -13,6 +13,10 @@ public class AdvancedParallax : MonoBehaviour
 
     [SerializeField] private bool isInfinite = true;
 
+    [Header("무한 스크롤 - 짝꿍 배경")]
+    [Tooltip("나와 번갈아 배치될 짝꿍 배경. 같은 parallaxFactor를 가진 오브젝트여야 합니다.")]
+    [SerializeField] private Transform pairedBackground;
+
     private Transform cameraTransform;
     private Vector3 lastCameraPosition;
     private float textureSizeX;
@@ -20,31 +24,39 @@ public class AdvancedParallax : MonoBehaviour
 
     private void Start()
     {
-        // Sprite의 가로 길이 계산 (무한 스크롤용)
+        // 일반 스프라이트 오브젝트인 경우
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             textureSizeX = spriteRenderer.bounds.size.x;
         }
+        else
+        {
+            // Tilemap 오브젝트인 경우 (TilemapBack 등)
+            Renderer tilemapRenderer = GetComponent<Renderer>();
+            if (tilemapRenderer != null)
+            {
+                textureSizeX = tilemapRenderer.bounds.size.x;
+            }
+        }
 
-        // MainCamera 자동 연결 시도
+        if (textureSizeX <= 0f)
+        {
+            Debug.LogWarning($"[{gameObject.name}] AdvancedParallax: textureSizeX를 계산하지 못했습니다. SpriteRenderer나 TilemapRenderer가 있는지, 실제로 타일이 칠해져 있는지 확인하세요.");
+        }
+
         TryInitializeCamera();
     }
 
     private void LateUpdate()
     {
-        // 카메라가 없을 경우 런타임 재검색
         if (cameraTransform == null)
         {
             if (!TryInitializeCamera()) return;
         }
 
-        // 지난 프레임 대비 카메라 이동량 계산
         Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;
 
-        // Factor가 1일 때 deltaMovement 만큼 100% 이동하여 카메라와 동기화(완전히 겹침)
-        // Factor가 0일 때 이동량 0 (월드 좌표 고정)
-        // Factor가 -1일 때 deltaMovement * -1 만큼 이동 (카메라 반대 방향)
         transform.position += new Vector3(
             deltaMovement.x * parallaxFactorX,
             deltaMovement.y * parallaxFactorY,
@@ -53,26 +65,45 @@ public class AdvancedParallax : MonoBehaviour
 
         lastCameraPosition = cameraTransform.position;
 
-        // 무한 가로 스크롤 처리
-        if (isInfinite && textureSizeX > 0)
+        // 무한 가로 스크롤 처리: "짝꿍 배경" 기준으로 이어붙이기
+        if (isInfinite && textureSizeX > 0 && pairedBackground != null)
         {
             float distanceFromCamera = cameraTransform.position.x - transform.position.x;
 
+            // 카메라가 이 배경을 완전히 지나쳐서(한 텍스처 폭 이상) 화면 밖으로 벗어났을 때만 재배치
             if (Mathf.Abs(distanceFromCamera) >= textureSizeX)
             {
-                float offsetPositionX = distanceFromCamera % textureSizeX;
-                transform.position = new Vector3(
-                    cameraTransform.position.x - offsetPositionX,
-                    transform.position.y,
-                    transform.position.z
-                );
+                // 카메라 진행 방향 판단
+                bool movingRight = deltaMovement.x > 0f;
+
+                if (movingRight)
+                {
+                    // 내가 뒤처졌으면(카메라보다 왼쪽), 짝꿍의 오른쪽 끝에 붙인다
+                    if (transform.position.x < pairedBackground.position.x)
+                    {
+                        transform.position = new Vector3(
+                            pairedBackground.position.x + textureSizeX,
+                            transform.position.y,
+                            transform.position.z
+                        );
+                    }
+                }
+                else
+                {
+                    // 카메라가 왼쪽으로 이동 중이면, 짝꿍의 왼쪽 끝에 붙인다
+                    if (transform.position.x > pairedBackground.position.x)
+                    {
+                        transform.position = new Vector3(
+                            pairedBackground.position.x - textureSizeX,
+                            transform.position.y,
+                            transform.position.z
+                        );
+                    }
+                }
             }
         }
     }
 
-    /// <summary>
-    /// MainCamera 태그를 가진 카메라를 찾아 참조를 초기화합니다.
-    /// </summary>
     private bool TryInitializeCamera()
     {
         if (Camera.main != null)
