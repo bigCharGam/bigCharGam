@@ -16,6 +16,9 @@ public class PlayerDeathHandler : MonoBehaviour
 
     private bool isDead = false;
 
+    // ⭐ [추가] GameOver.cs가 폴링해서 확인할 수 있도록 공개
+    public bool IsDead => isDead;
+
     private void Awake()
     {
         // 컴포넌트 자동 탐색 및 할당
@@ -29,7 +32,7 @@ public class PlayerDeathHandler : MonoBehaviour
         // 이미 사망 처리되었거나 체력 데이터가 없으면 패스
         if (isDead || playerBattle == null) return;
 
-        // PlayerBattle의 currentHealth가 0 이하가 되는 순간 사망 로직 실행
+        // PlayerBattle의 currentHealth가 0 이하가 되는 순간 사망 후처리 실행
         if (playerBattle.currentHealth <= 0)
         {
             HandleDeath();
@@ -38,6 +41,7 @@ public class PlayerDeathHandler : MonoBehaviour
 
     /// <summary>
     /// 플레이어 사망 시 키 입력 및 상태 차단
+    /// (애니메이션 트리거는 PlayerBattle.TakeDamage()에서 이미 "isDead"로 처리되므로 여기서는 중복 호출하지 않음)
     /// </summary>
     private void HandleDeath()
     {
@@ -47,7 +51,7 @@ public class PlayerDeathHandler : MonoBehaviour
         // 1. 유니티 Input System의 모든 키 입력 수신 비활성화
         if (playerInput != null)
         {
-            playerInput.DeactivateInput(); // 또는 playerInput.enabled = false;
+            playerInput.DeactivateInput();
         }
 
         // 2. 물리 이동 및 잔여 속도 완전히 정지 (Rigidbody2D 멈춤)
@@ -57,11 +61,8 @@ public class PlayerDeathHandler : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        // 3. 사망 애니메이션 재생 (옵션)
-        if (animator != null && !string.IsNullOrEmpty(deathAnimationTrigger))
-        {
-            animator.SetTrigger(deathAnimationTrigger);
-        }
+        // 참고: animator.SetTrigger("isDead")는 PlayerBattle.TakeDamage()에서 이미 실행됩니다.
+        // 여기서 deathAnimationTrigger를 또 쏘면 같은 죽음에 트리거가 두 번 걸리니 주의하세요.
     }
 
     /// <summary>

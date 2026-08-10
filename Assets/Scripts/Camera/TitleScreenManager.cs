@@ -29,11 +29,10 @@ public class TitleScreenManager : MonoBehaviour
         List<AsyncOperation> asyncOps = new List<AsyncOperation>();
 
         // 나머지 5개 씬들을 Additive로 로딩 지시 (지시만 내리고 바로 다음 줄로 넘어감)
-        asyncOps.Add(SceneManager.LoadSceneAsync("Environment", LoadSceneMode.Additive));
+        asyncOps.Add(SceneManager.LoadSceneAsync("Gameover", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Character", LoadSceneMode.Additive));
-        asyncOps.Add(SceneManager.LoadSceneAsync("Enemy", LoadSceneMode.Additive));
-        asyncOps.Add(SceneManager.LoadSceneAsync("Landscape", LoadSceneMode.Additive));
-        asyncOps.Add(SceneManager.LoadSceneAsync("SoundScape", LoadSceneMode.Additive));
+        asyncOps.Add(SceneManager.LoadSceneAsync("Map", LoadSceneMode.Additive));
+
 
         // 3. 5개 씬이 '전부 다' 로딩될 때까지 코루틴을 붙잡아둡니다.
         bool allScenesLoaded = false;
