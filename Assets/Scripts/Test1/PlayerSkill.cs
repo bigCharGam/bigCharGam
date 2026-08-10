@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [System.Serializable]
-public struct skillData
+public struct SkillData
 {
     public string skillName;
     public GameObject hitboxDetection;
@@ -13,6 +13,7 @@ public struct skillData
     public float cooldown;
     public bool isCooldown;
     public float usingStamina;
+    public Vector2 QTERotateRange; // QTEIndicator의 회전 범위 (min, max)
 }
 
 public struct DamageGraph
@@ -21,28 +22,49 @@ public struct DamageGraph
     public float damage;
 }
 
+public enum SkillState
+{
+    Idle,
+    Skill1,
+    Skill2,
+    Skill3,
+}
+
 public class PlayerSkill : MonoBehaviour
 {
     private PlayerInput playerInput;
     private PlayerStats playerStats;
-    [SerializeField] private skillData[] skills;
+    [SerializeField] private SkillData[] skills;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private QTEIndicator qteIndicatorPrefab;
+    [SerializeField] private SkillState skillState = SkillState.Idle;
+    [SerializeField] private SkillTimeDamageGraph graph;
+    private int skillDamage; // QTE중 실시간으로 계산되는 스킬 데미지
 
     [Header("Skill1")]
-    [SerializeField] private SkillTimeDamageGraph s1TDGraph;
-
     private List<EnemyBase> detectedEnemies = new List<EnemyBase>();
     private EnemyBase closestEnemy;
     private QTEIndicator currentQteIndicator;
     private int QTEStack = 0;
-    private int S1Damage;
 
     [Header("Skill2")]
     [SerializeField] private float s2MinDistance;
     [SerializeField] private float s2RushSpeed = 10f;
     [SerializeField] private float s2AttackDistance = 1f; // 적 앞에서 멈추는 거리
-    [SerializeField] private SkillTimeDamageGraph s2TDGraph;
+
+    [Header("Skill3")]
+    [SerializeField] private float backStepSpeed = 10f;
+    [SerializeField] private float backStepJumpForce = 3f;
+    [SerializeField] private float backStepDuration = 0.3f;
+    [SerializeField] private GameObject qteSpawnPoint;
+    [SerializeField] private GameObject hitboxSpawnPoint; // 다시 앞으로 가는 시간
+    [SerializeField] private float reDashTime = 0.15f;
+    [SerializeField] private float s3AttackDistance = 1f; // 적 앞에서 멈추는 거리
+    [SerializeField] private float s3MaxMoveDistance = 3f; // 돌진 이동 가능한 최대 거리
+    [SerializeField] private GameObject DropingHitboxPrefab;
+    [SerializeField] private GameObject DropingHitboxSpawnPoint;
+    [SerializeField] private float avoidDamageBonus = 1.5f; // 회피 성공 시 데미지 증가 배율
+
 
     [Header("Effect")]
     //effect test
@@ -56,9 +78,7 @@ public class PlayerSkill : MonoBehaviour
     public GameObject s3EffectPerfect;
     public GameObject s3EffectSpawnPoint;
     
-    private float s1Time = 0f;
-    private bool s1Waiting = false;
-    private bool s2Waiting = false;
+    private float elapsedTime = 0f;
     private int s2TargetIndex;
     private bool s2Resolved;
     private float s2StartTime;
@@ -69,8 +89,8 @@ public class PlayerSkill : MonoBehaviour
     private List<EnemyBase> s2Targets = new List<EnemyBase>();
     private QTEIndicator[] s2Indicators;
     private Rigidbody2D playerRb;
-    private SkillTimeDamageGraph Skill2Graph => s2TDGraph != null ? s2TDGraph : s1TDGraph;
     private PlayerMovement playerMovement;
+    private DecoyHitbox currentDecoyHitbox;
     
     void Start()
     {
@@ -89,7 +109,7 @@ public class PlayerSkill : MonoBehaviour
     private bool SkillStarter(int index)
     {
         if (BattleManager.instance.skillLevels[index] == 0) return false; // 스킬 레벨이 0이면 무시
-        if (skills[index].isCooldown || s1Waiting || s2Waiting) return false; // 스킬 쿨타임 중이거나 QTE 진행 중이면 무시
+        if (skills[index].isCooldown || skillState != SkillState.Idle) return false; // 스킬 쿨타임 중이거나 QTE 진행 중이면 무시
         if (playerStats == null || playerStats.currentStamina < skills[index].usingStamina) return false;
 
         playerStats.currentStamina -= skills[index].usingStamina;
@@ -105,38 +125,54 @@ public class PlayerSkill : MonoBehaviour
         if (!SkillStarter(0)) return;
 
 
-        s1Waiting = true;
+        skillState = SkillState.Skill1;
         StartCoroutine(Skill1());
-        StartCoroutine(Skill1Damage());
+        StartCoroutine(SkillDamageCal());
         StartCoroutine(Cooldown(0));
     }
     private void OnSkill2()
     {
         if (!SkillStarter(1)) return;
 
-        s2Waiting = true;
+        skillState = SkillState.Skill2;
         StartCoroutine(Skill2());
         StartCoroutine(Cooldown(1));
     }
     private void OnSkill3()
     {
-        SkillStarter(2);
+        if (!SkillStarter(2)) return;
+
+        skillState = SkillState.Skill3;
+        StartCoroutine(Skill3());
+        StartCoroutine(SkillDamageCal());
+        StartCoroutine(Cooldown(2));
     }
     private void OnQTE()
     {
-        if (s2Waiting)
+        switch (skillState)
         {
-            OnSkill2QTE();
-            return;
+            case SkillState.Skill1:
+                QTESkill1();
+                break;
+            case SkillState.Skill2:
+                QTESkill2();
+                break;
+            case SkillState.Skill3:
+                QTESkill3();
+                break;
         }
-        if (s1Time < s1TDGraph.damageGraph[0].time) return; // QTE 입력이 너무 빠른 경우 무시
+    }
+
+    private void QTESkill1()
+    {
+        if (elapsedTime < graph.damageGraph[0].time) return; // QTE 입력이 너무 빠른 경우 무시
         playerInput.SwitchCurrentActionMap("Player");
-        Debug.Log(s1Time);
+        Debug.Log(elapsedTime);
 
         currentQteIndicator?.SkipToStage4(); // 버튼 누르면 페이드아웃
 
         // effect
-        if (s1Time > s1TDGraph.damageGraph[2].time && s1Time < s1TDGraph.damageGraph[3].time) 
+        if (elapsedTime > graph.damageGraph[2].time && elapsedTime < graph.damageGraph[3].time) 
         {
             Instantiate(s1EffectPerfect, s1EffectSpawnPoint.transform.position, s1EffectPerfect.transform.rotation);
         }
@@ -147,18 +183,17 @@ public class PlayerSkill : MonoBehaviour
 
         if (closestEnemy == null)
         {
-            s1Waiting = false;
+            skillState = SkillState.Idle;
             playerMovement?.EndSkillUsing();
             return;
         }
 
         PlayerSkillHitbox skillHitbox = Instantiate(skills[0].hitboxAttack, closestEnemy.transform.position, Quaternion.identity).GetComponent<PlayerSkillHitbox>();
-        skillHitbox.damage = S1Damage * skills[0].damageMultiplier; // 물리 시뮬레이션보다 대입이 빨라서 히트박스가 충분히 damage를 받음
-        s1Waiting = false;
+        skillHitbox.damage = skillDamage * skills[0].damageMultiplier; // 물리 시뮬레이션보다 대입이 빨라서 히트박스가 충분히 damage를 받음
+        skillState = SkillState.Idle;
         playerMovement?.EndSkillUsing();
     }
-
-    private void OnSkill2QTE()
+    private void QTESkill2()
     {
         if (s2Resolved || s2TargetIndex >= s2Targets.Count) return;
         float elapsed = Time.time - s2StartTime;
@@ -169,17 +204,145 @@ public class PlayerSkill : MonoBehaviour
         s2Indicators[s2TargetIndex]?.SkipToStage4();
 
         PlayerSkillHitbox skillHitbox = Instantiate(skills[1].hitboxAttack, target.transform.position, Quaternion.identity).GetComponent<PlayerSkillHitbox>();
-        skillHitbox.damage = EvaluateDamage(Skill2Graph, elapsed - s2CurrentSpawnTime) * skills[1].damageMultiplier;
+        skillHitbox.damage = EvaluateDamage(graph, elapsed - s2CurrentSpawnTime) * skills[1].damageMultiplier;
         s2Resolved = true;
 
         // effect
-        if (s1Time > s1TDGraph.damageGraph[2].time && s1Time < s1TDGraph.damageGraph[3].time) 
+        if (elapsedTime > graph.damageGraph[2].time && elapsedTime < graph.damageGraph[3].time) 
         {
-            Instantiate(s1EffectPerfect, s1EffectSpawnPoint.transform.position, s1EffectPerfect.transform.rotation);
+            Instantiate(s2EffectPerfect, s2EffectSpawnPoint.transform.position, s2EffectPerfect.transform.rotation);
         }
         else
         {
-            Instantiate(s1Effect, s1EffectSpawnPoint.transform.position, s1Effect.transform.rotation);
+            Instantiate(s2Effect, s2EffectSpawnPoint.transform.position, s2Effect.transform.rotation);
+        }
+    }
+    private void QTESkill3()
+    {
+        if (elapsedTime < graph.damageGraph[0].time) return; // QTE 입력이 너무 빠른 경우 무시
+        playerInput.SwitchCurrentActionMap("Player");
+
+        currentQteIndicator?.SkipToStage4(); // 버튼 누르면 페이드아웃
+
+        StartCoroutine(Skill3DashToEnemy());
+    }
+
+    // 가장 가까운 적 앞까지 0.1초간 이동(최대 이동거리 제한)한 뒤 기존 이펙트/히트박스를 발생시킴
+    private IEnumerator Skill3DashToEnemy()
+    {
+        EnemyBase target = FindClosestEnemy(skills[2].hitboxDetection);
+
+        float moveDist = 0f;
+        if (target != null)
+        {
+            float dir = Mathf.Sign(target.transform.position.x - transform.position.x);
+            float desiredX = target.transform.position.x - dir * s3AttackDistance; // 적 앞에서 멈출 위치
+            moveDist = Mathf.Clamp(desiredX - transform.position.x, -s3MaxMoveDistance, s3MaxMoveDistance);
+        }
+        float velocityX = moveDist / reDashTime;
+
+        float timer = 0f;
+        while (timer < reDashTime)
+        {
+            if (playerRb != null)
+            {
+                playerRb.linearVelocity = new Vector2(velocityX, playerRb.linearVelocity.y);
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        if (playerRb != null) playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
+
+        // effect
+        if (elapsedTime > graph.damageGraph[2].time && elapsedTime < graph.damageGraph[3].time) 
+        {
+            Instantiate(s3EffectPerfect, s3EffectSpawnPoint.transform.position, RandomizedEffectRotation(s3EffectPerfect.transform.rotation, skills[2].QTERotateRange));
+        }
+        else
+        {
+            Instantiate(s3Effect, s3EffectSpawnPoint.transform.position, RandomizedEffectRotation(s3Effect.transform.rotation, skills[2].QTERotateRange));
+        }
+
+        float damageMultiplier = skills[2].damageMultiplier;
+        if (currentDecoyHitbox != null)
+        {
+            if (currentDecoyHitbox.wasHit) damageMultiplier *= avoidDamageBonus; // 미끼가 대신 맞았다면 회피 보너스 적용
+            Destroy(currentDecoyHitbox.gameObject);
+            currentDecoyHitbox = null;
+        }
+
+        PlayerSkillHitbox skillHitbox = Instantiate(skills[2].hitboxAttack, hitboxSpawnPoint.transform.position, Quaternion.identity).GetComponent<PlayerSkillHitbox>();
+        skillHitbox.damage = skillDamage * damageMultiplier; // 물리 시뮬레이션보다 대입이 빨라서 히트박스가 충분히 damage를 받음
+        skillState = SkillState.Idle;
+        playerMovement?.EndSkillUsing();
+    }
+
+    // QTEIndicator의 회전 범위 내에서 랜덤한 회전값을 반환
+    private Quaternion RandomizedEffectRotation(Quaternion baseRotation, Vector2 angleRange)
+    {
+        float randomAngle = Random.Range(angleRange.x, angleRange.y);
+        return baseRotation * Quaternion.Euler(0f, 0f, randomAngle);
+    }
+
+    private EnemyBase FindClosestEnemy(GameObject detectionArea)
+    {
+        Collider2D[] hits = Physics2D.OverlapBoxAll(detectionArea.transform.position, detectionArea.transform.localScale, 0f, enemyLayer);
+        EnemyBase closest = null;
+        float closestDistSqr = float.MaxValue;
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            {
+                float distSqr = (enemy.transform.position - transform.position).sqrMagnitude;
+                if (distSqr < closestDistSqr)
+                {
+                    closest = enemy;
+                    closestDistSqr = distSqr;
+                }
+            }
+        }
+        return closest;
+    }
+
+    private IEnumerator Skill1()
+    {
+        detectedEnemies.Clear();
+        Collider2D[] hits = Physics2D.OverlapBoxAll(skills[0].hitboxDetection.transform.position, skills[0].hitboxDetection.transform.localScale, 0f, enemyLayer);
+        foreach (var hit in hits)
+        {
+            if (hit.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            {
+                detectedEnemies.Add(enemy);
+            }
+
+        }
+        // 가장 가까운 적에게 QTE
+        if (detectedEnemies.Count > 0)
+        {
+            closestEnemy = detectedEnemies[0];
+            float closestDistance = (closestEnemy.transform.position - transform.position).sqrMagnitude;
+
+            foreach (EnemyBase enemy in detectedEnemies)
+            {
+                float distance = (enemy.transform.position - transform.position).sqrMagnitude;
+                if (distance < closestDistance)
+                {
+                    closestEnemy = enemy;
+                    closestDistance = distance;
+                }
+            }
+
+            currentQteIndicator = Instantiate(qteIndicatorPrefab, closestEnemy.transform.position, RandomizedEffectRotation(qteIndicatorPrefab.transform.rotation, skills[0].QTERotateRange));
+        }
+
+        // 제한시간 내 QTE 입력 없으면 실패 처리
+        yield return new WaitForSeconds(graph.damageGraph[graph.damageGraph.Length - 1].time);
+        if (skillState == SkillState.Skill1)
+        {
+            Debug.Log("Skill1 QTE Failed");
+            skillState = SkillState.Idle;
+            playerMovement?.EndSkillUsing();
+            playerInput.SwitchCurrentActionMap("Player");
         }
     }
 
@@ -221,16 +384,16 @@ public class PlayerSkill : MonoBehaviour
 
         if (s2Targets.Count == 0)
         {
-            s2Waiting = false;
+            skillState = SkillState.Idle;
             playerMovement?.EndSkillUsing();
             playerInput.SwitchCurrentActionMap("Player");
             yield break;
         }
 
         int n = s2Targets.Count;
-        float indicatorLead = QTEIndicator.ComputeLeadTime(Skill2Graph); // 스폰~퍼펙트까지 걸리는 고정 시간
-        float perfectWindow = QTEIndicator.ComputePerfectWindow(Skill2Graph);
-        float earlyMargin = Skill2Graph.damageGraph[0].time;
+        float indicatorLead = QTEIndicator.ComputeLeadTime(graph); // 스폰~퍼펙트까지 걸리는 고정 시간
+        float perfectWindow = QTEIndicator.ComputePerfectWindow(graph);
+        float earlyMargin = graph.damageGraph[0].time;
 
         float dir = Mathf.Sign(s2Targets[n - 1].transform.position.x - transform.position.x);
         float[] travelTime = new float[n];
@@ -274,7 +437,7 @@ public class PlayerSkill : MonoBehaviour
         }
 
         StopRush();
-        s2Waiting = false;
+        skillState = SkillState.Idle;
         playerMovement?.EndSkillUsing();
         playerInput.SwitchCurrentActionMap("Player");
     }
@@ -284,7 +447,7 @@ public class PlayerSkill : MonoBehaviour
     {
         while (Time.time - s2StartTime < rushStart) yield return null;
         float endTime = rushStart + rushDuration;
-        while (s2Waiting && Time.time - s2StartTime < endTime)
+        while (skillState == SkillState.Skill2 && Time.time - s2StartTime < endTime)
         {
             if (playerRb != null) 
             {
@@ -300,8 +463,8 @@ public class PlayerSkill : MonoBehaviour
         for (int i = 0; i < spawnTime.Length; i++)
         {
             while (Time.time - s2StartTime < spawnTime[i]) yield return null;
-            if (!s2Waiting) yield break;
-            s2Indicators[i] = Instantiate(qteIndicatorPrefab, s2Targets[i].transform.position, Quaternion.identity);
+            if (skillState != SkillState.Skill2) yield break;
+            s2Indicators[i] = Instantiate(qteIndicatorPrefab, s2Targets[i].transform.position, RandomizedEffectRotation(qteIndicatorPrefab.transform.rotation, skills[1].QTERotateRange));
         }
     }
 
@@ -323,80 +486,40 @@ public class PlayerSkill : MonoBehaviour
         }
         return 0f;
     }
-    private IEnumerator Skill1()
+    
+    private IEnumerator SkillDamageCal()
     {
-        detectedEnemies.Clear();
-        Collider2D[] hits = Physics2D.OverlapBoxAll(skills[0].hitboxDetection.transform.position, skills[0].hitboxDetection.transform.localScale, 0f, enemyLayer);
-        foreach (var hit in hits)
+        elapsedTime = 0f;
+        while (elapsedTime < graph.damageGraph[graph.damageGraph.Length - 1].time)
         {
-            if (hit.TryGetComponent<EnemyBase>(out EnemyBase enemy))
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime < graph.damageGraph[0].time)
             {
-                detectedEnemies.Add(enemy);
+                skillDamage = 0;
             }
-
-        }
-        // 가장 가까운 적에게 QTE
-        if (detectedEnemies.Count > 0)
-        {
-            closestEnemy = detectedEnemies[0];
-            float closestDistance = (closestEnemy.transform.position - transform.position).sqrMagnitude;
-
-            foreach (EnemyBase enemy in detectedEnemies)
+            else if (elapsedTime < graph.damageGraph[1].time)
             {
-                float distance = (enemy.transform.position - transform.position).sqrMagnitude;
-                if (distance < closestDistance)
-                {
-                    closestEnemy = enemy;
-                    closestDistance = distance;
-                }
+                skillDamage = Mathf.RoundToInt(Mathf.Lerp(graph.damageGraph[0].damage, graph.damageGraph[1].damage, (elapsedTime - graph.damageGraph[0].time) / (graph.damageGraph[1].time - graph.damageGraph[0].time)));
             }
-
-            currentQteIndicator = Instantiate(qteIndicatorPrefab, closestEnemy.transform.position, Quaternion.identity);
-        }
-
-        // 제한시간 내 QTE 입력 없으면 실패 처리
-        yield return new WaitForSeconds(s1TDGraph.damageGraph[s1TDGraph.damageGraph.Length - 1].time);
-        if (s1Waiting)
-        {
-            Debug.Log("Skill1 QTE Failed");
-            s1Waiting = false;
-            playerMovement?.EndSkillUsing();
-            playerInput.SwitchCurrentActionMap("Player");
-        }
-    }
-    private IEnumerator Skill1Damage()
-    {
-        s1Time = 0f;
-        while (s1Time < s1TDGraph.damageGraph[s1TDGraph.damageGraph.Length - 1].time)
-        {
-            s1Time += Time.deltaTime;
-            if (s1Time < s1TDGraph.damageGraph[0].time)
+            else if (elapsedTime < graph.damageGraph[2].time)
             {
-                S1Damage = 0;
+                skillDamage = Mathf.RoundToInt(Mathf.Lerp(graph.damageGraph[1].damage, graph.damageGraph[2].damage, (elapsedTime - graph.damageGraph[1].time) / (graph.damageGraph[2].time - graph.damageGraph[1].time)));
             }
-            else if (s1Time < s1TDGraph.damageGraph[1].time)
+            else if (elapsedTime < graph.damageGraph[3].time)
             {
-                S1Damage = Mathf.RoundToInt(Mathf.Lerp(s1TDGraph.damageGraph[0].damage, s1TDGraph.damageGraph[1].damage, (s1Time - s1TDGraph.damageGraph[0].time) / (s1TDGraph.damageGraph[1].time - s1TDGraph.damageGraph[0].time)));
+                skillDamage = Mathf.RoundToInt(Mathf.Lerp(graph.damageGraph[2].damage, graph.damageGraph[3].damage, (elapsedTime - graph.damageGraph[2].time) / (graph.damageGraph[3].time - graph.damageGraph[2].time)));
             }
-            else if (s1Time < s1TDGraph.damageGraph[2].time)
+            else if (elapsedTime < graph.damageGraph[4].time)
             {
-                S1Damage = Mathf.RoundToInt(Mathf.Lerp(s1TDGraph.damageGraph[1].damage, s1TDGraph.damageGraph[2].damage, (s1Time - s1TDGraph.damageGraph[1].time) / (s1TDGraph.damageGraph[2].time - s1TDGraph.damageGraph[1].time)));
+                skillDamage = Mathf.RoundToInt(Mathf.Lerp(graph.damageGraph[3].damage, graph.damageGraph[4].damage, (elapsedTime - graph.damageGraph[3].time) / (graph.damageGraph[4].time - graph.damageGraph[3].time)));
             }
-            else if (s1Time < s1TDGraph.damageGraph[3].time)
+            else if (elapsedTime < graph.damageGraph[5].time)
             {
-                S1Damage = Mathf.RoundToInt(Mathf.Lerp(s1TDGraph.damageGraph[2].damage, s1TDGraph.damageGraph[3].damage, (s1Time - s1TDGraph.damageGraph[2].time) / (s1TDGraph.damageGraph[3].time - s1TDGraph.damageGraph[2].time)));
-            }
-            else if (s1Time < s1TDGraph.damageGraph[4].time)
-            {
-                S1Damage = Mathf.RoundToInt(Mathf.Lerp(s1TDGraph.damageGraph[3].damage, s1TDGraph.damageGraph[4].damage, (s1Time - s1TDGraph.damageGraph[3].time) / (s1TDGraph.damageGraph[4].time - s1TDGraph.damageGraph[3].time)));
-            }
-            else if (s1Time < s1TDGraph.damageGraph[5].time)
-            {
-                S1Damage = Mathf.RoundToInt(Mathf.Lerp(s1TDGraph.damageGraph[4].damage, s1TDGraph.damageGraph[5].damage, (s1Time - s1TDGraph.damageGraph[4].time) / (s1TDGraph.damageGraph[5].time - s1TDGraph.damageGraph[4].time)));
+                skillDamage = Mathf.RoundToInt(Mathf.Lerp(graph.damageGraph[4].damage, graph.damageGraph[5].damage, (elapsedTime - graph.damageGraph[4].time) / (graph.damageGraph[5].time - graph.damageGraph[4].time)));
             }
             else
             {
-                S1Damage = 0;
+                skillDamage = 0;
             }
             yield return null;
         }
@@ -407,5 +530,30 @@ public class PlayerSkill : MonoBehaviour
         yield return new WaitForSeconds(skills[skillIndex].cooldown);
         skills[skillIndex].isCooldown = false;
         UIManager.instance?.SetSkillImage(skillIndex, true); // 스킬 사용 가능 이미지
+    }
+
+    private IEnumerator Skill3()
+    {
+        playerMovement?.BeginSkillUsing();
+        currentDecoyHitbox = Instantiate(DropingHitboxPrefab, DropingHitboxSpawnPoint.transform.position, Quaternion.identity).GetComponent<DecoyHitbox>(); // 뒤로 빠지기 전, 원래 자리에 미끼 히트박스를 드롭
+        playerRb.linearVelocity = new Vector2(-transform.localScale.x * backStepSpeed, backStepJumpForce);
+        currentQteIndicator = Instantiate(qteIndicatorPrefab, qteSpawnPoint.transform.position, RandomizedEffectRotation(qteIndicatorPrefab.transform.rotation, skills[2].QTERotateRange));
+        yield return new WaitForSeconds(backStepDuration);
+        playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
+
+        // 제한시간 내 QTE 입력 없으면 실패 처리
+        yield return new WaitForSeconds(graph.damageGraph[graph.damageGraph.Length - 1].time);
+        if (skillState == SkillState.Skill3)
+        {
+            Debug.Log("Skill3 QTE Failed");
+            skillState = SkillState.Idle;
+            playerMovement?.EndSkillUsing();
+            playerInput.SwitchCurrentActionMap("Player");
+            if (currentDecoyHitbox != null)
+            {
+                Destroy(currentDecoyHitbox.gameObject);
+                currentDecoyHitbox = null;
+            }
+        }
     }
 }

@@ -302,6 +302,9 @@ Transform:
   - {fileID: 906784948}
   - {fileID: 1028495169}
   - {fileID: 1420993606}
+  - {fileID: 1012434122}
+  - {fileID: 1245643352}
+  - {fileID: 2089360594}
   - {fileID: 1630157468}
   - {fileID: 992179621}
   m_Father: {fileID: 0}
@@ -541,6 +544,7 @@ MonoBehaviour:
     cooldown: 3
     isCooldown: 0
     usingStamina: 10
+    QTERotateRange: {x: -1, y: 1}
   - skillName: s2
     hitboxDetection: {fileID: 992179618}
     hitboxAttack: {fileID: 9101155308803224738, guid: 6db19daf89296ab44b6a6a7ad8a020d1, type: 3}
@@ -548,23 +552,43 @@ MonoBehaviour:
     cooldown: 3
     isCooldown: 0
     usingStamina: 25
+    QTERotateRange: {x: -15, y: 15}
+  - skillName: s3
+    hitboxDetection: {fileID: 992179618}
+    hitboxAttack: {fileID: 9101155308803224738, guid: 6db19daf89296ab44b6a6a7ad8a020d1, type: 3}
+    damageMultiplier: 1
+    cooldown: 5
+    isCooldown: 0
+    usingStamina: 20
+    QTERotateRange: {x: 80, y: 81}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
   qteIndicatorPrefab: {fileID: 5463351073271473951, guid: 290a20b19d7bfb2478c3059768ef74ce, type: 3}
-  s1TDGraph: {fileID: 11400000, guid: faa1ed52184a2a8449b8b150a57a7efa, type: 2}
+  skillState: 0
+  graph: {fileID: 11400000, guid: faa1ed52184a2a8449b8b150a57a7efa, type: 2}
   s2MinDistance: 2
   s2RushSpeed: 70
   s2AttackDistance: 1
-  s2TDGraph: {fileID: 0}
+  backStepSpeed: 15
+  backStepJumpForce: 1
+  backStepDuration: 0.5
+  qteSpawnPoint: {fileID: 1012434121}
+  hitboxSpawnPoint: {fileID: 1245643351}
+  reDashTime: 0.15
+  s3AttackDistance: 3
+  s3MaxMoveDistance: 12
+  DropingHitboxPrefab: {fileID: 7048388339674715948, guid: 41846faa8c9f8d34badbf5ae9ba57434, type: 3}
+  DropingHitboxSpawnPoint: {fileID: 2089360593}
+  avoidDamageBonus: 1.5
   s1Effect: {fileID: 2277307532902923427, guid: 287ef1afc45fa6c4a96b3913c51f40de, type: 3}
   s1EffectPerfect: {fileID: 2277307532902923427, guid: e57d50a2e75b8684b9f43063fd2c0c7c, type: 3}
   s1EffectSpawnPoint: {fileID: 906784947}
-  s2Effect: {fileID: 2277307532902923427, guid: 287ef1afc45fa6c4a96b3913c51f40de, type: 3}
-  s2EffectPerfect: {fileID: 2277307532902923427, guid: e57d50a2e75b8684b9f43063fd2c0c7c, type: 3}
+  s2Effect: {fileID: 2277307532902923427, guid: f7314d41f0134054989c0843e4ef5d15, type: 3}
+  s2EffectPerfect: {fileID: 2277307532902923427, guid: 22bc6ffcce2be4d42b90cd2ffd1169c3, type: 3}
   s2EffectSpawnPoint: {fileID: 1028495168}
-  s3Effect: {fileID: 2277307532902923427, guid: 287ef1afc45fa6c4a96b3913c51f40de, type: 3}
-  s3EffectPerfect: {fileID: 2277307532902923427, guid: e57d50a2e75b8684b9f43063fd2c0c7c, type: 3}
+  s3Effect: {fileID: 2277307532902923427, guid: 00cf97942d21e044fa5e7d6158996cb7, type: 3}
+  s3EffectPerfect: {fileID: 2277307532902923427, guid: 2dbebdc7929b85e4ba3049e9accff9ec, type: 3}
   s3EffectSpawnPoint: {fileID: 1420993605}
 --- !u!114 &481326630
 MonoBehaviour:
@@ -747,6 +771,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 481326620}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1012434121
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1012434122}
+  m_Layer: 7
+  m_Name: S3 QTE Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1012434122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012434121}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 481326620}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1028495168
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,6 +968,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ef6ce25da0543b4588d7b7db5655d04, type: 3}
+--- !u!1 &1245643351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1245643352}
+  m_Layer: 7
+  m_Name: S3 Hitbox Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1245643352
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245643351}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 481326620}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1420993605
 GameObject:
   m_ObjectHideFlags: 0
@@ -1327,6 +1413,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ef6ce25da0543b4588d7b7db5655d04, type: 3}
+--- !u!1 &2089360593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2089360594}
+  m_Layer: 7
+  m_Name: S3 Dropbox Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2089360594
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089360593}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 481326620}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
