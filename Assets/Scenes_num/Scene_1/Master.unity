@@ -4569,6 +4569,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkillLearnUI
       objectReference: {fileID: 0}
+    - target: {fileID: 3304831426116714391, guid: 9cd9165698167b044924e30ffde84415, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5262391941638235724, guid: 9cd9165698167b044924e30ffde84415, type: 3}
       propertyPath: expBar
       value: 
