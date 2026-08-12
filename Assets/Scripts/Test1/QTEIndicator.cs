@@ -17,6 +17,8 @@ public class QTEIndicator : MonoBehaviour
 
     private bool skipToStage4;
 
+    private readonly System.Collections.Generic.Dictionary<TrailRenderer, GradientAlphaKey[]> baseTrailAlphaKeys = new System.Collections.Generic.Dictionary<TrailRenderer, GradientAlphaKey[]>();
+
     public void SkipToStage4()
     {
         skipToStage4 = true;
@@ -91,14 +93,16 @@ public class QTEIndicator : MonoBehaviour
         // pos(t) = initialPos * (1 - (t/moveTime1)^2) 이므로 t=moveTime1에서의 미분값은 -2*initialPos/moveTime1.
         float speedA1 = -2f * initialPosA1.y / moveTime1;
         float speedA2 = -2f * initialPosA2.y / moveTime1;
+        float speedMultiplier = 1f; // 속도 조정용 multiplier, 필요시 조정 가능
         time = 0f;
         line.SetActive(false);
         while (time < moveTime2)
         {
             time += Time.deltaTime;
+            speedMultiplier = Mathf.Lerp(1f, 2f, time / moveTime2); 
             float clampedTime = Mathf.Min(time, moveTime2);
-            arrow1.transform.localPosition = new Vector3(currentPosA1.x, currentPosA1.y + speedA1 * clampedTime, currentPosA1.z);
-            arrow2.transform.localPosition = new Vector3(currentPosA2.x, currentPosA2.y + speedA2 * clampedTime, currentPosA2.z);
+            arrow1.transform.localPosition = new Vector3(currentPosA1.x, currentPosA1.y + speedA1 * clampedTime * speedMultiplier, currentPosA1.z);
+            arrow2.transform.localPosition = new Vector3(currentPosA2.x, currentPosA2.y + speedA2 * clampedTime * speedMultiplier, currentPosA2.z);
             setAlpha(arrow1, Mathf.Lerp(1f, 0f, time / moveTime2));
             setAlpha(arrow2, Mathf.Lerp(1f, 0f, time / moveTime2));
             yield return null;
@@ -119,6 +123,27 @@ public class QTEIndicator : MonoBehaviour
             Color color = sr.color;
             color.a = alpha;
             sr.color = color;
+        }
+
+        // setAlpha에서 TrailRenderer의 alpha는 조절하지 못하므로 별도 관리
+        TrailRenderer tr = target.GetComponent<TrailRenderer>();
+        if (tr != null)
+        {
+            if (!baseTrailAlphaKeys.TryGetValue(tr, out GradientAlphaKey[] baseKeys))
+            {
+                baseKeys = tr.colorGradient.alphaKeys;
+                baseTrailAlphaKeys[tr] = baseKeys;
+            }
+
+            GradientAlphaKey[] alphaKeys = new GradientAlphaKey[baseKeys.Length];
+            for (int i = 0; i < baseKeys.Length; i++)
+            {
+                alphaKeys[i] = new GradientAlphaKey(baseKeys[i].alpha * alpha, baseKeys[i].time);
+            }
+
+            Gradient gradient = tr.colorGradient;
+            gradient.SetKeys(gradient.colorKeys, alphaKeys);
+            tr.colorGradient = gradient;
         }
     }
 }
