@@ -41,11 +41,16 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        RefreshSkillImages();
+    }
+
+    public void RefreshSkillImages()
+    {
         for (int i = 0; i < skillsCount; i++)
         {
             notLearnedSkillImage[i].gameObject.SetActive(BattleManager.instance.skillLevels[i] == 0);
-            skillOnImage[i].gameObject.SetActive(true && BattleManager.instance.skillLevels[i] > 0);
-            skillOffImage[i].gameObject.SetActive(false && BattleManager.instance.skillLevels[i] > 0);
+            skillOnImage[i].gameObject.SetActive(BattleManager.instance.skillLevels[i] > 0);
+            skillOffImage[i].gameObject.SetActive(false);
         }
     }
 
@@ -55,7 +60,7 @@ public class UIManager : MonoBehaviour
             playerMPInnerbar.fillAmount = Mathf.Lerp(playerMPInnerbar.fillAmount, playerMPTarget, lerpSpeed * Time.deltaTime);
             bossHPInnerbar.fillAmount = Mathf.Lerp(bossHPInnerbar.fillAmount, bossHPTarget, lerpSpeed * Time.deltaTime);
             expBar.fillAmount = Mathf.MoveTowards(expBar.fillAmount, expTarget, lerpSpeedExp * Time.deltaTime);
-            expText.text = BattleManager.instance.expLevel.ToString();
+            expText.text = BattleManager.instance.skillPoint.ToString();
     }
 
     public void UpdatePlayerHP(float currentHp, float maxHp)
