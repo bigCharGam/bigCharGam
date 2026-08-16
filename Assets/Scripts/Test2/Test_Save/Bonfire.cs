@@ -37,7 +37,7 @@ public class Bonfire : MonoBehaviour
 
         GameSaveData data = new GameSaveData
         {
-            playerHP = player.GetComponent<PlayerAttack>().currentHealth,
+            playerHP = player.GetComponent<PlayerMovement>().currentHealth,
             posX = transform.position.x,
             posY = transform.position.y,
             posZ = transform.position.z,
