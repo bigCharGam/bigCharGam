@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : PlayerBattle
 {
     public enum PositionState { Grounded, Airborne }
-    public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing, Parrying }
+    public enum ActionState { None, Locomotion, FastFalling, Dashing, Attacking, SkillUsing, Parrying, Potion }
     public enum BaldoState { Nabdo, Baldo }
 
     [Header("Parallel States")]
@@ -43,6 +43,13 @@ public class PlayerMovement : PlayerBattle
     [SerializeField] private float dashForce = 50f;
     [SerializeField] private float dashDuration = 0.1f;
     [SerializeField] private float dashCooldown = 0.1f;
+
+    [Header("Potion")]
+    [SerializeField] private float potionDuration = 2f;
+    [SerializeField] private float potionMoveSpeed = 2f;
+    [SerializeField] private float potionHeal = 30f; // 포션 회복량
+    [SerializeField] private float potionHealDuration = 1.5f; // 회복이 실제로 진행되는 시간
+    private float potionTimer = 0f;
 
     // 내부 상태 및 컴포넌트 참조 변수
     protected Rigidbody2D rb;
@@ -142,6 +149,15 @@ public class PlayerMovement : PlayerBattle
                     currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
                 }
                 break;
+
+            case ActionState.Potion:
+                // 포션 사용 지속 시간 마모 계산
+                potionTimer -= Time.deltaTime;
+                if (potionTimer <= 0f)
+                {
+                    currentAction = isPressingAD ? ActionState.Locomotion : ActionState.None;
+                }
+                break;
         }
 
         // 애니 현재 스크립트 상태 머신 자산을 애니 파라미터에 실시간 동기화
@@ -200,6 +216,11 @@ public class PlayerMovement : PlayerBattle
             case ActionState.Parrying:
                 // ⭐ 패링 자세 중에는 자리에 완전 고정 처리
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                break;
+
+            case ActionState.Potion:
+                // 포션 사용 중에는 좌우로만 느리게 이동 가능 (점프/낙하 입력 무시)
+                rb.linearVelocity = new Vector2(moveInput.x * potionMoveSpeed, rb.linearVelocity.y);
                 break;
         }
     }
@@ -332,5 +353,22 @@ public class PlayerMovement : PlayerBattle
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
         }
+    }
+
+    public void OnPotion()
+    {
+        // 지상에 있고, 대기(None) 또는 좌우 이동(Locomotion) 중일 때만 포션 사용 시작
+        if (currentPosition != PositionState.Grounded) return;
+        if (currentAction != ActionState.None && currentAction != ActionState.Locomotion) return;
+        if (BattleManager.instance.potionCount <= 0) return;
+
+        BattleManager.instance.potionCount--;
+
+        currentAction = ActionState.Potion;
+        potionTimer = potionDuration;
+
+        StartPotionHeal(potionHeal, potionHealDuration);
+
+        Debug.Log("Potion");
     }
 }

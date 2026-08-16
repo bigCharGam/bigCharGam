@@ -16,9 +16,4 @@ public class PlayerUtills : MonoBehaviour
     {
         
     }
-    private void OnPotion()
-    {
-        playerInput.SwitchCurrentActionMap("OnPotion");
-        Debug.Log("Potion");
-    }
 }

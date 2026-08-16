@@ -1,9 +1,12 @@
 // 한국어 주석 유지를 위해 UTF-8로 작성됨
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerBattle : PlayerStats
 {
+    private Coroutine healCoroutine;
+
     [Header("Parry System (Collider Drag & Drop)")]
     [SerializeField] protected Collider2D outerCollider;     // 1번 바깥쪽 패리 감지 콜라이더 (드래그 앤 드롭)
     [SerializeField] protected Collider2D innerCollider;     // 2번 안쪽 본체 피격 콜라이더 (드래그 앤 드롭)
@@ -177,6 +180,13 @@ public class PlayerBattle : PlayerStats
         }
 
         // 2. 패리 상태가 아니거나 패리에 실패했을 때만 실제 대미지 적용
+        // 포션 회복 중이었다면 그 즉시 중단한다 (그 시점까지 회복된 체력에서 바로 데미지 적용)
+        if (healCoroutine != null)
+        {
+            StopCoroutine(healCoroutine);
+            healCoroutine = null;
+        }
+
         currentHealth -= damage;
         UIManager.instance.UpdatePlayerHP(currentHealth, maxHealth);
         //Debug.Log("Player 남은 체력 : " + currentHealth);
@@ -200,5 +210,45 @@ public class PlayerBattle : PlayerStats
                 animator.SetTrigger("isHit");
             }
         }
+    }
+
+    // 포션 등에 의한 회복을 duration에 걸쳐 실제 currentHealth 자체에 서서히 반영한다.
+    // 회복 도중 TakeDamage가 들어오면 코루틴이 즉시 중단되어, 그 시점까지 회복된 값에서 바로 데미지가 적용된다.
+    public void StartPotionHeal(float healAmount, float duration)
+    {
+        if (healCoroutine != null)
+        {
+            StopCoroutine(healCoroutine);
+            healCoroutine = null;
+        }
+
+        float clampedHeal = Mathf.Min(healAmount, maxHealth - currentHealth);
+        if (clampedHeal <= 0f || duration <= 0f)
+        {
+            currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
+            UIManager.instance.UpdatePlayerHP(currentHealth, maxHealth);
+            return;
+        }
+
+        UIManager.instance.BeginPotionHeal(currentHealth, maxHealth, clampedHeal, duration);
+        healCoroutine = StartCoroutine(HealOverTime(clampedHeal, duration));
+    }
+
+    private IEnumerator HealOverTime(float healAmount, float duration)
+    {
+        float healed = 0f;
+        float healPerSecond = healAmount / duration;
+
+        while (healed < healAmount)
+        {
+            float step = Mathf.Min(healPerSecond * Time.deltaTime, healAmount - healed);
+            healed += step;
+            currentHealth = Mathf.Min(currentHealth + step, maxHealth);
+            UIManager.instance.UpdatePlayerHPHealTick(currentHealth, maxHealth);
+            yield return null;
+        }
+
+        UIManager.instance.UpdatePlayerHP(currentHealth, maxHealth);
+        healCoroutine = null;
     }
 }
