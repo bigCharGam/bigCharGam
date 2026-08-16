@@ -8,5 +8,5 @@ public class GameSaveData
     public float posX, posY, posZ;
     public string currentSceneName;
     public List<string> unlockedItems = new List<string>();
-    public string lastBonfireID;
+    public string lastBonfireName = ""; // 빈 문자열이면 화톳불 미사용(기본 스폰)
 }

@@ -18,21 +18,22 @@ public class InteractMenuTrigger : MonoBehaviour
     //  실제로는 PlayerAttack이 붙어있어도 PlayerMovement로 참조를 잡아 그냥 꺼버릴 수 있습니다.)
     private PlayerMovement playerMovementScript;
 
-    // 메뉴가 열려 있는 동안 true.
-    public static bool IsMenuOpen { get; private set; } = false;
+    // 현재 열려 있는 메뉴가 "어느 트리거의 것인지"를 저장 (null이면 전부 닫힌 상태).
+    // static bool 대신 이렇게 인스턴스를 참조해야, 화톳불이 여러 개일 때 서로 입력을 가로채지 않음.
+    private static InteractMenuTrigger activeTrigger = null;
+
+    public static bool IsMenuOpen => activeTrigger != null;
 
     private void Start()
     {
         // 시작할 땐 메뉴가 꺼져 있어야 함
         if (menuPanel != null)
             menuPanel.SetActive(false);
-
-        IsMenuOpen = false;
     }
 
     private void Update()
     {
-        if (!IsMenuOpen)
+        if (activeTrigger == null)
         {
             // 메뉴가 닫혀 있을 때: 범위 안에서 F키를 누르면 메뉴 열기
             if (isPlayerInRange && Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
@@ -42,7 +43,10 @@ public class InteractMenuTrigger : MonoBehaviour
             return;
         }
 
-        // ---- 메뉴가 열려 있을 때 ----
+        // 다른 트리거가 열어놓은 메뉴라면 이 인스턴스는 입력을 무시함
+        if (activeTrigger != this) return;
+
+        // ---- 이 트리거가 연 메뉴가 열려 있을 때 ----
         // F(닫기) / 좌클릭 / 우클릭 외의 입력은 여기서 아무것도 하지 않으므로 자동으로 무시됩니다.
         HandleMenuInput();
     }
@@ -96,7 +100,7 @@ public class InteractMenuTrigger : MonoBehaviour
 
         bool newState = !menuPanel.activeSelf;
         menuPanel.SetActive(newState);
-        IsMenuOpen = newState;
+        activeTrigger = newState ? this : null;
 
         // 메뉴가 열리면 플레이어 조작 스크립트를 꺼서 이동을 막고,
         // 메뉴가 닫히면 다시 켭니다.
@@ -133,14 +137,18 @@ public class InteractMenuTrigger : MonoBehaviour
             isPlayerInRange = false;
 
             // 범위 벗어나면 메뉴도 자동으로 닫고, 조작 스크립트도 다시 켜줍니다.
-            if (menuPanel != null) menuPanel.SetActive(false);
-
-            if (IsMenuOpen && playerMovementScript != null)
+            // 단, 이 트리거가 연 메뉴일 때만 처리 (다른 화톳불이 열어놓은 메뉴는 건드리지 않음)
+            if (activeTrigger == this)
             {
-                playerMovementScript.enabled = true;
-            }
+                if (menuPanel != null) menuPanel.SetActive(false);
 
-            IsMenuOpen = false;
+                if (playerMovementScript != null)
+                {
+                    playerMovementScript.enabled = true;
+                }
+
+                activeTrigger = null;
+            }
         }
     }
 }
