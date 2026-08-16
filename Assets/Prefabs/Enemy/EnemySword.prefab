@@ -127,7 +127,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.021674365, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -137,7 +137,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.0433488, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &4276281232451001120
 MonoBehaviour:
@@ -282,7 +282,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.010867715, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -292,7 +292,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.0217354, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &9074362974794636428
 MonoBehaviour:
@@ -463,7 +463,7 @@ MonoBehaviour:
     damage: 10
     minRange: 0
     maxRange: 9999
-    UseRange: 6
+    UseRange: 5
     weightInit: 70
     weightNow: 0
     parryReduction: 0
@@ -473,9 +473,9 @@ MonoBehaviour:
   - skillName: 
     hitbox: {fileID: 7815302192937100778}
     damage: 20
-    minRange: 5
+    minRange: 4.5
     maxRange: 9999
-    UseRange: 7
+    UseRange: 6
     weightInit: 30
     weightNow: 0
     parryReduction: 0
@@ -494,7 +494,7 @@ MonoBehaviour:
     parryPerfectReduction: 0
     isImmune: 0
     isReflectable: 0
-  runSpeed: 15
+  runSpeed: 20
   backStepSpeed: 20
   backStepJumpForce: 3
   tooCloseRange: 0

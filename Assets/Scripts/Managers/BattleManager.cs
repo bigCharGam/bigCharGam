@@ -29,7 +29,9 @@ public class BattleManager : MonoBehaviour
     private int pendingExp;
     private bool isProcessingExp;
 
-    public int[] skillLevels;
+    [Header("Player Info")]
+    public int[] skillLevels; 
+    public int potionCount = 3;
     
     public GameObject midBossPrefab; 
     public GameObject midBossSpawnPoint;
