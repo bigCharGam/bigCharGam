@@ -7,19 +7,27 @@ public class TitleScreenManager : MonoBehaviour
 {
     public GameObject loadingScreen;
 
+    [Header("씬 설정 - 인스펙터에서 씬 파일을 드래그해서 등록")]
+    [Tooltip("Single 모드로 먼저 로드될 마스터 씬")]
+    public SceneField masterScene;
+
+    [Tooltip("마스터 씬 로드 후 Additive로 함께 로드할 씬들. + 버튼으로 슬롯을 늘리고 씬 파일을 드래그하면 됨")]
+    public List<SceneField> additiveScenes = new List<SceneField>();
+
     public void OnStartButtonClicked()
     {
         loadingScreen.SetActive(true);
         StartCoroutine(LoadScenesCoroutine());
     }
-    private System.Collections.IEnumerator LoadScenesCoroutine()
+
+    private IEnumerator LoadScenesCoroutine()
     {
         // Single 모드 씬 전환 시 이 오브젝트가 파괴되지 않도록 보호
-        // 이걸 안 넣으면 Master를 Single로 부를 때 TitleScene가 파괴되어 코루틴 끊김
+        // 이걸 안 넣으면 마스터씬을 Single로 부를 때 TitleScene가 파괴되어 코루틴 끊김
         DontDestroyOnLoad(gameObject);
 
         // 1. 마스터 씬을 싱글 모드로 먼저 로딩
-        AsyncOperation masterOp = SceneManager.LoadSceneAsync("Master", LoadSceneMode.Single);
+        AsyncOperation masterOp = SceneManager.LoadSceneAsync(masterScene, LoadSceneMode.Single);
         while (!masterOp.isDone)
         {
             yield return null;
@@ -28,13 +36,13 @@ public class TitleScreenManager : MonoBehaviour
         // 2. 동시에 로딩할 씬들의 비동기 오퍼레이션(로딩 상태 파악용)을 담을 리스트
         List<AsyncOperation> asyncOps = new List<AsyncOperation>();
 
-        // 나머지 5개 씬들을 Additive로 로딩 지시 (지시만 내리고 바로 다음 줄로 넘어감)
-        asyncOps.Add(SceneManager.LoadSceneAsync("Gameover", LoadSceneMode.Additive));
-        asyncOps.Add(SceneManager.LoadSceneAsync("Character", LoadSceneMode.Additive));
-        asyncOps.Add(SceneManager.LoadSceneAsync("Map", LoadSceneMode.Additive));
+        // 인스펙터에 등록해둔 씬들을 전부 Additive로 로딩 지시 (지시만 내리고 바로 다음 줄로 넘어감)
+        foreach (SceneField scene in additiveScenes)
+        {
+            asyncOps.Add(SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive));
+        }
 
-
-        // 3. 5개 씬이 '전부 다' 로딩될 때까지 코루틴을 붙잡아둡니다.
+        // 3. 등록된 씬이 '전부 다' 로딩될 때까지 코루틴을 붙잡아둡니다.
         bool allScenesLoaded = false;
         while (!allScenesLoaded)
         {
@@ -44,7 +52,7 @@ public class TitleScreenManager : MonoBehaviour
             {
                 if (!op.isDone)
                 {
-                    allScenesLoaded = false; 
+                    allScenesLoaded = false;
                     Debug.Log("로딩 중");
                     break;
                 }
@@ -53,13 +61,13 @@ public class TitleScreenManager : MonoBehaviour
             yield return null; // 다음 프레임까지 대기 후 다시 검사
         }
 
-        // 4. 이 줄에 도달했다는 것은 6개 씬이 완벽하게 켜졌다는 뜻입니다!
+        // 4. 이 줄에 도달했다는 것은 등록된 씬들이 전부 켜졌다는 뜻입니다!
         Debug.Log("모든 인게임 씬 로딩 완료! 게임을 시작합니다.");
         if (loadingScreen != null) //null체크 안하면 유니티가 경고띄움
         {
             loadingScreen.SetActive(false);
         }
-        
+
         // 여기서 실제로 캐릭터의 중력을 켜거나, 페이드아웃 연출을 끝내고 게임을 시작시키면 됩니다.
         StartActualGame();
 
@@ -72,4 +80,3 @@ public class TitleScreenManager : MonoBehaviour
         // 여기에 로딩 완료 후 처리할 로직 작성 (예: 플레이어 움직임 활성화 등)
     }
 }
-

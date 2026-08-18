@@ -45,6 +45,7 @@ public class LoadGameManager : MonoBehaviour
         asyncOps.Add(SceneManager.LoadSceneAsync("Gameover", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Character", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Map", LoadSceneMode.Additive));
+        asyncOps.Add(SceneManager.LoadSceneAsync("BossHorse", LoadSceneMode.Additive));
 
         // 3. 전부 로딩될 때까지 대기
         bool allScenesLoaded = false;

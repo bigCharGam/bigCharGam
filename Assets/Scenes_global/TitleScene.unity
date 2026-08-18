@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 131405396}
   - component: {fileID: 131405395}
   m_Layer: 5
-  m_Name: StartText
+  m_Name: Start Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 398652414}
   - component: {fileID: 398652413}
   m_Layer: 5
-  m_Name: LoadText
+  m_Name: Load Text (TMI)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 453188739}
   - component: {fileID: 453188738}
   m_Layer: 5
-  m_Name: StartPanel
+  m_Name: TitlePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -420,6 +420,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 131405394}
+  - {fileID: 817520338}
   m_Father: {fileID: 1366390770}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -478,7 +479,7 @@ GameObject:
   - component: {fileID: 817520340}
   - component: {fileID: 817520339}
   m_Layer: 5
-  m_Name: LoadPanel
+  m_Name: Load Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,13 +492,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 817520337}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 398652412}
-  m_Father: {fileID: 1366390770}
+  m_Father: {fileID: 453188737}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -629,6 +630,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleScreenManager
   loadingScreen: {fileID: 2114407174}
+  masterScene:
+    sceneAsset: {fileID: 102900000, guid: 65721203267646846ad619afb2d1bae8, type: 3}
+    sceneName: Master
+  additiveScenes:
+  - sceneAsset: {fileID: 102900000, guid: 4b36e03413996ff48b0a384e1067a9e3, type: 3}
+    sceneName: BossHorse
+  - sceneAsset: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+    sceneName: Character
+  - sceneAsset: {fileID: 102900000, guid: 242131fcc02f15145b4341b7e92f1e3c, type: 3}
+    sceneName: GameOver
+  - sceneAsset: {fileID: 102900000, guid: 164638af5459bef42aa89922d2f6fd79, type: 3}
+    sceneName: Map
 --- !u!4 &1092077067
 Transform:
   m_ObjectHideFlags: 0
@@ -752,7 +765,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 453188737}
-  - {fileID: 817520338}
   - {fileID: 2114407175}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -773,7 +785,7 @@ GameObject:
   - component: {fileID: 1499890989}
   - component: {fileID: 1499890988}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Start Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
