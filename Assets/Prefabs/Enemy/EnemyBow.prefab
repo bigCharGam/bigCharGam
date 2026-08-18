@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a7fa931f02c8147a3d1642345bf835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBow
-  maxHealth: 100
+  maxHealth: 50
   currentHealth: 0
   moveSpeed: 8
   detectionRange: 45

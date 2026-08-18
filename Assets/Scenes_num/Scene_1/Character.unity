@@ -467,7 +467,7 @@ MonoBehaviour:
   bigAttackDuration: 0.25
   normalAttackCooldown: 0.2
   bigAttackCooldown: 0.5
-  normalAttackDamage: 10
+  normalAttackDamage: 100
   bigAttackDamage: 20
   attackPoint: {fileID: 1601832588}
   attackSize: {x: 3, y: 10}

@@ -611,7 +611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 674a62d42b05ac649ba558201fb5fe4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpear
-  maxHealth: 100
+  maxHealth: 50
   currentHealth: 0
   moveSpeed: 8
   detectionRange: 30

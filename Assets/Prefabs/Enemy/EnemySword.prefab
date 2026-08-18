@@ -239,7 +239,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.20784314}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.7647059}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66fa2e97cd45ee346987bd3400be52a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy1
-  maxHealth: 5
+  maxHealth: 50
   currentHealth: 0
   moveSpeed: 8
   detectionRange: 25
@@ -455,8 +455,8 @@ MonoBehaviour:
     waitTime: 1
   - transform: {fileID: 0}
     waitTime: 1
-  patrolLoop: 1
-  dropExp: 180
+  patrolLoop: 0
+  dropExp: 50
   skills:
   - skillName: 
     hitbox: {fileID: 5499297599995935795}

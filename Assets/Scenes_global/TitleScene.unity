@@ -644,6 +644,8 @@ MonoBehaviour:
     sceneName: Map
   - sceneAsset: {fileID: 102900000, guid: 242131fcc02f15145b4341b7e92f1e3c, type: 3}
     sceneName: GameOver
+  - sceneAsset: {fileID: 102900000, guid: d1c95cdbe6959e144865c4b2c1a52607, type: 3}
+    sceneName: Enemy
 --- !u!4 &1092077067
 Transform:
   m_ObjectHideFlags: 0

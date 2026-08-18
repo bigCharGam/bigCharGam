@@ -46,6 +46,7 @@ public class LoadGameManager : MonoBehaviour
         asyncOps.Add(SceneManager.LoadSceneAsync("Character", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Map", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("BossHorse", LoadSceneMode.Additive));
+        asyncOps.Add(SceneManager.LoadSceneAsync("Enemy", LoadSceneMode.Additive));
 
         // 3. 전부 로딩될 때까지 대기
         bool allScenesLoaded = false;
@@ -109,6 +110,13 @@ public class LoadGameManager : MonoBehaviour
         {
             player.transform.position = new Vector3(data.posX, data.posY, data.posZ);
             Debug.Log("[로드] 화톳불 정보 없음/불일치 - 저장된 좌표로 복원.");
+        }
+
+        // 마지막으로 쉰 화톳불 번호에 맞춰 그 이후 구간의 적 스포너를 다시 활성화
+        if (!string.IsNullOrEmpty(data.lastBonfireName) && SpawnManager.Instance != null)
+        {
+            int bonfireIndex = BonfireManager.ParseBonfireIndex(data.lastBonfireName);
+            SpawnManager.Instance.ResetAreaSpawners(bonfireIndex);
         }
 
         // ---- 레벨 / 경험치 / 스킬 복원 ----

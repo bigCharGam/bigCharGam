@@ -53,6 +53,17 @@ public class BonfireManager : MonoBehaviour
         return null;
     }
 
+    // "Bonfire_2" 형태의 이름에서 뒤쪽 숫자(진행도 인덱스)만 파싱. 실패 시 0.
+    public static int ParseBonfireIndex(string bonfireName)
+    {
+        if (string.IsNullOrEmpty(bonfireName)) return 0;
+
+        int lastUnderscore = bonfireName.LastIndexOf('_');
+        string numberPart = lastUnderscore >= 0 ? bonfireName.Substring(lastUnderscore + 1) : bonfireName;
+
+        return int.TryParse(numberPart, out int index) ? index : 0;
+    }
+
     // Bonfire가 OnTriggerEnter2D에서 호출해서 "지금 이 화톳불과 상호작용 중"이라고 알려줌
     public void SetCurrentBonfire(Bonfire bonfire)
     {

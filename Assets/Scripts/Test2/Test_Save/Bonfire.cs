@@ -92,5 +92,11 @@ public class Bonfire : MonoBehaviour
 
         SaveManager.Save(data);
         Debug.Log($"[모닥불 저장] '{bonfireName}' 에서 저장 완료 - {Application.persistentDataPath}");
+
+        // 화톳불 앉으면 적 제거
+        if (SpawnManager.Instance != null)
+        {
+            SpawnManager.Instance.DeleteAllEnemies();
+        }
     }
 }
