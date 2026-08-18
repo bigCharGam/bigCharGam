@@ -109,5 +109,42 @@ public class LoadGameManager : MonoBehaviour
             player.transform.position = new Vector3(data.posX, data.posY, data.posZ);
             Debug.Log("[로드] 화톳불 정보 없음/불일치 - 저장된 좌표로 복원.");
         }
+
+        // ---- 레벨 / 경험치 / 스킬 복원 ----
+        if (BattleManager.instance != null)
+        {
+            // BattleManager.cs 확인 결과 레벨 필드 이름은 "level"이 아니라 "expLevel" 이었음.
+            BattleManager.instance.expLevel = data.playerLevel;
+            BattleManager.instance.exp = data.playerExp;
+
+            if (data.skillLevels != null)
+            {
+                for (int i = 0; i < data.skillLevels.Count && i < BattleManager.instance.skillLevels.Length; i++)
+                {
+                    BattleManager.instance.skillLevels[i] = data.skillLevels[i];
+                }
+            }
+            BattleManager.instance.skillPoint = data.skillPoint;
+
+            // 스킬 UI가 이미 떠 있는 상태였다면 갱신
+            if (UIManager.instance != null)
+            {
+                UIManager.instance.RefreshSkillImages();
+
+                // 경험치 바(HUD)도 저장된 값 기준으로 다시 그려줌
+                int[] expTable = BattleManager.instance.expTable;
+                if (expTable != null && expTable.Length > 0)
+                {
+                    int tableIndex = Mathf.Clamp(BattleManager.instance.expLevel, 0, expTable.Length - 1);
+                    UIManager.instance.UpdateExp(BattleManager.instance.exp, expTable[tableIndex]);
+                }
+            }
+
+            Debug.Log("[로드] 레벨/경험치/스킬 복원 완료.");
+        }
+        else
+        {
+            Debug.LogWarning("[로드] BattleManager.instance가 없어 레벨/경험치/스킬을 복원하지 못했습니다.");
+        }
     }
 }

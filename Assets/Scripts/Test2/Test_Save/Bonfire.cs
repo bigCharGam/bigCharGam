@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -73,6 +74,21 @@ public class Bonfire : MonoBehaviour
             currentSceneName = SceneManager.GetActiveScene().name,
             lastBonfireName = bonfireName
         };
+
+        // ---- 레벨 / 경험치 / 스킬 저장 ----
+        if (BattleManager.instance != null)
+        {
+            // BattleManager.cs 확인 결과 레벨 필드 이름은 "level"이 아니라 "expLevel" 이었음.
+            data.playerLevel = BattleManager.instance.expLevel;
+            data.playerExp = BattleManager.instance.exp;
+
+            data.skillLevels = new List<int>(BattleManager.instance.skillLevels);
+            data.skillPoint = BattleManager.instance.skillPoint;
+        }
+        else
+        {
+            Debug.LogWarning("[모닥불 저장] BattleManager.instance가 없어 레벨/경험치/스킬을 저장하지 못했습니다.");
+        }
 
         SaveManager.Save(data);
         Debug.Log($"[모닥불 저장] '{bonfireName}' 에서 저장 완료 - {Application.persistentDataPath}");
