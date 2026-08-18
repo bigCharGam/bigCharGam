@@ -6,7 +6,11 @@ using UnityEngine.InputSystem;
 public class InteractMenuTrigger : MonoBehaviour
 {
     [Header("팝업으로 켜고 끌 메뉴 UI (씬에 미리 배치된 오브젝트)")]
+    [Tooltip("인스펙터에서 직접 드래그해서 넣어도 되고, 비워두면 아래 menuPanelName으로 씬에서 자동으로 찾습니다.")]
     [SerializeField] private GameObject menuPanel;
+
+    [Header("menuPanel을 인스펙터에서 안 넣었을 때 자동으로 찾을 오브젝트 이름")]
+    [SerializeField] private string menuPanelName = "SkillLearnUICanvas";
 
     [Header("플레이어를 구분할 태그")]
     [SerializeField] private string playerTag = "Player";
@@ -22,7 +26,66 @@ public class InteractMenuTrigger : MonoBehaviour
     // static bool 대신 이렇게 인스턴스를 참조해야, 화톳불이 여러 개일 때 서로 입력을 가로채지 않음.
     private static InteractMenuTrigger activeTrigger = null;
 
+    // 씬에서 한 번 찾은 menuPanel을 캐싱해서, 트리거가 여러 개 있어도 GameObject.Find를 반복 호출하지 않게 함.
+    private static GameObject cachedMenuPanel = null;
+
     public static bool IsMenuOpen => activeTrigger != null;
+
+    private void Awake()
+    {
+        // 인스펙터에 드래그로 안 넣었다면, 이름으로 자동으로 찾아서 채웁니다.
+        // (드래그 앤 드롭이 귀찮아서 매번 반복하기 싫을 때 사용)
+        //
+        // GameObject.Find는 "비활성화된" 오브젝트를 찾지 못해서 (씬에서 꺼둔 상태로
+        // 시작하면 무조건 실패) 대신 씬의 루트 오브젝트부터 자식까지 전부 뒤져서
+        // 이름이 일치하는 오브젝트를 찾는 FindInSceneIncludingInactive를 사용합니다.
+        if (menuPanel == null)
+        {
+            if (cachedMenuPanel == null)
+            {
+                cachedMenuPanel = FindInSceneIncludingInactive(menuPanelName);
+            }
+            menuPanel = cachedMenuPanel;
+        }
+
+        if (menuPanel == null)
+        {
+            Debug.LogWarning($"[InteractMenuTrigger] '{menuPanelName}' 이름의 오브젝트를 씬에서 찾지 못했습니다. " +
+                              $"오브젝트 이름 철자/공백/대소문자를 확인하거나, 인스펙터에서 menuPanel을 직접 연결해주세요.");
+        }
+    }
+
+    // 씬(활성 씬)의 모든 오브젝트를 루트부터 자식까지 재귀적으로 뒤져서,
+    // 비활성화된 오브젝트라도 이름이 일치하면 찾아줍니다.
+    private static GameObject FindInSceneIncludingInactive(string targetName)
+    {
+        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var roots = scene.GetRootGameObjects();
+
+        foreach (var root in roots)
+        {
+            var found = FindChildByName(root.transform, targetName);
+            if (found != null)
+                return found.gameObject;
+        }
+
+        return null;
+    }
+
+    private static Transform FindChildByName(Transform parent, string targetName)
+    {
+        if (parent.name == targetName)
+            return parent;
+
+        foreach (Transform child in parent)
+        {
+            var found = FindChildByName(child, targetName);
+            if (found != null)
+                return found;
+        }
+
+        return null;
+    }
 
     private void Start()
     {
