@@ -99,6 +99,17 @@ public class PlayerBattle : PlayerStats
         var movement = GetComponent<PlayerMovement>();
         var attackScript = GetComponent<PlayerAttack>();
 
+        // ⭐ [임시 추가] 아래 조건(궤적/방향) 판정 로직은 그대로 두되,
+        // 패링 판정이 간헐적으로 안 되는 문제 때문에 패링 자세(Parrying)만 취하고 있으면
+        // 조건 검사 없이 무조건 패리 성공(무적) 처리합니다. (임시 조치)
+        if (movement != null && movement.GetCurrentAction() == PlayerMovement.ActionState.Parrying)
+        {
+            Debug.Log("<color=purple>[⚔️ PARRY - 임시 무조건 성공]</color> 조건 검사 없이 패리 처리되었습니다!");
+            hasFirstContact = false;
+            contactLossTimer = 0f;
+            return;
+        }
+
         // 1. 플레이어가 현재 패링 자세를 취하고 있고, 바깥 영역 진입 좌표가 기록되어 있을 때
         if (movement != null && movement.GetCurrentAction() == PlayerMovement.ActionState.Parrying && attackScript != null && hasFirstContact && innerCollider != null)
         {
