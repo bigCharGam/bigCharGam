@@ -51,14 +51,14 @@ public class PlayerDeathHandler : MonoBehaviour
         // 1. 유니티 Input System의 모든 키 입력 수신 비활성화
         if (playerInput != null)
         {
-            playerInput.DeactivateInput();
+            //playerInput.DeactivateInput();
         }
 
         // 2. 물리 이동 및 잔여 속도 완전히 정지 (Rigidbody2D 멈춤)
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero;
+            //rb.linearVelocity = Vector2.zero;
         }
 
         // 참고: animator.SetTrigger("isDead")는 PlayerBattle.TakeDamage()에서 이미 실행됩니다.

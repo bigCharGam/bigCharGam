@@ -41,8 +41,11 @@ public class LoadGameManager : MonoBehaviour
         }
 
         // 2. 나머지 씬들을 Additive로 로딩
+        // ※ [수정] "Gameover" 씬은 여기서 또 로드하지 않음.
+        //    GameOver 오브젝트가 게임 시작 시점(GameOver.Start())에 이미
+        //    "GameOver" 씬을 DontDestroyOnLoad로 한 번 로드해서 계속 들고 있기 때문에,
+        //    여기서 다시 로드하면 (게다가 이름 대소문자도 "Gameover"로 달라서) 중복/이름 불일치 문제만 생김.
         List<AsyncOperation> asyncOps = new List<AsyncOperation>();
-        asyncOps.Add(SceneManager.LoadSceneAsync("Gameover", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Character", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("Map", LoadSceneMode.Additive));
         asyncOps.Add(SceneManager.LoadSceneAsync("BossHorse", LoadSceneMode.Additive));
@@ -68,6 +71,20 @@ public class LoadGameManager : MonoBehaviour
 
         // 4. 씬이 다 켜졌으니 이제 플레이어 상태와 위치를 저장된 값으로 덮어씀
         ApplySaveData(data);
+
+        // 5. [수정] 사망 직후 불러오기를 했을 수도 있으므로,
+        //    GameOver가 걸어둔 Time.timeScale = 0 / isDead 상태를 여기서 확실히 풀어준다.
+        //    (기존에는 GameOver.OnRetryOrMenu()를 호출하는 경로가 어디에도 없어서,
+        //     죽은 뒤 로드하면 timeScale이 0으로 계속 멈춰 있었음 -> 이동/공격/애니메이션 전부 정지,
+        //     Update() 기반 좌우 반전만 살아있는 것처럼 보였던 원인)
+        if (GameOver.Instance != null)
+        {
+            GameOver.Instance.OnRetryOrMenu();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
 
         if (loadingScreen != null) loadingScreen.SetActive(false);
 
