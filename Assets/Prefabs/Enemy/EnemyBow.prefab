@@ -172,10 +172,10 @@ MonoBehaviour:
   - transform: {fileID: 0}
     waitTime: 0
   patrolLoop: 1
-  dropExp: 20
+  dropExp: 17
   skills:
   - skillName: Shoot
-    damage: 15
+    damage: 10
     shootPower: 40
     minRange: 0
     maxRange: 9999
@@ -187,7 +187,7 @@ MonoBehaviour:
     isImmune: 0
     isReflectable: 0
   - skillName: LongShoot
-    damage: 20
+    damage: 15
     shootPower: 65
     minRange: 0
     maxRange: 9999

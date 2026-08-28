@@ -409,6 +409,7 @@ MonoBehaviour:
     m_Bits: 128
   waypoints: []
   patrolLoop: 0
+  dropExp: 200
   skills:
   - skillName: Pierce
     hitbox: {fileID: 6311753499756369654}

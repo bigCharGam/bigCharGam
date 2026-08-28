@@ -5,6 +5,7 @@ public class Arrow : MonoBehaviour
     public float damage;
     public float power;
     private Rigidbody2D rb;
+    private bool isStuck = false; // 벽/바닥에 박힌 이후에는 더 이상 데미지를 주지 않음
 
     // 스프라이트 기본 방향이 velocity 반대일 때 보정 (Arrow_0는 왼쪽을 향함)
     private const float RotationOffset = 180f;
@@ -35,7 +36,7 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (!isStuck && other.CompareTag("Player"))
         {
             other.GetComponent<PlayerBattle>().TakeDamage(damage);
             Destroy(gameObject);
@@ -44,6 +45,7 @@ public class Arrow : MonoBehaviour
 
     public void ArrowStop()
     {
+        isStuck = true;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
         rb.bodyType = RigidbodyType2D.Kinematic;

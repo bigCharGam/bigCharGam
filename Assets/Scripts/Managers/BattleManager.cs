@@ -30,11 +30,10 @@ public class BattleManager : MonoBehaviour
     private bool isProcessingExp;
 
     [Header("Player Info")]
-    public int[] skillLevels; 
+    public int[] skillLevels;
     public int potionCount = 3;
+    public int maxPotionCount = 3;
     
-    public GameObject midBossPrefab; 
-    public GameObject midBossSpawnPoint;
     public GameObject bossHPBar;
     void Awake()
     {
@@ -49,9 +48,12 @@ public class BattleManager : MonoBehaviour
     }
     public void SpawnMidBoss()
     {
-        // 중간보스는 좌우반전해서 스폰해야함
-        Instantiate(midBossPrefab, midBossSpawnPoint.transform.position, Quaternion.Euler(0, 180, 0));
         bossHPBar.SetActive(true);
+    }
+
+    public void DeadMidBoss()
+    {
+        bossHPBar.SetActive(false);
     }
 
     public void AddExp(int amount)

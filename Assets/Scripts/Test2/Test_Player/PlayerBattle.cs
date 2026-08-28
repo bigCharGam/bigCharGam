@@ -237,6 +237,22 @@ public class PlayerBattle : PlayerStats
         }
     }
 
+    // 화톳불 휴식 등으로 체력/기력을 즉시 완전 회복시킨다.
+    public void FullyRestore()
+    {
+        if (healCoroutine != null)
+        {
+            StopCoroutine(healCoroutine);
+            healCoroutine = null;
+        }
+
+        currentHealth = maxHealth;
+        currentStamina = maxStamina;
+
+        UIManager.instance?.UpdatePlayerHP(currentHealth, maxHealth);
+        UIManager.instance?.UpdatePlayerMP(currentStamina, maxStamina);
+    }
+
     // 포션 등에 의한 회복을 duration에 걸쳐 실제 currentHealth 자체에 서서히 반영한다.
     // 회복 도중 TakeDamage가 들어오면 코루틴이 즉시 중단되어, 그 시점까지 회복된 값에서 바로 데미지가 적용된다.
     public void StartPotionHeal(float healAmount, float duration)
