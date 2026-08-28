@@ -51,6 +51,11 @@ public class BattleManager : MonoBehaviour
         bossHPBar.SetActive(true);
     }
 
+    public void DeadMidBoss()
+    {
+        bossHPBar.SetActive(false);
+    }
+
     public void AddExp(int amount)
     {
         if (amount <= 0 || expTable.Length == 0)
