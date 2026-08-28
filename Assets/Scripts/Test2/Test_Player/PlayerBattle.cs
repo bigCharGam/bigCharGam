@@ -15,6 +15,11 @@ public class PlayerBattle : PlayerStats
     private Vector2 firstContactPoint;  // 1번 영역 진입 최초 좌표
     private bool hasFirstContact = false;
 
+    [Header("Parry Detection Tuning")]
+    [Tooltip("바깥 콜라이더가 한두 프레임 겹침을 놓쳐도 진입 기록을 바로 지우지 않고 버텨주는 유예 시간(초)")]
+    [SerializeField] private float contactLossGracePeriod = 0.12f;
+    private float contactLossTimer = 0f;
+
     [Header("Battle Status")]
     // [수정] 아래 isParrying 변수는 직접 쓰기보다, PlayerMovement의 currentAction 상태를 참조하는 방식으로 일원화합니다.
     public bool isParrying => (GetComponent<PlayerMovement>() != null && GetComponent<PlayerMovement>().GetCurrentAction() == PlayerMovement.ActionState.Parrying);
@@ -42,9 +47,9 @@ public class PlayerBattle : PlayerStats
             // 바깥쪽 콜라이더 영역 겹침 감지
             int count = outerCollider.Overlap(filter, results);
 
+            bool anyAttackInOuter = false;
             if (count > 0)
             {
-                bool anyAttackInOuter = false;
                 for (int i = 0; i < count; i++)
                 {
                     // ⭐ [개선] 하드코딩된 태그나 이름 검사 대신, 인스펙터 드롭다운에서 설정한 레이어마스크 비트 연산으로 필터링합니다.
@@ -62,23 +67,30 @@ public class PlayerBattle : PlayerStats
                         break;
                     }
                 }
+            }
 
-                // ⭐ [예외 처리] 바깥 영역 안에 잡히는 것들 중 내가 지정한 적 공격 레이어가 없다면 진입 기록을 지워 버그를 방지합니다.
-                if (!anyAttackInOuter)
+            if (anyAttackInOuter)
+            {
+                // 이번 프레임에 정상적으로 감지됐으면 유예 타이머 리셋
+                contactLossTimer = 0f;
+            }
+            else if (hasFirstContact)
+            {
+                // ⭐ [완화] 한두 프레임 놓쳤다고 바로 기록을 지우지 않고, 유예 시간 동안은 firstContactPoint를 유지합니다.
+                // (터널링/물리 흔들림으로 인한 순간적인 오버랩 유실이 패링 실패로 이어지는 것을 방지)
+                contactLossTimer += Time.deltaTime;
+                if (contactLossTimer >= contactLossGracePeriod)
                 {
                     hasFirstContact = false;
+                    contactLossTimer = 0f;
                 }
-            }
-            else
-            {
-                // 바깥 오버랩 범위에 오브젝트가 아예 없다면 감지 데이터 초기화 (공격이 빗나갔을 때 유실 처리)
-                hasFirstContact = false;
             }
         }
         else
         {
-            // 패링 상태가 아니면 감지 기록을 초기화합니다.
+            // 패링 상태 자체를 벗어난 경우는 즉시 초기화 (이건 흔들림이 아니라 명확한 상태 전환이므로 유예 불필요)
             hasFirstContact = false;
+            contactLossTimer = 0f;
         }
     }
 
@@ -86,6 +98,17 @@ public class PlayerBattle : PlayerStats
     {
         var movement = GetComponent<PlayerMovement>();
         var attackScript = GetComponent<PlayerAttack>();
+
+        // ⭐ [임시 추가] 아래 조건(궤적/방향) 판정 로직은 그대로 두되,
+        // 패링 판정이 간헐적으로 안 되는 문제 때문에 패링 자세(Parrying)만 취하고 있으면
+        // 조건 검사 없이 무조건 패리 성공(무적) 처리합니다. (임시 조치)
+        if (movement != null && movement.GetCurrentAction() == PlayerMovement.ActionState.Parrying)
+        {
+            Debug.Log("<color=purple>[⚔️ PARRY - 임시 무조건 성공]</color> 조건 검사 없이 패리 처리되었습니다!");
+            hasFirstContact = false;
+            contactLossTimer = 0f;
+            return;
+        }
 
         // 1. 플레이어가 현재 패링 자세를 취하고 있고, 바깥 영역 진입 좌표가 기록되어 있을 때
         if (movement != null && movement.GetCurrentAction() == PlayerMovement.ActionState.Parrying && attackScript != null && hasFirstContact && innerCollider != null)
@@ -149,6 +172,7 @@ public class PlayerBattle : PlayerStats
 
             // 패리 처리 후 진입 정보 리셋
             hasFirstContact = false;
+            contactLossTimer = 0f;
 
             if (isParrySuccess)
             {
@@ -192,6 +216,7 @@ public class PlayerBattle : PlayerStats
         //Debug.Log("Player 남은 체력 : " + currentHealth);
 
         hasFirstContact = false;
+        contactLossTimer = 0f;
 
         Animator animator = GetComponent<Animator>();
 

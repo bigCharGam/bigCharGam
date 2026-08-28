@@ -2632,11 +2632,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1438885894682935725, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 411.793
+      value: 9.4
       objectReference: {fileID: 0}
     - target: {fileID: 1438885894682935725, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -48.523563
+      value: -49.5
       objectReference: {fileID: 0}
     - target: {fileID: 1438885894682935725, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2672,11 +2672,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5691166501490319232, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: bonfireName
-      value: Bonfire_3
+      value: Bonfire_1
       objectReference: {fileID: 0}
     - target: {fileID: 8616658710682279996, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_Name
-      value: Bonfire_3
+      value: Bonfire_1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6787,7 +6787,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8616658710682279996, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_Name
-      value: Bonfire_0 (test)
+      value: Bonfire_0
       objectReference: {fileID: 0}
     - target: {fileID: 8616658710682279996, guid: 2985831ba39379742af7d81d7cd04670, type: 3}
       propertyPath: m_IsActive
