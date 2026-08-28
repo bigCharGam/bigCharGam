@@ -39,7 +39,7 @@ public class SpawnManager : MonoBehaviour
                 spawner.gameObject.SetActive(false);
             }
         }
-        for (int i = index + 1; i <= areaSpawners.Count; i++)
+        for (int i = index + 1; i < areaSpawners.Count; i++)
         {
             if (areaSpawners[i] != null)
             {

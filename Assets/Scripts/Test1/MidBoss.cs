@@ -213,6 +213,12 @@ public class MidBoss : EnemyBase
         ResetAllGizmoPhases();
     }
 
+    // EnemyBase의 DieCoroutine을 그대로 실행한 뒤, 미드보스 사망을 BattleManager에 알림 (보스 체력바 정리 등)
+    protected override IEnumerator DieCoroutine()
+    {
+        yield return base.DieCoroutine();
+        BattleManager.instance?.DeadMidBoss();
+    }
 
     // 직접 호출하지 않고 Animation Event에서 호출하는 함수들
 
