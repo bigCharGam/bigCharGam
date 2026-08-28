@@ -66,6 +66,10 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField] private float avoidDamageBonus = 1.5f; // 회피 성공 시 데미지 증가 배율
 
 
+    [Header("QTE Slow Motion")]
+    [SerializeField, Range(0.05f, 1f)] private float qteTimeScale = 0.7f; // QTE 대기(스킬 시전 전) 동안 적용할 타임스케일
+    private float defaultFixedDeltaTime;
+
     [Header("Effect")]
     //effect test
     public GameObject s1Effect;
@@ -98,6 +102,28 @@ public class PlayerSkill : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
         playerRb = GetComponent<Rigidbody2D>();
         playerMovement = GetComponent<PlayerMovement>();
+        defaultFixedDeltaTime = Time.fixedDeltaTime;
+    }
+
+    // 스킬 버튼을 누른 뒤 QTE 입력(시전)을 하기 전까지 시간을 느리게 만든다.
+    private void BeginQTESlowMotion()
+    {
+        Time.timeScale = qteTimeScale;
+        Time.fixedDeltaTime = defaultFixedDeltaTime * qteTimeScale;
+    }
+
+    // QTE 입력(시전) 또는 QTE 실패로 대기 구간이 끝나면 정상 속도로 복귀한다.
+    private void EndQTESlowMotion()
+    {
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = defaultFixedDeltaTime;
+    }
+
+    // 월드(적)는 Time.timeScale로 느려지지만, 플레이어 본인이 스킬 중 직접 움직이는 속도(돌진/백스텝)는
+    // 이 배율만큼 보정해서 체감상 항상 평소와 같은 속도로 움직이게 한다.
+    private float NormalSpeedCompensation()
+    {
+        return Time.timeScale > 0f ? 1f / Time.timeScale : 1f;
     }
 
     // Update is called once per frame
@@ -118,6 +144,7 @@ public class PlayerSkill : MonoBehaviour
 
         playerMovement?.BeginSkillUsing();
         playerInput.SwitchCurrentActionMap("OnSkill");
+        BeginQTESlowMotion();
         return true;
     }
     private void OnSkill1()
@@ -166,6 +193,7 @@ public class PlayerSkill : MonoBehaviour
     private void QTESkill1()
     {
         if (elapsedTime < graph.damageGraph[0].time) return; // QTE 입력이 너무 빠른 경우 무시
+        EndQTESlowMotion();
         playerInput.SwitchCurrentActionMap("Player");
         Debug.Log(elapsedTime);
 
@@ -196,7 +224,7 @@ public class PlayerSkill : MonoBehaviour
     private void QTESkill2()
     {
         if (s2Resolved || s2TargetIndex >= s2Targets.Count) return;
-        float elapsed = Time.time - s2StartTime;
+        float elapsed = Time.unscaledTime - s2StartTime;
         if (elapsed < s2EarliestInput) return; // 너무 이른 입력 무시
 
         bool isPerfect = elapsed >= s2PerfectStart && elapsed <= s2PerfectEnd;
@@ -220,6 +248,7 @@ public class PlayerSkill : MonoBehaviour
     private void QTESkill3()
     {
         if (elapsedTime < graph.damageGraph[0].time) return; // QTE 입력이 너무 빠른 경우 무시
+        EndQTESlowMotion();
         playerInput.SwitchCurrentActionMap("Player");
 
         currentQteIndicator?.SkipToStage4(); // 버튼 누르면 페이드아웃
@@ -246,9 +275,9 @@ public class PlayerSkill : MonoBehaviour
         {
             if (playerRb != null)
             {
-                playerRb.linearVelocity = new Vector2(velocityX, playerRb.linearVelocity.y);
+                playerRb.linearVelocity = new Vector2(velocityX * NormalSpeedCompensation(), playerRb.linearVelocity.y);
             }
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             yield return null;
         }
         if (playerRb != null) playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
@@ -336,10 +365,11 @@ public class PlayerSkill : MonoBehaviour
         }
 
         // 제한시간 내 QTE 입력 없으면 실패 처리
-        yield return new WaitForSeconds(graph.damageGraph[graph.damageGraph.Length - 1].time);
+        yield return new WaitForSecondsRealtime(graph.damageGraph[graph.damageGraph.Length - 1].time);
         if (skillState == SkillState.Skill1)
         {
             Debug.Log("Skill1 QTE Failed");
+            EndQTESlowMotion();
             skillState = SkillState.Idle;
             playerMovement?.EndSkillUsing();
             playerInput.SwitchCurrentActionMap("Player");
@@ -384,6 +414,7 @@ public class PlayerSkill : MonoBehaviour
 
         if (s2Targets.Count == 0)
         {
+            EndQTESlowMotion();
             skillState = SkillState.Idle;
             playerMovement?.EndSkillUsing();
             playerInput.SwitchCurrentActionMap("Player");
@@ -413,7 +444,7 @@ public class PlayerSkill : MonoBehaviour
         }
 
         s2Indicators = new QTEIndicator[n];
-        s2StartTime = Time.time;
+        s2StartTime = Time.unscaledTime;
         StartCoroutine(Skill2Rush(dir, rushStart, travelTime[n - 1]));
         StartCoroutine(Skill2IndicatorSpawner(spawnTime));
 
@@ -426,7 +457,7 @@ public class PlayerSkill : MonoBehaviour
             float judgeDeadline = s2PerfectEnd + earlyMargin;
 
             s2Resolved = false;
-            while (!s2Resolved && Time.time - s2StartTime < judgeDeadline)
+            while (!s2Resolved && Time.unscaledTime - s2StartTime < judgeDeadline)
                 yield return null;
 
             if (!s2Resolved)
@@ -437,6 +468,7 @@ public class PlayerSkill : MonoBehaviour
         }
 
         StopRush();
+        EndQTESlowMotion();
         skillState = SkillState.Idle;
         playerMovement?.EndSkillUsing();
         playerInput.SwitchCurrentActionMap("Player");
@@ -445,13 +477,13 @@ public class PlayerSkill : MonoBehaviour
     // 한 번 시작하면 마지막 공격지점까지 멈추지 않는 연속 등속 돌진
     private IEnumerator Skill2Rush(float direction, float rushStart, float rushDuration)
     {
-        while (Time.time - s2StartTime < rushStart) yield return null;
+        while (Time.unscaledTime - s2StartTime < rushStart) yield return null;
         float endTime = rushStart + rushDuration;
-        while (skillState == SkillState.Skill2 && Time.time - s2StartTime < endTime)
+        while (skillState == SkillState.Skill2 && Time.unscaledTime - s2StartTime < endTime)
         {
-            if (playerRb != null) 
+            if (playerRb != null)
             {
-                playerRb.linearVelocity = new Vector2(direction * s2RushSpeed, playerRb.linearVelocity.y);
+                playerRb.linearVelocity = new Vector2(direction * s2RushSpeed * NormalSpeedCompensation(), playerRb.linearVelocity.y);
             }
             yield return null;
         }
@@ -462,7 +494,7 @@ public class PlayerSkill : MonoBehaviour
     {
         for (int i = 0; i < spawnTime.Length; i++)
         {
-            while (Time.time - s2StartTime < spawnTime[i]) yield return null;
+            while (Time.unscaledTime - s2StartTime < spawnTime[i]) yield return null;
             if (skillState != SkillState.Skill2) yield break;
             s2Indicators[i] = Instantiate(qteIndicatorPrefab, s2Targets[i].transform.position, RandomizedEffectRotation(qteIndicatorPrefab.transform.rotation, skills[1].QTERotateRange));
         }
@@ -492,7 +524,7 @@ public class PlayerSkill : MonoBehaviour
         elapsedTime = 0f;
         while (elapsedTime < graph.damageGraph[graph.damageGraph.Length - 1].time)
         {
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
             if (elapsedTime < graph.damageGraph[0].time)
             {
                 skillDamage = 0;
@@ -527,7 +559,7 @@ public class PlayerSkill : MonoBehaviour
     private IEnumerator Cooldown(int skillIndex)
     {
         skills[skillIndex].isCooldown = true;
-        yield return new WaitForSeconds(skills[skillIndex].cooldown);
+        yield return new WaitForSecondsRealtime(skills[skillIndex].cooldown);
         skills[skillIndex].isCooldown = false;
         UIManager.instance?.SetSkillImage(skillIndex, true); // 스킬 사용 가능 이미지
     }
@@ -536,16 +568,18 @@ public class PlayerSkill : MonoBehaviour
     {
         playerMovement?.BeginSkillUsing();
         currentDecoyHitbox = Instantiate(DropingHitboxPrefab, DropingHitboxSpawnPoint.transform.position, Quaternion.identity).GetComponent<DecoyHitbox>(); // 뒤로 빠지기 전, 원래 자리에 미끼 히트박스를 드롭
-        playerRb.linearVelocity = new Vector2(-transform.localScale.x * backStepSpeed, backStepJumpForce);
+        float compensation = NormalSpeedCompensation();
+        playerRb.linearVelocity = new Vector2(-transform.localScale.x * backStepSpeed * compensation, backStepJumpForce * compensation);
         currentQteIndicator = Instantiate(qteIndicatorPrefab, qteSpawnPoint.transform.position, RandomizedEffectRotation(qteIndicatorPrefab.transform.rotation, skills[2].QTERotateRange));
-        yield return new WaitForSeconds(backStepDuration);
+        yield return new WaitForSecondsRealtime(backStepDuration);
         playerRb.linearVelocity = new Vector2(0f, playerRb.linearVelocity.y);
 
         // 제한시간 내 QTE 입력 없으면 실패 처리
-        yield return new WaitForSeconds(graph.damageGraph[graph.damageGraph.Length - 1].time);
+        yield return new WaitForSecondsRealtime(graph.damageGraph[graph.damageGraph.Length - 1].time);
         if (skillState == SkillState.Skill3)
         {
             Debug.Log("Skill3 QTE Failed");
+            EndQTESlowMotion();
             skillState = SkillState.Idle;
             playerMovement?.EndSkillUsing();
             playerInput.SwitchCurrentActionMap("Player");

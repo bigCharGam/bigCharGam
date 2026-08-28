@@ -89,6 +89,12 @@ public class PlayerMovement : PlayerBattle
         // 애니 오브젝트의 Animator 컴포넌트 자동 할당
         animator = GetComponent<Animator>();
 
+        // 적 슬로우모션(Time.timeScale) 중에도 플레이어 애니메이션은 항상 정상 속도로 재생
+        if (animator != null)
+        {
+            animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+        }
+
         defaultScale = transform.localScale;
     }
 

@@ -54,7 +54,7 @@ public class QTEIndicator : MonoBehaviour
         float time = 0f;
         while (time < setUpTime1)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             setAlpha(arrow1, Mathf.Clamp01(time / setUpTime1));
             setAlpha(arrow2, Mathf.Clamp01(time / setUpTime2));
             setAlpha(line, Mathf.Clamp01(time / setUpTime2));
@@ -65,7 +65,7 @@ public class QTEIndicator : MonoBehaviour
         time = 0f;
         while (time < setUpTime2)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             yield return null;
         }
 
@@ -76,7 +76,7 @@ public class QTEIndicator : MonoBehaviour
         time = 0f;
         while (time < moveTime1 && !skipToStage4)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(time / moveTime1);
             float et = t * t;
             line.transform.localScale = new Vector3(initialScale.x, Mathf.Lerp(initialScale.y, 0f, et), initialScale.z);
@@ -98,7 +98,7 @@ public class QTEIndicator : MonoBehaviour
         line.SetActive(false);
         while (time < moveTime2)
         {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             speedMultiplier = Mathf.Lerp(1f, 2f, time / moveTime2); 
             float clampedTime = Mathf.Min(time, moveTime2);
             arrow1.transform.localPosition = new Vector3(currentPosA1.x, currentPosA1.y + speedA1 * clampedTime * speedMultiplier, currentPosA1.z);

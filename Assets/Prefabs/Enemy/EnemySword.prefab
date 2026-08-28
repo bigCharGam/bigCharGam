@@ -456,7 +456,7 @@ MonoBehaviour:
   - transform: {fileID: 0}
     waitTime: 1
   patrolLoop: 0
-  dropExp: 50
+  dropExp: 17
   skills:
   - skillName: 
     hitbox: {fileID: 5499297599995935795}

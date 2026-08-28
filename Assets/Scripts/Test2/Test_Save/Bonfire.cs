@@ -65,6 +65,13 @@ public class Bonfire : MonoBehaviour
             return;
         }
 
+        // 화톳불에서 쉬면 체력/기력/포션 개수를 전부 완전 회복
+        movement.FullyRestore();
+        if (BattleManager.instance != null)
+        {
+            BattleManager.instance.potionCount = BattleManager.instance.maxPotionCount;
+        }
+
         GameSaveData data = new GameSaveData
         {
             playerHP = movement.currentHealth,
